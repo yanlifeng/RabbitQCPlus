@@ -21,8 +21,15 @@ public:
 
 
     std::string operator + (const std::string &b);
+    std::string operator = (const std::string &b);
     bool operator ==(const std::string &b);
     bool operator !=(const std::string &b);
+    bool operator ==(StringPool b);
+    bool operator !=(StringPool b);
+
+    //用于更换char
+    void set(int pos,char x);
+
 
 
     // 生成新的substring

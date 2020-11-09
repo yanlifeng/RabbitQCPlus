@@ -48,10 +48,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/zhaozhan/CLionProjects/StringPool
+CMAKE_SOURCE_DIR = /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,59 +123,32 @@ StringPool/fast:
 	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/build
 .PHONY : StringPool/fast
 
-StringPool.o: StringPool.cpp.o
+src/StringPool.o: src/StringPool.cpp.o
 
-.PHONY : StringPool.o
-
-# target to build an object file
-StringPool.cpp.o:
-	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/StringPool.cpp.o
-.PHONY : StringPool.cpp.o
-
-StringPool.i: StringPool.cpp.i
-
-.PHONY : StringPool.i
-
-# target to preprocess a source file
-StringPool.cpp.i:
-	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/StringPool.cpp.i
-.PHONY : StringPool.cpp.i
-
-StringPool.s: StringPool.cpp.s
-
-.PHONY : StringPool.s
-
-# target to generate assembly for a file
-StringPool.cpp.s:
-	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/StringPool.cpp.s
-.PHONY : StringPool.cpp.s
-
-sequence.o: sequence.cpp.o
-
-.PHONY : sequence.o
+.PHONY : src/StringPool.o
 
 # target to build an object file
-sequence.cpp.o:
-	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/sequence.cpp.o
-.PHONY : sequence.cpp.o
+src/StringPool.cpp.o:
+	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/src/StringPool.cpp.o
+.PHONY : src/StringPool.cpp.o
 
-sequence.i: sequence.cpp.i
+src/StringPool.i: src/StringPool.cpp.i
 
-.PHONY : sequence.i
+.PHONY : src/StringPool.i
 
 # target to preprocess a source file
-sequence.cpp.i:
-	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/sequence.cpp.i
-.PHONY : sequence.cpp.i
+src/StringPool.cpp.i:
+	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/src/StringPool.cpp.i
+.PHONY : src/StringPool.cpp.i
 
-sequence.s: sequence.cpp.s
+src/StringPool.s: src/StringPool.cpp.s
 
-.PHONY : sequence.s
+.PHONY : src/StringPool.s
 
 # target to generate assembly for a file
-sequence.cpp.s:
-	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/sequence.cpp.s
-.PHONY : sequence.cpp.s
+src/StringPool.cpp.s:
+	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/src/StringPool.cpp.s
+.PHONY : src/StringPool.cpp.s
 
 # Help Target
 help:
@@ -186,12 +159,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... StringPool"
-	@echo "... StringPool.o"
-	@echo "... StringPool.i"
-	@echo "... StringPool.s"
-	@echo "... sequence.o"
-	@echo "... sequence.i"
-	@echo "... sequence.s"
+	@echo "... src/StringPool.o"
+	@echo "... src/StringPool.i"
+	@echo "... src/StringPool.s"
 .PHONY : help
 
 

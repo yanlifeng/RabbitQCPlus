@@ -52,7 +52,7 @@ Read::Read(Read &r) {
 
 void Read::print(){
 	std::cerr << mName << endl;
-	std::cerr << mSeq.mStr << endl;
+	std::cerr << mSeq.mStr.toString() << endl;
 	std::cerr << mStrand << endl;
 	if(mHasQuality)
 		std::cerr << mQuality << endl;
@@ -60,7 +60,7 @@ void Read::print(){
 
 void Read::printFile(ofstream& file){
 	file << mName << endl;
-	file << mSeq.mStr << endl;
+	file << mSeq.mStr.toString() << endl;
 	file << mStrand << endl;
 	if(mHasQuality)
 		file << mQuality << endl;
@@ -128,7 +128,7 @@ int Read::length(){
 }
 
 string Read::toString() {
-	return mName + "\n" + mSeq.mStr + "\n" + mStrand + "\n" + mQuality + "\n";
+	return mName + "\n" + mSeq.mStr.toString() + "\n" + mStrand + "\n" + mQuality + "\n";
 }
 
 bool Read::test(){
@@ -204,7 +204,7 @@ Read* ReadPair::fastMerge(){
 		stringstream ss;
 		ss << mLeft->mName << " merged offset:" << offset << " overlap:" << olen << " diff:" << diff;
 		string mergedName = ss.str();
-		string mergedSeq = mLeft->mSeq.mStr.substr(0, offset) + rcRight->mSeq.mStr;
+		string mergedSeq = mLeft->mSeq.mStr.substr(0, offset) + rcRight->mSeq.mStr.toString();
 		string mergedQual = mLeft->mQuality.substr(0, offset) + rcRight->mQuality;
 		// quality adjuction and correction for low qual diff
 		for(int i=0;i<olen;i++){

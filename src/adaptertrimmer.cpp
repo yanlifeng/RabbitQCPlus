@@ -27,9 +27,9 @@ bool AdapterTrimmer::trimByOverlapAnalysis(Read* r1, Read* r2, FilterResult* fr,
             cerr <<endl;
         }
 
-        r1->mSeq.mStr = r1->mSeq.mStr.substr(0, ol);
+        r1->mSeq.mStr._substr(0, ol);
         r1->mQuality = r1->mQuality.substr(0, ol);
-        r2->mSeq.mStr = r2->mSeq.mStr.substr(0, ol);
+        r2->mSeq.mStr._substr(0, ol);
         r2->mQuality = r2->mQuality.substr(0, ol);
 
         fr->addAdapterTrimmed(adapter1, adapter2);
@@ -93,7 +93,7 @@ bool AdapterTrimmer::trimBySequence(Read* r, FilterResult* fr, string& adapterse
 
         } else {
             string adapter = r->mSeq.mStr.substr(pos, rlen-pos);
-            r->mSeq.mStr = r->mSeq.mStr.substr(0, pos);//string substr
+            r->mSeq.mStr._substr(0, pos);//string substr
             r->mQuality = r->mQuality.substr(0, pos);//string substr
             if(fr) {
                 fr->addAdapterTrimmed(adapter, isR2);

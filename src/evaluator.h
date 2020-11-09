@@ -59,6 +59,7 @@ private:
     Options* mOptions;
     string int2seq(unsigned int val, int seqlen);
     int seq2int(string& seq, int pos, int seqlen, int lastVal = -1);
+    int seq2int(StringPool& seq, int pos, int seqlen, int lastVal = -1);
     string getAdapterWithSeed(int seed, Read** loadedReads, long records, int keylen);
 };
 

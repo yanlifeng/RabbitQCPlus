@@ -4,8 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/zhaozhan/CLionProjects/StringPool/StringPool.cpp" "/Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles/StringPool.dir/StringPool.cpp.o"
-  "/Users/zhaozhan/CLionProjects/StringPool/sequence.cpp" "/Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles/StringPool.dir/sequence.cpp.o"
+  "/Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/src/StringPool.cpp" "/Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles/StringPool.dir/src/StringPool.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 

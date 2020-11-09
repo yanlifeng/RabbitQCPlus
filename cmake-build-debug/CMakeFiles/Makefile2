@@ -44,10 +44,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/zhaozhan/CLionProjects/StringPool
+CMAKE_SOURCE_DIR = /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -74,14 +74,14 @@ preinstall:
 CMakeFiles/StringPool.dir/all:
 	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/depend
 	$(MAKE) -f CMakeFiles/StringPool.dir/build.make CMakeFiles/StringPool.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles --progress-num=1,2,3 "Built target StringPool"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target StringPool"
 .PHONY : CMakeFiles/StringPool.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/StringPool.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/StringPool.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/StringPool.dir/rule
 
 # Convenience name for target.

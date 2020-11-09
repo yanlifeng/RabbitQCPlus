@@ -41,7 +41,7 @@ int BaseCorrector::correctByOverlapAnalysis(Read* r1, Read* r2, FilterResult* fr
         if(seq1[p1] != complement(seq2[p2])) {
             if(qual1[p1] >= GOOD_QUAL && qual2[p2] <= BAD_QUAL) {
                 // use R1
-                r2->mSeq.mStr[p2] = complement(seq1[p1]);
+                r2->mSeq.mStr.set(p2,complement(seq1[p1]));
                 r2->mQuality[p2] = qual1[p1];
                 corrected++;
                 r2Corrected = true;
@@ -50,7 +50,7 @@ int BaseCorrector::correctByOverlapAnalysis(Read* r1, Read* r2, FilterResult* fr
                 }
             } else if(qual2[p2] >= GOOD_QUAL && qual1[p1] <= BAD_QUAL) {
                 // use R2
-                r1->mSeq.mStr[p1] = complement(seq2[p2]);
+                r1->mSeq.mStr.set(p1,complement(seq2[p2]));
                 r1->mQuality[p1] = qual2[p2];
                 corrected++;
                 r1Corrected = true;

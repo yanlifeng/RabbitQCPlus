@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/StringPool.dir/StringPool.cpp.o"
-  "CMakeFiles/StringPool.dir/sequence.cpp.o"
+  "CMakeFiles/StringPool.dir/src/StringPool.cpp.o"
   "StringPool"
   "StringPool.pdb"
 )

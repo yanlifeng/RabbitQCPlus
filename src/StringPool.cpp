@@ -14,11 +14,15 @@ char StringPool::operator [](int i){
     return this->mstr[this->front+i];
 }
 
-
 std::string StringPool::operator + (const std::string &b){
     return std::string(this->mstr.substr(this->front,this->len)+b);
 }
 
+std::string StringPool::operator = (const std::string &b){
+    this->mstr = b;
+    this->front =0;
+    this->len = b.size();
+}
 
 bool StringPool::operator !=(const std::string &b){
     bool fg=false;
@@ -32,6 +36,25 @@ bool StringPool::operator ==(const std::string &b){
     if (this->len != b.size()) return false;
     for (int i=0;i<this->len;i++) if (b[i]!=this->mstr[i+this->front]){fg=false;break;}
     return fg;
+}
+
+bool StringPool::operator ==(StringPool b){
+    bool fg=true;
+    if (this->len != b.length()) return false;
+    for (int i=0;i<this->len;i++) if (b[i]!=this->mstr[i+this->front]){fg=false;break;}
+    return fg;
+}
+
+bool StringPool::operator !=(StringPool b){
+    bool fg=false;
+    if (this->len != b.length()) return true;
+    for (int i=0;i<this->len;i++) if (b[i]!=this->mstr[i+this->front]){fg=true;break;}
+    return fg;
+}
+
+void StringPool::set(int pos,char x){
+    if (pos < 0 || pos > len) return;
+    this->mstr[this->front+pos] = x;
 }
 
 // 生成新的substd::string
@@ -70,10 +93,15 @@ std::string StringPool::toString(){
 }
 char* StringPool::c_str(){return &this->mstr[front];}
 int StringPool::length(){return this->len;}
+
+
+
+//using namespace std;
 //int main(int argc,char **argv){
 //    StringPool s("AAAATTTTCCCCGGGG");
+//    cout << s << endl;
 //    if (s != "AAAATTTTCCCGGGG"){
-//        cout << "okkkk" << endl;
+//        std::cout << "okkkk" << std::endl;
 //    }
 //}
 

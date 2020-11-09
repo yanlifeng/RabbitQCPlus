@@ -89,7 +89,7 @@ Read* Filter::trimAndCut(Read* r, int front, int tail) {
         r->resize(rlen);
         return r;
     } else if(!mOptions->qualityCut.enabled5 && !mOptions->qualityCut.enabled3){
-        r->mSeq.mStr = r->mSeq.mStr.substr(front, rlen);
+        r->mSeq.mStr._substr(front, rlen);
         r->mQuality = r->mQuality.substr(front, rlen);
         return r;
     }
@@ -165,7 +165,7 @@ Read* Filter::trimAndCut(Read* r, int front, int tail) {
     if(rlen <= 0 || front >= l-1)
         return NULL;
 
-    r->mSeq.mStr = r->mSeq.mStr.substr(front, rlen);
+    r->mSeq.mStr._substr(front, rlen);
     r->mQuality = r->mQuality.substr(front, rlen);
 
     return r;

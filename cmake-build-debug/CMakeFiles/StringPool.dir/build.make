@@ -43,10 +43,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/zhaozhan/CLionProjects/StringPool
+CMAKE_SOURCE_DIR = /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/StringPool.dir/depend.make
@@ -57,45 +57,30 @@ include CMakeFiles/StringPool.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/StringPool.dir/flags.make
 
-CMakeFiles/StringPool.dir/sequence.cpp.o: CMakeFiles/StringPool.dir/flags.make
-CMakeFiles/StringPool.dir/sequence.cpp.o: ../sequence.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/StringPool.dir/sequence.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/StringPool.dir/sequence.cpp.o -c /Users/zhaozhan/CLionProjects/StringPool/sequence.cpp
+CMakeFiles/StringPool.dir/src/StringPool.cpp.o: CMakeFiles/StringPool.dir/flags.make
+CMakeFiles/StringPool.dir/src/StringPool.cpp.o: ../src/StringPool.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/StringPool.dir/src/StringPool.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/StringPool.dir/src/StringPool.cpp.o -c /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/src/StringPool.cpp
 
-CMakeFiles/StringPool.dir/sequence.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/StringPool.dir/sequence.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zhaozhan/CLionProjects/StringPool/sequence.cpp > CMakeFiles/StringPool.dir/sequence.cpp.i
+CMakeFiles/StringPool.dir/src/StringPool.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/StringPool.dir/src/StringPool.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/src/StringPool.cpp > CMakeFiles/StringPool.dir/src/StringPool.cpp.i
 
-CMakeFiles/StringPool.dir/sequence.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/StringPool.dir/sequence.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zhaozhan/CLionProjects/StringPool/sequence.cpp -o CMakeFiles/StringPool.dir/sequence.cpp.s
-
-CMakeFiles/StringPool.dir/StringPool.cpp.o: CMakeFiles/StringPool.dir/flags.make
-CMakeFiles/StringPool.dir/StringPool.cpp.o: ../StringPool.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/StringPool.dir/StringPool.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/StringPool.dir/StringPool.cpp.o -c /Users/zhaozhan/CLionProjects/StringPool/StringPool.cpp
-
-CMakeFiles/StringPool.dir/StringPool.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/StringPool.dir/StringPool.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zhaozhan/CLionProjects/StringPool/StringPool.cpp > CMakeFiles/StringPool.dir/StringPool.cpp.i
-
-CMakeFiles/StringPool.dir/StringPool.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/StringPool.dir/StringPool.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zhaozhan/CLionProjects/StringPool/StringPool.cpp -o CMakeFiles/StringPool.dir/StringPool.cpp.s
+CMakeFiles/StringPool.dir/src/StringPool.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/StringPool.dir/src/StringPool.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/src/StringPool.cpp -o CMakeFiles/StringPool.dir/src/StringPool.cpp.s
 
 # Object files for target StringPool
 StringPool_OBJECTS = \
-"CMakeFiles/StringPool.dir/sequence.cpp.o" \
-"CMakeFiles/StringPool.dir/StringPool.cpp.o"
+"CMakeFiles/StringPool.dir/src/StringPool.cpp.o"
 
 # External object files for target StringPool
 StringPool_EXTERNAL_OBJECTS =
 
-StringPool: CMakeFiles/StringPool.dir/sequence.cpp.o
-StringPool: CMakeFiles/StringPool.dir/StringPool.cpp.o
+StringPool: CMakeFiles/StringPool.dir/src/StringPool.cpp.o
 StringPool: CMakeFiles/StringPool.dir/build.make
 StringPool: CMakeFiles/StringPool.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable StringPool"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable StringPool"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/StringPool.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -108,6 +93,6 @@ CMakeFiles/StringPool.dir/clean:
 .PHONY : CMakeFiles/StringPool.dir/clean
 
 CMakeFiles/StringPool.dir/depend:
-	cd /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/zhaozhan/CLionProjects/StringPool /Users/zhaozhan/CLionProjects/StringPool /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug /Users/zhaozhan/CLionProjects/StringPool/cmake-build-debug/CMakeFiles/StringPool.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug /Users/zhaozhan/CLionProjects/StringPool-ZZ/StringPool/cmake-build-debug/CMakeFiles/StringPool.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/StringPool.dir/depend
 
