@@ -19,6 +19,7 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
         guessedCycles = mEvaluatedSeqLen;
     }
 
+
     mCycles = guessedCycles;
     mBases = 0;
     mQ20Total = 0;
@@ -29,6 +30,7 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
 
     // extend the buffer to make sure it's long enough
     mBufLen = guessedCycles + bufferMargin;
+
 
     for (int i = 0; i < 8; i++) {
         mQ20Bases[i] = 0;
@@ -64,6 +66,7 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
 void Stats::extendBuffer(int newBufLen) {
     if (newBufLen <= mBufLen)
         return;
+
 
     long *newBuf = NULL;
 

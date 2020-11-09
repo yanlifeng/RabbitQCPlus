@@ -566,6 +566,9 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
     printf("total cost : %.5f\n", cost);
     printf("total  : %d\n", totCnt);
 
+
+
+    //TODO check another !
     long *tmpKmer = config->getPreStats1()->getKmer();
     int tmpKmerSize = config->getPreStats1()->getKmerSize();
     long *tmpStats = config->getPreStats1()->getOneStats();
