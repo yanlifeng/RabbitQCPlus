@@ -12,13 +12,13 @@ OverlapResult OverlapAnalysis::analyze(Read* r1, Read* r2, int overlapDiffLimit,
 }
 
 // ported from the python code of AfterQC
-OverlapResult OverlapAnalysis::analyze(Sequence& r1, Sequence& r2, int overlapDiffLimit, int overlapRequire) {
-    Sequence rcr2 = ~r2;
+OverlapResult OverlapAnalysis::analyze(StringPool& r1, StringPool& r2, int overlapDiffLimit, int overlapRequire) {
+    StringPool rcr2 = ~r2;
     int len1 = r1.length();
     int len2 = rcr2.length();
     // use the pointer directly for speed
-    const char* str1 = r1.mStr.c_str();
-    const char* str2 = rcr2.mStr.c_str();
+    const char* str1 = r1.c_str();
+    const char* str2 = rcr2.c_str();
 
     int complete_compare_require = 50;
 
@@ -97,8 +97,8 @@ bool OverlapAnalysis::test(){
     //Sequence r1("CAGCGCCTACGGGCCCCTTTTTCTGCGCGACCGCGTGGCTGTGGGCGCGGATGCCTTTGAGCGCGGTGACTTCTCACTGCGTATCGAGCCGCTGGAGGTCTCCC");
     //Sequence r2("ACCTCCAGCGGCTCGATACGCAGTGAGAAGTCACCGCGCTCAAAGGCATCCGCGCCCACAGCCACGCGGTCGCGCAGAAAAAGGGGCCCGTAGGCGCGGCTCCC");
 
-    Sequence r1("CAGCGCCTACGGGCCCCTTTTTCTGCGCGACCGCGTGGCTGTGGGCGCGGATGCCTTTGAGCGCGGTGACTTCTCACTGCGTATCGAGC");
-    Sequence r2("ACCTCCAGCGGCTCGATACGCAGTGAGAAGTCACCGCGCTCAAAGGCATCCGCGCCCACAGCCACGCGGTCGCGCAGAAAAAGGGGTCC");
+    StringPool r1("CAGCGCCTACGGGCCCCTTTTTCTGCGCGACCGCGTGGCTGTGGGCGCGGATGCCTTTGAGCGCGGTGACTTCTCACTGCGTATCGAGC");
+    StringPool r2("ACCTCCAGCGGCTCGATACGCAGTGAGAAGTCACCGCGCTCAAAGGCATCCGCGCCCACAGCCACGCGGTCGCGCAGAAAAAGGGGTCC");
     
     OverlapResult ov = OverlapAnalysis::analyze(r1, r2);
 

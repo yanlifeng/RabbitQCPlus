@@ -94,7 +94,7 @@ void Evaluator::computeOverRepSeq(string filename, map<string, long>& hotseqs, i
         for(int s=0; s<5; s++) {
             int step = steps[s];
             for(int i=0; i<rlen-step; i++) {
-                string seq = r->mSeq.mStr.substr(i, step);
+                string seq = r->mSeq.substr(i, step);
                 if(seqCounts.count(seq)>0)
                     seqCounts[seq]++;
                 else
@@ -250,7 +250,7 @@ string Evaluator::evalAdapterAndReadNumDepreciated(long& readNum) {
         if(rlen < keylen + 1 + shiftTail)
             continue;
 
-        const char* data = r->mSeq.mStr.c_str();
+        const char* data = r->mSeq.c_str();
         bool valid = true;
         unsigned int key = 0;
         for(int i=0; i<keylen; i++) {
@@ -495,7 +495,7 @@ string Evaluator::evalAdapterAndReadNum(long& readNum, bool isR2) {
         //const char* data = r->mSeq.mStr.c_str();
         int key = -1;
         for(int pos = 20; pos <= r->length()-keylen-shiftTail; pos++) {
-            key = seq2int(r->mSeq.mStr, pos, keylen, key);
+            key = seq2int(r->mSeq, pos, keylen, key);
             if(key >= 0) {
                 counts[key]++;
             }
@@ -615,7 +615,7 @@ string Evaluator::getAdapterWithSeed(int seed, Read** loadedReads, long records,
 	    int my_rank = omp_get_thread_num();
 	    int key = -1;
 	    for(int pos = 20; pos <= r->length()-keylen-shiftTail; pos++) {
-		    key = seq2int(r->mSeq.mStr, pos, keylen, key);
+		    key = seq2int(r->mSeq, pos, keylen, key);
 		    if(key == seed) {
 		        seedInfo.recordsID = i;
 		        seedInfo.pos = pos;
@@ -627,8 +627,8 @@ string Evaluator::getAdapterWithSeed(int seed, Read** loadedReads, long records,
 	for(int i=0; i<thread_count; i++){
 	    vector<AdapterSeedInfo>::iterator it;
 	    for(it = vecArr.at(i).begin(); it != vecArr.at(i).end(); it++){
-		    forwardTree.addSeq(loadedReads[it->recordsID]->mSeq.mStr.substr(it->pos+keylen, loadedReads[it->recordsID]->length()-keylen-shiftTail-it->pos));
-		    string seq =  loadedReads[it->recordsID]->mSeq.mStr.substr(0, it->pos);
+		    forwardTree.addSeq(loadedReads[it->recordsID]->mSeq.substr(it->pos+keylen, loadedReads[it->recordsID]->length()-keylen-shiftTail-it->pos));
+		    string seq =  loadedReads[it->recordsID]->mSeq.substr(0, it->pos);
 		    string rcseq = reverse(seq);
 		    backwardTree.addSeq(rcseq);
 	    }

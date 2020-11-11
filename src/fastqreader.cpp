@@ -250,7 +250,7 @@ bool FastqReader::test(){
 		r2=reader2.read();
 		if(r1 == NULL || r2 == NULL)
 			break;
-		if(r1->mSeq.mStr != r2->mSeq.mStr){
+		if(r1->mSeq != r2->mSeq){
 			return false;
 		}
 		delete r1;

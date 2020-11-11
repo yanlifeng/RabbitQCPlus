@@ -35,7 +35,7 @@ SOFTWARE.
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "sequence.h"
+#include "StringPool.h"
 #include <vector>
 
 #include "Fastq.h"
@@ -44,9 +44,11 @@ using namespace std;
 class Read{
 public:
 	Read(string name, string seq, string strand, string quality, bool phred64=false);
-    Read(string name, Sequence seq, string strand, string quality, bool phred64=false);
+    Read(string name, StringPool seq, string strand, string quality, bool phred64=false);
+    Read(string name, string seq, string strand, StringPool quality, bool phred64=false);
+    Read(string name, StringPool seq, string strand, StringPool quality, bool phred64=false);
 	Read(string name, string seq, string strand);
-    Read(string name, Sequence seq, string strand);
+    Read(string name, StringPool seq, string strand);
     Read(Read &r);
 	void print();
     void printFile(ofstream& file);
@@ -69,9 +71,9 @@ private:
 
 public:
 	string mName;
-	Sequence mSeq;
+	StringPool mSeq;
 	string mStrand;
-	string mQuality;
+	StringPool mQuality;
 	bool mHasQuality;
 };
 

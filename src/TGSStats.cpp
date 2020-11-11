@@ -40,7 +40,7 @@ TGSStats::~TGSStats(){
 
 void TGSStats::tgsStatRead(Read* r){
 	const int rlen = r->length();
-	const char* seq = r->mSeq.mStr.c_str();
+	const char* seq = r->mSeq.c_str();
 	const char* quality = r->mQuality.c_str();
 	int size_range = mMinlen >> 1;
 	int i;

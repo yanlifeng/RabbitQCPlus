@@ -4,9 +4,9 @@
 
 Read::Read(string name, string seq, string strand, string quality, bool phred64){
 	mName = name;
-	mSeq = Sequence(seq);
+	mSeq = StringPool(seq);
 	mStrand = strand;
-	mQuality = quality;
+	mQuality = StringPool(quality);
 	mHasQuality = true;
 	if(phred64)
 		convertPhred64To33();
@@ -14,31 +14,52 @@ Read::Read(string name, string seq, string strand, string quality, bool phred64)
 
 Read::Read(string name, string seq, string strand){
 	mName = name;
-	mSeq = Sequence(seq);
+	mSeq = StringPool(seq);
 	mStrand = strand;
 	mHasQuality = false;
 }
 
-Read::Read(string name, Sequence seq, string strand, string quality, bool phred64){
+Read::Read(string name, StringPool seq, string strand, string quality, bool phred64){
 	mName = name;
 	mSeq = seq;
 	mStrand = strand;
-	mQuality = quality;
+	mQuality = StringPool(quality);
 	mHasQuality = true;
 	if(phred64)
 		convertPhred64To33();
 }
 
-Read::Read(string name, Sequence seq, string strand){
+Read::Read(string name, StringPool seq, string strand){
 	mName = name;
 	mSeq = seq;
 	mStrand = strand;
 	mHasQuality = false;
 }
 
+Read::Read(string name, string seq, string strand, StringPool quality, bool phred64){
+    mName = name;
+    mSeq = StringPool(seq);
+    mStrand = strand;
+    mQuality = quality;
+    mHasQuality = true;
+    if(phred64)
+    convertPhred64To33();
+}
+Read::Read(string name, StringPool seq, string strand, StringPool quality, bool phred64){
+    mName = name;
+    mSeq = seq;
+    mStrand = strand;
+    mQuality = quality;
+    mHasQuality = true;
+    if(phred64)
+        convertPhred64To33();
+}
+
+
+
 void Read::convertPhred64To33(){
 	for(int i=0; i<mQuality.length(); i++) {
-		mQuality[i] = max(33, mQuality[i] - (64-33));
+		mQuality.mstr[i+mQuality.front] = max(33, mQuality.mstr[i+mQuality.front] - (64-33));
 	}
 }
 
@@ -52,24 +73,23 @@ Read::Read(Read &r) {
 
 void Read::print(){
 	std::cerr << mName << endl;
-	std::cerr << mSeq.mStr.toString() << endl;
+	std::cerr << mSeq.toString() << endl;
 	std::cerr << mStrand << endl;
 	if(mHasQuality)
-		std::cerr << mQuality << endl;
+		std::cerr << mQuality.toString() << endl;
 }
 
 void Read::printFile(ofstream& file){
 	file << mName << endl;
-	file << mSeq.mStr.toString() << endl;
+	file << mSeq.toString() << endl;
 	file << mStrand << endl;
 	if(mHasQuality)
-		file << mQuality << endl;
+		file << mQuality.toString() << endl;
 }
 
 Read* Read::reverseComplement(){
-	Sequence seq = ~mSeq;
-	string qual;
-	qual.assign(mQuality.rbegin(), mQuality.rend());
+	StringPool seq = ~mSeq;
+	StringPool qual = mQuality.reverse();
 	string strand = (mStrand=="+") ? "-" : "+";
 	return new Read(mName, seq, strand, qual);
 }
@@ -77,14 +97,14 @@ Read* Read::reverseComplement(){
 void Read::resize(int len) {
 	if(len > length() || len<0)
 		return ;
-	mSeq.mStr.resize(len);
+	mSeq.resize(len);
 	mQuality.resize(len);
 }
    
 void Read::trimFront(int len){
 	len = min(length()-1, len);
-	mSeq.mStr = mSeq.mStr.substr(len, mSeq.mStr.length() - len);
-	mQuality = mQuality.substr(len, mQuality.length() - len);
+	mSeq._substr(len, mSeq.length() - len);
+	mQuality._substr(len, mQuality.length() - len);
 }
 
 string Read::lastIndex(){
@@ -128,7 +148,7 @@ int Read::length(){
 }
 
 string Read::toString() {
-	return mName + "\n" + mSeq.mStr.toString() + "\n" + mStrand + "\n" + mQuality + "\n";
+	return mName + "\n" + mSeq.toString() + "\n" + mStrand + "\n" + mQuality.toString() + "\n";
 }
 
 bool Read::test(){
@@ -161,8 +181,8 @@ Read* ReadPair::fastMerge(){
 	int len1 = mLeft->length();
 	int len2 = rcRight->length();
 	// use the pointer directly for speed
-	const char* str1 = mLeft->mSeq.mStr.c_str();
-	const char* str2 = rcRight->mSeq.mStr.c_str();
+	const char* str1 = mLeft->mSeq.c_str();
+	const char* str2 = rcRight->mSeq.c_str();
 	const char* qual1 = mLeft->mQuality.c_str();
 	const char* qual2 = rcRight->mQuality.c_str();
 	// we require at least 30 bp overlapping to merge a pair
@@ -204,8 +224,8 @@ Read* ReadPair::fastMerge(){
 		stringstream ss;
 		ss << mLeft->mName << " merged offset:" << offset << " overlap:" << olen << " diff:" << diff;
 		string mergedName = ss.str();
-		string mergedSeq = mLeft->mSeq.mStr.substr(0, offset) + rcRight->mSeq.mStr.toString();
-		string mergedQual = mLeft->mQuality.substr(0, offset) + rcRight->mQuality;
+		string mergedSeq = mLeft->mSeq.substr(0, offset) + rcRight->mSeq.toString();
+		string mergedQual = mLeft->mQuality.substr(0, offset) + rcRight->mQuality.toString();
 		// quality adjuction and correction for low qual diff
 		for(int i=0;i<olen;i++){
 			if(str1[offset+i] != str2[i]){
@@ -244,7 +264,7 @@ bool ReadPair::test(){
 	if(merged == NULL)
 		return false;
 
-	if(merged->mSeq.mStr != "TTTTTTCTCTTGGACTCTAACACTGTTTTTTCTTATGAAAACACAGGAGTGATGACTAGTTGAGTGCATTCTTATGAGACTCATAGTCATTCTATGATGTAGTTTTTT")
+	if(merged->mSeq != "TTTTTTCTCTTGGACTCTAACACTGTTTTTTCTTATGAAAACACAGGAGTGATGACTAGTTGAGTGCATTCTTATGAGACTCATAGTCATTCTATGATGTAGTTTTTT")
 		return false;
 
 	return true;

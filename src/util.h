@@ -284,6 +284,12 @@ inline void error_exit(const string& msg) {
     exit(-1);
 }
 
+static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
+static char CharReverseAGCTN[8] = {'N','T','N','G','A','N','N','C'};
+
+// AaGgCcTtNn  : 1177334466
+
+
 extern mutex logmtx;
 inline void loginfo(const string s){
     logmtx.lock();

@@ -16,7 +16,7 @@ void PolyX::trimPolyG(Read* r, FilterResult* fr, int compareReq) {
     const int allowOneMismatchForEach = 8;
     const int maxMismatch = 5;
 
-    const char* data = r->mSeq.mStr.c_str();
+    const char* data = r->mSeq.c_str();
 
     int rlen = r->length();
 
@@ -49,7 +49,7 @@ void PolyX::trimPolyX(Read* r, FilterResult* fr, int compareReq) {
     const int allowOneMismatchForEach = 8;
     const int maxMismatch = 5;
 
-    const char* data = r->mSeq.mStr.c_str();
+    const char* data = r->mSeq.c_str();
 
     int rlen = r->length();
 
@@ -119,5 +119,5 @@ bool PolyX::test() {
         "///EEEEEEEEEEEEEEEEEEEEEEEEEE////EEEEEEEEEEEEE////E////E");
     PolyX::trimPolyX(&r, NULL, 10);
     r.print();
-    return r.mSeq.mStr == "ATTTT";
+    return r.mSeq == "ATTTT";
 }

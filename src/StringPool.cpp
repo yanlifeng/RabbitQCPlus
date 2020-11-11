@@ -24,6 +24,8 @@ std::string StringPool::operator = (const std::string &b){
     this->len = b.size();
 }
 
+
+
 bool StringPool::operator !=(const std::string &b){
     bool fg=false;
     if (this->len != b.size()) return true;
@@ -50,6 +52,10 @@ bool StringPool::operator !=(StringPool b){
     if (this->len != b.length()) return true;
     for (int i=0;i<this->len;i++) if (b[i]!=this->mstr[i+this->front]){fg=true;break;}
     return fg;
+}
+
+StringPool StringPool::operator~() {
+    return reverseComplement();
 }
 
 void StringPool::set(int pos,char x){
@@ -92,16 +98,31 @@ std::string StringPool::toString(){
     return this->mstr.substr(this->front,this->len);
 }
 char* StringPool::c_str(){return &this->mstr[front];}
+
 int StringPool::length(){return this->len;}
+int StringPool::size() {return this->len;}
 
+StringPool StringPool::reverseComplement(){
+    std::string str(this->len,0);
+    for(int c=0;c<this->mstr.size();c++){str[this->mstr.size()-c-1] = CharReverseAGCTN[this->mstr[c]&0x07];}
+    return StringPool(str);
+}
+StringPool StringPool::reverse(){
+    std::string str(this->len,0);
+    for(int c=0;c<this->mstr.size();c++){str[this->mstr.size()-c-1] = this->mstr[c];}
+    return StringPool(str);
 
-
+}
 //using namespace std;
 //int main(int argc,char **argv){
-//    StringPool s("AAAATTTTCCCCGGGG");
-//    cout << s << endl;
-//    if (s != "AAAATTTTCCCGGGG"){
-//        std::cout << "okkkk" << std::endl;
-//    }
+//    StringPool qual("0123456789");
+//    qual[3]='4';
+////    StringPool s("AAAATTTTCCCCGGGG");
+////    s._substr(4);
+//////    cout << s.reverseComplement().toString() << endl;
+////    for (int i=0;i<s.length();i++){
+////      s.mstr[i+s.front] = 'o';
+////    }
+//    cout << qual.reverse().toString() << endl;
 //}
 

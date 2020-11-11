@@ -70,7 +70,7 @@ void Duplicate::statRead(Read* r) {
     int start1 = 0;
     int start2 = max(0, r->length() - 32 - 5);
 
-    const char* data = r->mSeq.mStr.c_str();
+    const char* data = r->mSeq.c_str();
     bool valid = true;
 
     uint64 ret = seq2int(data, start1, mKeyLenInBase, valid);
@@ -101,8 +101,8 @@ void Duplicate::statPair(Read* r1, Read* r2) {
     if(r1->length() < 32 || r2->length() < 32)
         return;
 
-    const char* data1 = r1->mSeq.mStr.c_str();
-    const char* data2 = r2->mSeq.mStr.c_str();
+    const char* data1 = r1->mSeq.c_str();
+    const char* data2 = r2->mSeq.c_str();
     bool valid = true;
 
     uint64 ret = seq2int(data1, 0, mKeyLenInBase, valid);

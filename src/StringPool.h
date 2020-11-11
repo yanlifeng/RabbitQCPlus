@@ -10,7 +10,11 @@
 #include <cmath>
 #include <stack>
 #include <set>
+#include "util.h"
 
+/*
+ *  出现修改mstr的操作的时候，一定需要添加front来进行偏移
+ */
 class StringPool{
 public:
     StringPool();
@@ -20,17 +24,20 @@ public:
     char operator [](int i);
 
 
-    std::string operator + (const std::string &b);
-    std::string operator = (const std::string &b);
-    bool operator ==(const std::string &b);
-    bool operator !=(const std::string &b);
-    bool operator ==(StringPool b);
-    bool operator !=(StringPool b);
+    std::string operator +   (const std::string &b);
+    std::string operator =   (const std::string &b);
+    bool        operator ==  (const std::string &b);
+    bool        operator !=  (const std::string &b);
+    bool        operator ==  (StringPool b);
+    bool        operator !=  (StringPool b);
+    StringPool  operator ~   ();
 
     //用于更换char
     void set(int pos,char x);
 
 
+    StringPool reverseComplement();
+    StringPool reverse();
 
     // 生成新的substring
     std::string substr(int pos);
@@ -49,8 +56,9 @@ public:
     std::string toString();
     char* c_str();
     int length();
+    int size();
 
-private:
+public:
     std::string mstr; // 字符串(可能出现赘余)
     int front; // 字符串开始的位置
     int len; // 字符串的长度
