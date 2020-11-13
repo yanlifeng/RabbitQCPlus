@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="rabbit_qc"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rabbit_qc">
+				<Option output="/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/rabbit_qc" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 rabbit_qc"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rabbit_qc/fast">
+				<Option output="/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/rabbit_qc" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 rabbit_qc/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/ylf9811/Desktop/STD/RabbitQC/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/FastqIo.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/FastqIo.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/FastqStream.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/FastqStream.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/TGSProcessor.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/TGSProcessor.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/TGSStats.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/TGSStats.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/adaptertrimmer.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/adaptertrimmer.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/basecorrector.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/basecorrector.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/duplicate.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/duplicate.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/evaluator.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/evaluator.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/fastqreader.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/fastqreader.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/filter.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/filter.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/filterresult.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/filterresult.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/htmlreporter.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/htmlreporter.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/jsonreporter.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/jsonreporter.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/main.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/nucleotidetree.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/nucleotidetree.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/options.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/options.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/overlapanalysis.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/overlapanalysis.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/peprocessor.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/peprocessor.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/polyx.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/polyx.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/processor.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/processor.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/read.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/read.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/seprocessor.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/seprocessor.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/sequence.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/sequence.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/stats.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/stats.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/threadconfig.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/threadconfig.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/umiprocessor.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/umiprocessor.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/unittest.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/unittest.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/writer.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/writer.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/writerthread.cpp">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/src/writerthread.h">
+			<Option target="rabbit_qc"/>
+		</Unit>
+		<Unit filename="/Users/ylf9811/Desktop/STD/RabbitQC/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
