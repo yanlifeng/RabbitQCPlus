@@ -119,7 +119,7 @@ private:
 
     bool overRepPassed(string &seq, long count);
 
-private:
+public:
     Options *mOptions;
     bool mIsRead2;
     long mReads;

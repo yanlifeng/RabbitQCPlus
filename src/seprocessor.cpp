@@ -537,15 +537,6 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
         } //--[haoz:] I think it 3GS can add here
     }
 
-    if (mFinishedThreads == mOptions->thread) {
-        if (mLeftWriter)
-            mLeftWriter->setInputCompleted();
-    }
-
-    if (mOptions->verbose) {
-        string msg = "thread " + to_string(config->getThreadId() + 1) + " finished";
-        loginfo(msg);
-    }
 
     printf("total cost1 : %.5f\n", cost1);
     printf("total cost2 : %.5f\n", cost2);
@@ -568,47 +559,67 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
 
 
 
-    //TODO check another !
-    long *tmpKmer = config->getPreStats1()->getKmer();
-    int tmpKmerSize = config->getPreStats1()->getKmerSize();
-    long *tmpStats = config->getPreStats1()->getOneStats();
-    int tmpStatsSize = config->getPreStats1()->getStatsSize();
-
-//    printf("=================================================\n");
-//    for (int i = 0; i < min(10, tmpStatsSize); i++) {
-//        printf("%ld\n", tmpStats[i]);
-//    }
-//    printf("=================================================\n");
-
+//TODO check another !
     fstream out;
     fstream in;
 
     string outFileName1 = "oneStatsCheckOfThread" + to_string(config->getThreadId());
+    string outFileName2 = "kMerCheckOfThread" + to_string(config->getThreadId());
+    long *tmpKmer = config->getPreStats1()->mKmer;
+    int tmpKmerSize = config->getPreStats1()->mKmerBufLen;
+    long *tmpStats = config->getPreStats1()->mCycleTotalQual;
+    int tmpStatsSize = config->getPreStats1()->mBufLen;
+
+    printf("Start checking ...");
+    printf("Open file : %s\n", outFileName1.c_str());
+
+    // Read sampling file
+    long *temp = new long[tmpStatsSize];
+    in.open(outFileName1.c_str(), ios::in | ios::binary);
+    if (!in) {
+        printf("Can't open file \"%s\"\n", outFileName1.c_str());
+    } else {
+        in.seekg(0, ios::beg);
+        in.read(reinterpret_cast<char *>(temp), tmpStatsSize * sizeof(long));
+        printf("=================================================\n");
+        for (int i = 0; i < tmpStatsSize; i++) {
+            if (temp[i] != tmpStats[i]) {
+                printf("GG on test %d  STD : %ld   Now : %ld\n", i, temp[i], tmpStats[i]);
+            }
+//            printf("%ld\n", temp[i]);
+        }
+        printf("=================================================\n");
+    }
+
+
+    printf("=================================================\n");
+    for (int i = 0; i < tmpStatsSize; i++) {
+        printf("%ld ", tmpStats[i]);
+        if ((i + 1) % 20 == 0)printf("\n");
+    }
+    printf("=================================================\n");
+
     out.open(outFileName1.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
     out.write(reinterpret_cast<char *>(tmpStats), tmpStatsSize * sizeof(long));
     out.close();
 
-    string outFileName2 = "kMerCheckOfThread" + to_string(config->getThreadId());
     out.open(outFileName2.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
     out.write(reinterpret_cast<char *>(tmpKmer), tmpKmerSize * sizeof(long));
     out.close();
 
-//    // Read sampling file
-//    long *temp = new long[tmpStatsSize];
-//    in.open(outFileName1.c_str(), ios::in | ios::binary);
-//    if (!in) {
-//        printf("Can't open file \"%s\"\n", outFileName2.c_str());
-//    } else {
-//        in.seekg(0, ios::beg);
-//        in.read(reinterpret_cast<char *>(temp), tmpStatsSize * sizeof(long));
-//        printf("=================================================\n");
-//        for (int i = 0; i < min(10, tmpStatsSize); i++) {
-//            printf("%ld\n", temp[i]);
-//        }
-//        printf("=================================================\n");
-//    }
+
+    if (mFinishedThreads == mOptions->thread) {
+        if (mLeftWriter)
+            mLeftWriter->setInputCompleted();
+    }
+
+    if (mOptions->verbose) {
+        string msg = "thread " + to_string(config->getThreadId() + 1) + " finished";
+        loginfo(msg);
+    }
+
 }
 
 void SingleEndProcessor::writeTask(WriterThread *config) {
