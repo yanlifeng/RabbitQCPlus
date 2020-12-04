@@ -132,11 +132,14 @@ bool SingleEndProcessor::process() {
     Stats *finalPostStats = Stats::merge(postStats);
     FilterResult *finalFilterResult = FilterResult::merge(filterResults);
 
+
     // read filter results to the first thread's
-    for (int t = 1; t < mOptions->thread; t++) {
-        preStats.push_back(configs[t]->getPreStats1());
-        postStats.push_back(configs[t]->getPostStats1());
-    }
+    //TODO is this useful?
+
+//    for (int t = 1; t < mOptions->thread; t++) {
+//        preStats.push_back(configs[t]->getPreStats1());
+//        postStats.push_back(configs[t]->getPostStats1());
+//    }
 
     cerr << "Read1 before filtering:" << endl;
     finalPreStats->print();
@@ -247,6 +250,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
         // handling the duplication profiling
         t1 = get_wall_time();
+
+        //TODO maybe mDuplicate is not thread safe
         if (mDuplicate)
             mDuplicate->statRead(or1);//cost 14/57
         cost2 += get_wall_time() - t1;
@@ -503,6 +508,10 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
     cost11b = 0;
     cost12 = 0;
     totCnt = 0;
+    //writePos is the postion where producer has written in buffer
+    //readPos is the posthon where consumers has read from buffer
+    //if mRepo.writePos <= mRepo.readPos, whether all the tasks has down or consumers have to wait producer.
+
     while (true) {
         if (config->canBeStopped()) {
             mFinishedThreads++;
@@ -523,18 +532,28 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
             //lock.unlock();
             break;
         }
-        if (mProduceFinished) {
-            if (mOptions->verbose) {
-                string msg = "thread " + to_string(config->getThreadId() + 1) + " is processing the " +
-                             to_string(mRepo.readPos) + " / " + to_string(mRepo.writePos) + " pack";
-                loginfo(msg);
-            }
-            consumePack(config);
-            //lock.unlock();
-        } else {
-            //lock.unlock();
-            consumePack(config);
-        } //--[haoz:] I think it 3GS can add here
+
+//        assert(mRepo.writePos > mRepo.readPos);
+        if (mOptions->verbose) {
+            string msg = "thread " + to_string(config->getThreadId() + 1) + " is processing the " +
+                         to_string(mRepo.readPos) + " / " + to_string(mRepo.writePos) + " pack";
+            loginfo(msg);
+        }
+        consumePack(config);
+
+        //TODO if ?? maybe 3GS
+//        if (mProduceFinished) {
+//            if (mOptions->verbose) {
+//                string msg = "thread " + to_string(config->getThreadId() + 1) + " is processing the " +
+//                             to_string(mRepo.readPos) + " / " + to_string(mRepo.writePos) + " pack";
+//                loginfo(msg);
+//            }
+//            consumePack(config);
+//            //lock.unlock();
+//        } else {
+//            //lock.unlock();
+//            consumePack(config);
+//        } //--[haoz:] I think it 3GS can add here
     }
 
 
@@ -569,35 +588,36 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
     int tmpKmerSize = config->getPreStats1()->mKmerBufLen;
     long *tmpStats = config->getPreStats1()->mCycleTotalQual;
     int tmpStatsSize = config->getPreStats1()->mBufLen;
-
-    printf("Start checking ...");
-    printf("Open file : %s\n", outFileName1.c_str());
-
-    // Read sampling file
-    long *temp = new long[tmpStatsSize];
-    in.open(outFileName1.c_str(), ios::in | ios::binary);
-    if (!in) {
-        printf("Can't open file \"%s\"\n", outFileName1.c_str());
-    } else {
-        in.seekg(0, ios::beg);
-        in.read(reinterpret_cast<char *>(temp), tmpStatsSize * sizeof(long));
-        printf("=================================================\n");
-        for (int i = 0; i < tmpStatsSize; i++) {
-            if (temp[i] != tmpStats[i]) {
-                printf("GG on test %d  STD : %ld   Now : %ld\n", i, temp[i], tmpStats[i]);
-            }
-//            printf("%ld\n", temp[i]);
-        }
-        printf("=================================================\n");
-    }
-
-
-    printf("=================================================\n");
-    for (int i = 0; i < tmpStatsSize; i++) {
-        printf("%ld ", tmpStats[i]);
-        if ((i + 1) % 20 == 0)printf("\n");
-    }
-    printf("=================================================\n");
+//    mCounts = new uint16[mKeyLenInBit];
+//    uint16 tmpMcounts=
+//    printf("Start checking ...");
+//    printf("Open file : %s\n", outFileName1.c_str());
+//
+//    // Read sampling file
+//    long *temp = new long[tmpStatsSize];
+//    in.open(outFileName1.c_str(), ios::in | ios::binary);
+//    if (!in) {
+//        printf("Can't open file \"%s\"\n", outFileName1.c_str());
+//    } else {
+//        in.seekg(0, ios::beg);
+//        in.read(reinterpret_cast<char *>(temp), tmpStatsSize * sizeof(long));
+//        printf("=================================================\n");
+//        for (int i = 0; i < tmpStatsSize; i++) {
+//            if (temp[i] != tmpStats[i]) {
+//                printf("GG on test %d  STD : %ld   Now : %ld\n", i, temp[i], tmpStats[i]);
+//            }
+////            printf("%ld\n", temp[i]);
+//        }
+//        printf("=================================================\n");
+//    }
+//
+//
+//    printf("=================================================\n");
+//    for (int i = 0; i < tmpStatsSize; i++) {
+//        printf("%ld ", tmpStats[i]);
+//        if ((i + 1) % 20 == 0)printf("\n");
+//    }
+//    printf("=================================================\n");
 
     out.open(outFileName1.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
