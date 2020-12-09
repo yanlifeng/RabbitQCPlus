@@ -35,6 +35,9 @@ SingleEndProcessor::SingleEndProcessor(Options *opt) {
     mProduceFinished = false;
     mFinishedThreads = 0;
     mFilter = new Filter(opt);
+//    printf("mFilter->test() start ...\n");
+//    mFilter->test();
+//    printf("mFilter->test() end ...");
     mOutStream = NULL;
     mZipFile = NULL;
     mUmiProcessor = new UmiProcessor(opt);
@@ -260,6 +263,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         t1 = get_wall_time();
         // filter by index
         if (mOptions->indexFilter.enabled && mFilter->filterByIndex(or1)) {
+            printf("mOptions->indexFilter ...");
             delete or1;
             continue;
         }
@@ -268,29 +272,46 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
         t1 = get_wall_time();
         // umi processing
-        if (mOptions->umi.enabled)
+
+        //TODO maybe this can be the big hotspot
+        if (mOptions->umi.enabled) {
+            printf("mOptions->umi ...");
             mUmiProcessor->process(or1);
+        }
         cost4 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
         // trim in head and tail, and apply quality cut in sliding window
+        //not in
+        //TODO look what will do in this function and how to open this function
+        //TODO maybe this can be the big hotspot
         Read *r1 = mFilter->trimAndCut(or1, mOptions->trim.front1, mOptions->trim.tail1);
         cost5 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
         if (r1 != NULL) {
-            if (mOptions->polyGTrim.enabled)
+            //not in because xx is false
+            if (mOptions->polyGTrim.enabled) {
+                printf("polyGTrim ...\n");
                 PolyX::trimPolyG(r1, config->getFilterResult(), mOptions->polyGTrim.minLen);
-            if (mOptions->polyXTrim.enabled)
+
+            }
+            //not in because xx is false
+            if (mOptions->polyXTrim.enabled) {
+                printf("polyXTrim ...\n");
                 PolyX::trimPolyX(r1, config->getFilterResult(), mOptions->polyXTrim.minLen);
+
+            }
         }
         cost6 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+        //not in because mOptions->adapter.hasSeqR1 is false
         if (r1 != NULL && mOptions->adapter.enabled && mOptions->adapter.hasSeqR1) {
+            printf("AdapterTrimmer::trimBySequence ...\n");
             AdapterTrimmer::trimBySequence(r1, config->getFilterResult(), mOptions->adapter.sequence);
         }
         cost7 += get_wall_time() - t1;
@@ -298,13 +319,17 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
         t1 = get_wall_time();
         if (r1 != NULL) {
-            if (mOptions->trim.maxLen1 > 0 && mOptions->trim.maxLen1 < r1->length())
+            // not in because mOptions->trim.maxLen1 is 0
+            if (mOptions->trim.maxLen1 > 0 && mOptions->trim.maxLen1 < r1->length()) {
+                printf("r1->resize ...\n");
                 r1->resize(mOptions->trim.maxLen1);
+            }
         }
         cost8 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+        //in ! O(len)
         int result = mFilter->passFilter(r1);
         cost9 += get_wall_time() - t1;
 
@@ -313,7 +338,10 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         config->addFilterResult(result);
         cost10 += get_wall_time() - t1;
 
-
+        //in !
+//        if (result != PASS_FILTER) {
+//            cout << r1->toString() << endl;
+//        }
         if (r1 != NULL && result == PASS_FILTER) {
             t1 = get_wall_time();
             outstr += r1->toString();
@@ -582,6 +610,7 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
     fstream out;
     fstream in;
 
+    //TODO it seems that the output of file1 is different everytime,which only happen when read data with adapter.
     string outFileName1 = "oneStatsCheckOfThread" + to_string(config->getThreadId());
     string outFileName2 = "kMerCheckOfThread" + to_string(config->getThreadId());
     long *tmpKmer = config->getPreStats1()->mKmer;

@@ -383,6 +383,9 @@ int main(int argc, char *argv[]) {
     int indexFilterThreshold = cmd.get<int>("filter_by_index_threshold");
     opt.initIndexFiltering(blacklist1, blacklist2, indexFilterThreshold);
 
+//    cout << "blacklist1 is " << blacklist1 << "\nblacklist2 is " << blacklist2 << "\nindexFilterThreshold is "
+//         << indexFilterThreshold << endl;
+//
     stringstream ss;
     for (int i = 0; i < argc; i++) {
         ss << argv[i] << " ";
