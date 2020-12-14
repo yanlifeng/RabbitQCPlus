@@ -12,24 +12,6 @@
 #include "polyx.h"
 
 
-double cost;
-double cost1;
-double cost2;
-double cost3;
-double cost4;
-double cost5;
-double cost6;
-double cost7;
-double cost8;
-double cost9;
-double cost10;
-double cost11;
-double cost11b;
-double cost12;
-
-
-int totCnt;
-
 SingleEndProcessor::SingleEndProcessor(Options *opt) {
     mOptions = opt;
     mProduceFinished = false;
@@ -143,6 +125,138 @@ bool SingleEndProcessor::process() {
 //        preStats.push_back(configs[t]->getPreStats1());
 //        postStats.push_back(configs[t]->getPostStats1());
 //    }
+    fstream out;
+
+    fstream in1, in2, in3;
+    string outFileName1 = "preStatsKmer";
+    string outFileName2 = "postStatsKmer";
+    string outFileName3 = "mDuplicateCount";
+    string outFileName4 = "mDuplicateGC";
+    string outFileName5 = "mDuplicateDups";
+
+//
+//    string checkGC = "../STD/mDuplicateGC";
+//    string checkKmer = "../STD/mDuplicateDups";
+//    string checkCnt = "../STD/mDuplicateCount";
+//    // Read sampling file
+//    uint8 *tempGC = new uint8[mDuplicate->mKeyLenInBit];
+//    uint64 *tempKmer = new uint64[mDuplicate->mKeyLenInBit];
+//    uint16 *tempCnt = new uint16[mDuplicate->mKeyLenInBit];
+//    in1.open(checkGC, ios::in | ios::binary);
+//    if (!in1) {
+//        printf("Can't open file \"%s\"\n", checkGC.c_str());
+//    } else {
+//        in1.seekg(0, ios::beg);
+//        in1.read(reinterpret_cast<char *>(tempGC), mDuplicate->mKeyLenInBit * sizeof(uint8));
+//    }
+//    in1.close();
+//    in2.open(checkKmer, ios::in | ios::binary);
+//    if (!in2) {
+//        printf("Can't open file \"%s\"\n", checkKmer.c_str());
+//    } else {
+//        in2.seekg(0, ios::beg);
+//        in2.read(reinterpret_cast<char *>(tempKmer), mDuplicate->mKeyLenInBit * sizeof(uint64));
+//    }
+//    in2.close();
+//    in3.open(checkCnt, ios::in | ios::binary);
+//    if (!in3) {
+//        printf("Can't open file \"%s\"\n", checkCnt.c_str());
+//    } else {
+//        in3.seekg(0, ios::beg);
+//        in3.read(reinterpret_cast<char *>(tempCnt), mDuplicate->mKeyLenInBit * sizeof(uint16));
+//    }
+//    in3.close();
+//    printf("=================================================\n");
+//    for (int i = 0; i < mDuplicate->mKeyLenInBit; i++) {
+//        assert(tempCnt[i] == mDuplicate->mCounts[i]);
+//        assert(tempKmer[i] == mDuplicate->mDups[i]);
+//
+////        for (int i = 0; i < 10000; i++) {
+//        if (tempGC[i] != mDuplicate->mGC[i]) {
+//            printf("GG on test %d  STD : %ld %d %d  Now : %ld %d %d\n", i, tempKmer[i], (int) tempGC[i], (int)
+//                    tempCnt[i], mDuplicate->mDups[i], (int) mDuplicate->mGC[i], (int) mDuplicate->mCounts[i]);
+//        }
+////            printf("%ld\n", temp[i]);
+//    }
+//    printf("=================================================\n");
+
+    out.open(outFileName1.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPreStats->mKmer), finalPreStats->mKmerBufLen * sizeof(long));
+    out.close();
+
+    out.open(outFileName2.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPostStats->mKmer), finalPostStats->mKmerBufLen * sizeof(long));
+    out.close();
+
+    out.open(outFileName3.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(mDuplicate->mCounts), mDuplicate->mKeyLenInBit * sizeof(uint16));
+    out.close();
+
+    out.open(outFileName4.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(mDuplicate->mGC), mDuplicate->mKeyLenInBit * sizeof(uint8));
+    out.close();
+
+    out.open(outFileName5.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(mDuplicate->mDups), mDuplicate->mKeyLenInBit * sizeof(uint64));
+    out.close();
+
+    double cost = 0;
+    double cost1 = 0;
+    double cost2 = 0;
+    double cost3 = 0;
+    double cost4 = 0;
+    double cost5 = 0;
+    double cost6 = 0;
+    double cost7 = 0;
+    double cost8 = 0;
+    double cost9 = 0;
+    double cost10 = 0;
+    double cost11 = 0;
+    double cost12 = 0;
+    double cost13 = 0;
+    int totCnt = 0;
+
+    for (int t = 0; t < mOptions->thread; t++) {
+        cost += configs[t]->cost;
+        cost1 += configs[t]->cost1;
+        cost2 += configs[t]->cost2;
+        cost3 += configs[t]->cost3;
+        cost4 += configs[t]->cost4;
+        cost5 += configs[t]->cost5;
+        cost6 += configs[t]->cost6;
+        cost7 += configs[t]->cost7;
+        cost8 += configs[t]->cost8;
+        cost9 += configs[t]->cost9;
+        cost10 += configs[t]->cost10;
+        cost11 += configs[t]->cost11;
+        cost12 += configs[t]->cost12;
+        cost13 += configs[t]->cost13;
+        totCnt += configs[t]->totCnt;
+    }
+
+    printf("total getPreStats1()->statRead(or1) ====: %.5f\n", cost1);
+    printf("total mDuplicate->statRead(or1) ========: %.5f\n", cost2);
+    printf("total mOptions->indexFilter()  =========: %.5f\n", cost3);
+    printf("total mUmiProcessor->process(or1) ======: %.5f\n", cost4);
+    printf("total mFilter->trimAndCut() ============: %.5f\n", cost5);
+    printf("total PolyX::trimPolyG() ===============: %.5f\n", cost4);
+    printf("total trimBySequence ===================: %.5f\n", cost7);
+    printf("total r1->resize() =====================: %.5f\n", cost8);
+    printf("total mFilter->passFilter(r1) ==========: %.5f\n", cost9);
+    printf("total addFilterResult(result) ==========: %.5f\n", cost10);
+    printf("total outstr += r1->toString() =========: %.5f\n", cost11);
+    printf("total getPostStats1()->statRead(r1) ====: %.5f\n", cost12);
+    printf("total delete r1 ========================: %.5f\n", cost13);
+    printf("total costTotel ========================: %.5f\n",
+           cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11 + cost12 + cost13);
+    printf("total cost =============================: %.5f\n", cost);
+    printf("total  =================================: %d\n", totCnt);
+
 
     cerr << "Read1 before filtering:" << endl;
     finalPreStats->print();
@@ -229,13 +343,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
     //2. add getTGStats function in ThreadConfig file;
     //3. add TGStats menber variable in ThreadConfig class
     //---------------------------------------------------
-//    printf("Totel : \n");
-//    printf("pack->count : %d\n", pack->count);
-//    printf("total cost1 : %.5f\n", cost1);
-//    printf("total cost2 : %.5f\n", cost2);
-//    printf("total cost3 : %.5f\n", cost3);
-//    printf("total cost4 : %.5f\n", cost4);
-    totCnt += 1;
+
+    config->totCnt += 1;
     double t0, t1;
 
 
@@ -248,7 +357,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         // stats the original read before trimming
         t1 = get_wall_time();
         config->getPreStats1()->statRead(or1);//cost 12/57
-        cost1 += get_wall_time() - t1;
+        config->cost1 += get_wall_time() - t1;
 
 
         // handling the duplication profiling
@@ -257,7 +366,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         //TODO maybe mDuplicate is not thread safe
         if (mDuplicate)
             mDuplicate->statRead(or1);//cost 14/57
-        cost2 += get_wall_time() - t1;
+        config->cost2 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
@@ -267,7 +376,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
             delete or1;
             continue;
         }
-        cost3 += get_wall_time() - t1;
+        config->cost3 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
@@ -278,7 +387,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
             printf("mOptions->umi ...");
             mUmiProcessor->process(or1);
         }
-        cost4 += get_wall_time() - t1;
+        config->cost4 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
@@ -287,7 +396,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         //TODO look what will do in this function and how to open this function
         //TODO maybe this can be the big hotspot
         Read *r1 = mFilter->trimAndCut(or1, mOptions->trim.front1, mOptions->trim.tail1);
-        cost5 += get_wall_time() - t1;
+        config->cost5 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
@@ -305,7 +414,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
             }
         }
-        cost6 += get_wall_time() - t1;
+        config->cost6 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
@@ -314,7 +423,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
             printf("AdapterTrimmer::trimBySequence ...\n");
             AdapterTrimmer::trimBySequence(r1, config->getFilterResult(), mOptions->adapter.sequence);
         }
-        cost7 += get_wall_time() - t1;
+        config->cost7 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
@@ -325,18 +434,18 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
                 r1->resize(mOptions->trim.maxLen1);
             }
         }
-        cost8 += get_wall_time() - t1;
+        config->cost8 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
         //in ! O(len)
         int result = mFilter->passFilter(r1);
-        cost9 += get_wall_time() - t1;
+        config->cost9 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
         config->addFilterResult(result);
-        cost10 += get_wall_time() - t1;
+        config->cost10 += get_wall_time() - t1;
 
         //in !
 //        if (result != PASS_FILTER) {
@@ -345,11 +454,11 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         if (r1 != NULL && result == PASS_FILTER) {
             t1 = get_wall_time();
             outstr += r1->toString();
-            cost11b += get_wall_time() - t1;
+            config->cost11 += get_wall_time() - t1;
             // stats the read after filtering
             t1 = get_wall_time();
             config->getPostStats1()->statRead(r1);//cost 23/57
-            cost11 += get_wall_time() - t1;
+            config->cost12 += get_wall_time() - t1;
             readPassed++;
         }
 
@@ -359,15 +468,9 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         // if no trimming applied, r1 should be identical to or1
         if (r1 != or1 && r1 != NULL)
             delete r1;
-        cost12 += get_wall_time() - t1;
-//        printf("now %d : \n", p);
-//        printf("total cost1 : %.5f\n", cost1);
-//        printf("total cost2 : %.5f\n", cost2);
-//        printf("total cost3 : %.5f\n", cost3);
-//        printf("total cost4 : %.5f\n", cost4);
-//        printf("\n");
+        config->cost13 += get_wall_time() - t1;
     }
-    cost += get_wall_time() - t0;
+    config->cost += get_wall_time() - t0;
 
     // if splitting output, then no lock is need since different threads write different files
     if (!mOptions->split.enabled)
@@ -522,20 +625,20 @@ void SingleEndProcessor::producerTask() {
 }
 
 void SingleEndProcessor::consumerTask(ThreadConfig *config) {
-    cost1 = 0;
-    cost2 = 0;
-    cost3 = 0;
-    cost4 = 0;
-    cost5 = 0;
-    cost6 = 0;
-    cost7 = 0;
-    cost8 = 0;
-    cost9 = 0;
-    cost10 = 0;
-    cost11 = 0;
-    cost11b = 0;
-    cost12 = 0;
-    totCnt = 0;
+//    cost1 = 0;
+//    cost2 = 0;
+//    cost3 = 0;
+//    cost4 = 0;
+//    cost5 = 0;
+//    cost6 = 0;
+//    cost7 = 0;
+//    cost8 = 0;
+//    cost9 = 0;
+//    cost10 = 0;
+//    cost11 = 0;
+//    cost11b = 0;
+//    cost12 = 0;
+//    totCnt = 0;
     //writePos is the postion where producer has written in buffer
     //readPos is the posthon where consumers has read from buffer
     //if mRepo.writePos <= mRepo.readPos, whether all the tasks has down or consumers have to wait producer.
@@ -583,40 +686,40 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
 //            consumePack(config);
 //        } //--[haoz:] I think it 3GS can add here
     }
-
-
-    printf("total cost1 : %.5f\n", cost1);
-    printf("total cost2 : %.5f\n", cost2);
-    printf("total cost3 : %.5f\n", cost3);
-    printf("total cost4 : %.5f\n", cost4);
-    printf("total cost5 : %.5f\n", cost5);
-    printf("total cost6 : %.5f\n", cost4);
-    printf("total cost7 : %.5f\n", cost7);
-    printf("total cost8 : %.5f\n", cost8);
-    printf("total cost9 : %.5f\n", cost9);
-    printf("total cost10 : %.5f\n", cost10);
-    printf("total cost11b : %.5f\n", cost11b);
-    printf("total cost11 : %.5f\n", cost11);
-    printf("total cost12 : %.5f\n", cost12);
-    printf("total statReadCost : %.5f\n", cost11 + cost11);
-    printf("total costTotel : %.5f\n",
-           cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11b + cost11 + cost12);
-    printf("total cost : %.5f\n", cost);
-    printf("total  : %d\n", totCnt);
-
-
-
-//TODO check another !
-    fstream out;
-    fstream in;
-
-    //TODO it seems that the output of file1 is different everytime,which only happen when read data with adapter.
-    string outFileName1 = "oneStatsCheckOfThread" + to_string(config->getThreadId());
-    string outFileName2 = "kMerCheckOfThread" + to_string(config->getThreadId());
-    long *tmpKmer = config->getPreStats1()->mKmer;
-    int tmpKmerSize = config->getPreStats1()->mKmerBufLen;
-    long *tmpStats = config->getPreStats1()->mCycleTotalQual;
-    int tmpStatsSize = config->getPreStats1()->mBufLen;
+//
+//
+//    printf("total cost1 : %.5f\n", cost1);
+//    printf("total cost2 : %.5f\n", cost2);
+//    printf("total cost3 : %.5f\n", cost3);
+//    printf("total cost4 : %.5f\n", cost4);
+//    printf("total cost5 : %.5f\n", cost5);
+//    printf("total cost6 : %.5f\n", cost4);
+//    printf("total cost7 : %.5f\n", cost7);
+//    printf("total cost8 : %.5f\n", cost8);
+//    printf("total cost9 : %.5f\n", cost9);
+//    printf("total cost10 : %.5f\n", cost10);
+//    printf("total cost11b : %.5f\n", cost11b);
+//    printf("total cost11 : %.5f\n", cost11);
+//    printf("total cost12 : %.5f\n", cost12);
+//    printf("total statReadCost : %.5f\n", cost11 + cost11);
+//    printf("total costTotel : %.5f\n",
+//           cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11b + cost11 + cost12);
+//    printf("total cost : %.5f\n", cost);
+//    printf("total  : %d\n", totCnt);
+//
+//
+//
+////TODO check another !
+//    fstream out;
+//    fstream in;
+//
+//    //TODO it seems that the output of file1 is different everytime,which only happen when read data with adapter.
+//    string outFileName1 = "oneStatsCheckOfThread" + to_string(config->getThreadId());
+//    string outFileName2 = "kMerCheckOfThread" + to_string(config->getThreadId());
+//    long *tmpKmer = config->getPreStats1()->mKmer;
+//    int tmpKmerSize = config->getPreStats1()->mKmerBufLen;
+//    long *tmpStats = config->getPreStats1()->mCycleTotalQual;
+//    int tmpStatsSize = config->getPreStats1()->mBufLen;
 //    mCounts = new uint16[mKeyLenInBit];
 //    uint16 tmpMcounts=
 //    printf("Start checking ...");
@@ -647,16 +750,16 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
 //        if ((i + 1) % 20 == 0)printf("\n");
 //    }
 //    printf("=================================================\n");
-
-    out.open(outFileName1.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(tmpStats), tmpStatsSize * sizeof(long));
-    out.close();
-
-    out.open(outFileName2.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(tmpKmer), tmpKmerSize * sizeof(long));
-    out.close();
+//
+//    out.open(outFileName1.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(tmpStats), tmpStatsSize * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName2.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(tmpKmer), tmpKmerSize * sizeof(long));
+//    out.close();
 
 
     if (mFinishedThreads == mOptions->thread) {

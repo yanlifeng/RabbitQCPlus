@@ -275,6 +275,10 @@ memory.h
 -
 math.h
 -
+util.h
+/Users/ylf9811/Desktop/RabbitQCPlus/src/util.h
+thread
+-
 
 /Users/ylf9811/Desktop/RabbitQCPlus/src/duplicate.h
 stdio.h
@@ -289,6 +293,8 @@ options.h
 /Users/ylf9811/Desktop/RabbitQCPlus/src/options.h
 common.h
 /Users/ylf9811/Desktop/RabbitQCPlus/src/common.h
+mutex
+-
 
 /Users/ylf9811/Desktop/RabbitQCPlus/src/evaluator.cpp
 evaluator.h

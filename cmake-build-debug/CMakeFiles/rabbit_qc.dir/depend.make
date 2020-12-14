@@ -107,6 +107,7 @@ CMakeFiles/rabbit_qc.dir/src/duplicate.cpp.o: ../src/options.h
 CMakeFiles/rabbit_qc.dir/src/duplicate.cpp.o: ../src/overlapanalysis.h
 CMakeFiles/rabbit_qc.dir/src/duplicate.cpp.o: ../src/read.h
 CMakeFiles/rabbit_qc.dir/src/duplicate.cpp.o: ../src/sequence.h
+CMakeFiles/rabbit_qc.dir/src/duplicate.cpp.o: ../src/util.h
 CMakeFiles/rabbit_qc.dir/src/duplicate.cpp.o: ../src/utils.h
 
 CMakeFiles/rabbit_qc.dir/src/evaluator.cpp.o: ../src/Buffer.h

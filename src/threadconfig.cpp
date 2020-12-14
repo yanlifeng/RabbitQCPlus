@@ -30,20 +30,34 @@ SOFTWARE.
 #include "threadconfig.h"
 #include "util.h"
 
-ThreadConfig::ThreadConfig(Options* opt, int threadId, bool paired){
+ThreadConfig::ThreadConfig(Options *opt, int threadId, bool paired) {
+    cost = 0;
+    cost1 = 0;
+    cost2 = 0;
+    cost3 = 0;
+    cost4 = 0;
+    cost5 = 0;
+    cost6 = 0;
+    cost7 = 0;
+    cost8 = 0;
+    cost9 = 0;
+    cost10 = 0;
+    cost11 = 0;
+    cost12 = 0;
+    cost13 = 0;
+    totCnt = 0;
     mOptions = opt;
     mThreadId = threadId;
     mWorkingSplit = threadId;
     mCurrentSplitReads = 0;
     mPreStats1 = new Stats(mOptions, false);
     mPostStats1 = new Stats(mOptions, false);
-	//---tgs---//
-	mTGSStats = new TGSStats(mOptions->minLen);
-    if(paired){
+    //---tgs---//
+    mTGSStats = new TGSStats(mOptions->minLen);
+    if (paired) {
         mPreStats2 = new Stats(mOptions, true);
         mPostStats2 = new Stats(mOptions, true);
-    }
-    else {
+    } else {
         mPreStats2 = NULL;
         mPostStats2 = NULL;
     }
@@ -59,17 +73,17 @@ ThreadConfig::~ThreadConfig() {
 }
 
 void ThreadConfig::cleanup() {
-    if(mOptions->split.enabled && mOptions->split.byFileNumber)
+    if (mOptions->split.enabled && mOptions->split.byFileNumber)
         writeEmptyFilesForSplitting();
     deleteWriter();
 }
 
 void ThreadConfig::deleteWriter() {
-    if(mWriter1 != NULL) {
+    if (mWriter1 != NULL) {
         delete mWriter1;
         mWriter1 = NULL;
     }
-    if(mWriter2 != NULL) {
+    if (mWriter2 != NULL) {
         delete mWriter2;
         mWriter2 = NULL;
     }
@@ -86,12 +100,12 @@ void ThreadConfig::initWriter(string filename1, string filename2) {
     mWriter2 = new Writer(filename2, mOptions->compression);
 }
 
-void ThreadConfig::initWriter(ofstream* stream) {
+void ThreadConfig::initWriter(ofstream *stream) {
     deleteWriter();
     mWriter1 = new Writer(stream);
 }
 
-void ThreadConfig::initWriter(ofstream* stream1, ofstream* stream2) {
+void ThreadConfig::initWriter(ofstream *stream1, ofstream *stream2) {
     deleteWriter();
     mWriter1 = new Writer(stream1);
     mWriter2 = new Writer(stream2);
@@ -113,19 +127,19 @@ void ThreadConfig::addFilterResult(int result) {
 }
 
 void ThreadConfig::initWriterForSplit() {
-    if(mOptions->out1.empty())
-        return ;
+    if (mOptions->out1.empty())
+        return;
 
     // use 1-based naming
     string num = to_string(mWorkingSplit + 1);
     // padding for digits like 0001
-    if(mOptions->split.digits > 0){
-        while(num.size() < mOptions->split.digits)
+    if (mOptions->split.digits > 0) {
+        while (num.size() < mOptions->split.digits)
             num = "0" + num;
     }
 
     string filename1 = joinpath(dirname(mOptions->out1), num + "." + basename(mOptions->out1));
-    if(!mOptions->isPaired()) {
+    if (!mOptions->isPaired()) {
         initWriter(filename1);
     } else {
         string filename2 = joinpath(dirname(mOptions->out2), num + "." + basename(mOptions->out2));
@@ -135,20 +149,20 @@ void ThreadConfig::initWriterForSplit() {
 
 void ThreadConfig::markProcessed(long readNum) {
     mCurrentSplitReads += readNum;
-    if(!mOptions->split.enabled)
-        return ;
+    if (!mOptions->split.enabled)
+        return;
     // if splitting is enabled, check whether current file is full
-    if(mCurrentSplitReads >= mOptions->split.size) {
+    if (mCurrentSplitReads >= mOptions->split.size) {
         // if it's splitting by file number, totally we cannot exceed split.number
         // if it's splitting by file lines, then we don't need to check
-        if(mOptions->split.byFileLines || mWorkingSplit + mOptions->thread < mOptions->split.number ){
+        if (mOptions->split.byFileLines || mWorkingSplit + mOptions->thread < mOptions->split.number) {
             mWorkingSplit += mOptions->thread;
             initWriterForSplit();
             mCurrentSplitReads = 0;
         } else {
             // this thread can be stoped now since all its tasks are done
             // only a part of threads have to deal with the remaining reads
-            if(mOptions->split.number % mOptions->thread >0 
+            if (mOptions->split.number % mOptions->thread > 0
                 && mThreadId >= mOptions->split.number % mOptions->thread)
                 mCanBeStopped = true;
         }
@@ -158,10 +172,10 @@ void ThreadConfig::markProcessed(long readNum) {
 // if a task of writting N files is assigned to this thread, but the input file doesn't have so many reads to input
 // write some empty files so it will not break following pipelines
 void ThreadConfig::writeEmptyFilesForSplitting() {
-    while(mWorkingSplit + mOptions->thread < mOptions->split.number) {
+    while (mWorkingSplit + mOptions->thread < mOptions->split.number) {
         mWorkingSplit += mOptions->thread;
-            initWriterForSplit();
-            mCurrentSplitReads = 0;
+        initWriterForSplit();
+        mCurrentSplitReads = 0;
     }
 }
 

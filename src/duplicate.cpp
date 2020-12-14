@@ -3,6 +3,7 @@
 #include <memory.h>
 #include <math.h>
 #include "util.h"
+#include <thread>
 
 Duplicate::Duplicate(Options *opt) {
     mOptions = opt;
@@ -21,6 +22,7 @@ Duplicate::~Duplicate() {
     delete[] mCounts;
 }
 
+
 uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) {
     uint64 ret = 0;
     for (int i = 0; i < keylen; i++) {
@@ -29,24 +31,6 @@ uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) 
             return 0;
         }
         ret += valAGCT[data[start + i] & 0x07];
-
-//        switch(data[start + i]) {
-//            case 'A':
-//                ret += 0;
-//                break;
-//            case 'T':
-//                ret += 1;
-//                break;
-//            case 'C':
-//                ret += 2;
-//                break;
-//            case 'G':
-//                ret += 3;
-//                break;
-//            default:
-//                valid = false;
-//                return 0;
-//        }
         // if it's not the last one, shift it by 2 bits
         if (i != keylen - 1)
             ret <<= 2;
@@ -54,20 +38,30 @@ uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) 
     return ret;
 }
 
+
 void Duplicate::addRecord(uint32 key, uint64 kmer32, uint8 gc) {
+    lok.lock();
+//    printf("thread %d is duplicating ...\n", this_thread::get_id());
+    //TODO what if kmer1 == kmer2 but gc1 != gc2 (of cause key1 == key2)
+    //even if set lock in this function, it is stall thread unsafe.
+    //now change code to make it thread safe, but maybe it can be case a logic error.
     if (mCounts[key] == 0) {
         mCounts[key] = 1;
         mDups[key] = kmer32;
         mGC[key] = gc;
     } else {
-        if (mDups[key] == kmer32)
+        if (mDups[key] == kmer32) {
             mCounts[key]++;
-        else if (mDups[key] > kmer32) {
+            //add this
+            //TODO check it is still logic correct or not
+            if (mGC[key] > gc)mGC[key] = gc;
+        } else if (mDups[key] > kmer32) {
             mDups[key] = kmer32;
             mCounts[key] = 1;
             mGC[key] = gc;
         }
     }
+    lok.unlock();
 }
 
 void Duplicate::statRead(Read *r) {

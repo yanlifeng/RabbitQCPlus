@@ -36,30 +36,36 @@ SOFTWARE.
 #include "read.h"
 #include "options.h"
 #include "common.h"
+#include <mutex>
 
 using namespace std;
 
-class Duplicate{
+class Duplicate {
 public:
-    Duplicate(Options* opt);
+    Duplicate(Options *opt);
+
     ~Duplicate();
 
-    void statRead(Read* r1);
-    void statPair(Read* r1, Read* r2);
-    uint64 seq2int(const char* data, int start, int keylen, bool& valid);
+    void statRead(Read *r1);
+
+    void statPair(Read *r1, Read *r2);
+
+    uint64 seq2int(const char *data, int start, int keylen, bool &valid);
+
     void addRecord(uint32 key, uint64 kmer32, uint8 gc);
 
     // make histogram and get duplication rate
-    double statAll(int* hist, double* meanGC, int histSize);
+    double statAll(int *hist, double *meanGC, int histSize);
 
-private:
-    Options* mOptions;
+public:
+    Options *mOptions;
     int mKeyLenInBase;
     int mKeyLenInBit;
-    uint64* mDups;
-    uint16* mCounts;
-    uint8* mGC;
-    
+    uint64 *mDups;
+    uint16 *mCounts;
+    uint8 *mGC;
+    mutex lok;
+
 };
 
 #endif
