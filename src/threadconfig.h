@@ -81,6 +81,7 @@ public:
     double cost11;
     double cost12;
     double cost13;
+    double costFormat;
     int totCnt;
     Stats *mPreStats1;
     Stats *mPostStats1;

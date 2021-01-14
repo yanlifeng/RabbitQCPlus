@@ -67,8 +67,10 @@ void SingleEndProcessor::initConfig(ThreadConfig *config) {
 }
 
 bool SingleEndProcessor::process() {
-    if (!mOptions->split.enabled)
+    if (!mOptions->split.enabled) {
         initOutput();
+    }
+
 
     initPackRepository();
     std::thread
@@ -88,8 +90,10 @@ bool SingleEndProcessor::process() {
     }
 
     std::thread *leftWriterThread = NULL;
-    if (mLeftWriter)
+    if (mLeftWriter) {
+//        printf("mLeftWriter is true, leftWriterThread pre ing ...\n");
         leftWriterThread = new std::thread(std::bind(&SingleEndProcessor::writeTask, this, mLeftWriter));
+    }
 
     producer.join();
     for (int t = 0; t < mOptions->thread; t++) {
@@ -219,6 +223,7 @@ bool SingleEndProcessor::process() {
     double cost11 = 0;
     double cost12 = 0;
     double cost13 = 0;
+    double costFormat = 0;
     int totCnt = 0;
 
     for (int t = 0; t < mOptions->thread; t++) {
@@ -237,6 +242,7 @@ bool SingleEndProcessor::process() {
         cost12 += configs[t]->cost12;
         cost13 += configs[t]->cost13;
         totCnt += configs[t]->totCnt;
+        costFormat += configs[t]->costFormat;
     }
 
     printf("total getPreStats1()->statRead(or1) ====: %.5f\n", cost1);
@@ -256,6 +262,7 @@ bool SingleEndProcessor::process() {
            cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11 + cost12 + cost13);
     printf("total cost =============================: %.5f\n", cost);
     printf("total  =================================: %d\n", totCnt);
+    printf("total format =================================: %.5f\n", costFormat);
 
 
     cerr << "Read1 before filtering:" << endl;
@@ -273,6 +280,7 @@ bool SingleEndProcessor::process() {
     double *dupMeanGC = NULL;
     double dupRate = 0.0;
     if (mOptions->duplicate.enabled) {
+        printf("duplicate enabled is true\n");
         dupHist = new int[mOptions->duplicate.histSize];
         memset(dupHist, 0, sizeof(int) * mOptions->duplicate.histSize);
         dupMeanGC = new double[mOptions->duplicate.histSize];
@@ -384,7 +392,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
         //TODO maybe this can be the big hotspot
         if (mOptions->umi.enabled) {
-            printf("mOptions->umi ...");
+//            printf("mOptions->umi ...");
             mUmiProcessor->process(or1);
         }
         config->cost4 += get_wall_time() - t1;
@@ -476,13 +484,17 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
     if (!mOptions->split.enabled)
         mOutputMtx.lock();
     if (mOptions->outputToSTDOUT) {
+        printf("mOptions->outputToSTDOUT\n");
         fwrite(outstr.c_str(), 1, outstr.length(), stdout);
     } else if (mOptions->split.enabled) {
         // split output by each worker thread
-        if (!mOptions->out1.empty())
+        if (!mOptions->out1.empty()) {
+            printf("mOptions->split.enabled and !mOptions->out1.empty()\n");
             config->getWriter1()->writeString(outstr);
+        }
     } else {
         if (mLeftWriter) {
+//            printf("mLeftWriter\n");
             char *ldata = new char[outstr.size()];
             memcpy(ldata, outstr.c_str(), outstr.size());
             mLeftWriter->input(ldata, outstr.size());
@@ -505,6 +517,9 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
 void SingleEndProcessor::initPackRepository() {
     //mRepo.packBuffer = new ReadPack*[PACK_NUM_LIMIT];
+//    printf("now initPackRepositorying ...\n");
+//    printf("FastqDataChunk totle size %d\n", PACK_NUM_LIMIT);
+//    printf("FastqDataChunk pre size %d\n", sizeof(dsrc::fq::FastqDataChunk *));
     mRepo.packBuffer = new dsrc::fq::FastqDataChunk *[PACK_NUM_LIMIT];
     //memset(mRepo.packBuffer, 0, sizeof(ReadPack*)*PACK_NUM_LIMIT);
     memset(mRepo.packBuffer, 0, sizeof(dsrc::fq::FastqDataChunk *) * PACK_NUM_LIMIT);
@@ -570,8 +585,12 @@ void SingleEndProcessor::consumePack(ThreadConfig *config) {
         mRepo.readPos = 0;*/
     mInputMtx.unlock();
 
+
+    double t = get_wall_time();
     //data format for from dsrc to fastp
     data->count = dsrc::fq::chunkFormat(chunk, data->data, true);
+
+    config->costFormat += get_wall_time() - t;
     //cerr << (char*)chunk->data.Pointer() << endl;
     fastqPool->Release(chunk);
 

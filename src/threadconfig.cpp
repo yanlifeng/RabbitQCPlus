@@ -46,6 +46,7 @@ ThreadConfig::ThreadConfig(Options *opt, int threadId, bool paired) {
     cost12 = 0;
     cost13 = 0;
     totCnt = 0;
+    costFormat = 0;
     mOptions = opt;
     mThreadId = threadId;
     mWorkingSplit = threadId;

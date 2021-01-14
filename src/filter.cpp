@@ -81,6 +81,8 @@ Read *Filter::trimAndCut(Read *r, int front, int tail) {
         return r;
 
 //    printf("Filter::trimAndCut!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!...\n");
+//    printf("%d %d\n", front, tail);
+//    printf("%d %d\n", mOptions->qualityCut.enabled5, mOptions->qualityCut.enabled3);
     int rlen = r->length() - front - tail;
     if (rlen < 0)
         return NULL;
@@ -95,7 +97,7 @@ Read *Filter::trimAndCut(Read *r, int front, int tail) {
     }
 
     // need quality cutting
-
+    //windowSize default is 4
     int w = mOptions->qualityCut.windowSize;
     int l = r->length();
     const char *qualstr = r->mQuality.c_str();
@@ -162,8 +164,11 @@ Read *Filter::trimAndCut(Read *r, int front, int tail) {
         rlen = t - front + 1;
     }
 
-    if (rlen <= 0 || front >= l - 1)
+    if (rlen <= 0 || front >= l - 1) {
+//        printf("cut errors occur\n");
         return NULL;
+    }
+
 
 //    printf("0 : %d ---->>>>> %d %d\n", r->length(), front, rlen);
     r->mSeq.mStr = r->mSeq.mStr.substr(front, rlen);
