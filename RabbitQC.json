@@ -213,5 +213,5 @@
 		"overrepresented_sequences": {
 		}
 	},
-	"command": "./rabbit_qc -w 1 -i ../data/test.fq -o p.fq --umi --umi_loc index1 "
+	"command": "./rabbit_qc -w 1 -i ../data/test.fq -o p.fq "
 }

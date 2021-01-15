@@ -54,7 +54,7 @@ using namespace std;
 
 struct ReadPack {
     //Read** data;
-	vector<Read*> data;
+    vector<Read *> data;
     int count;
 };
 
@@ -62,7 +62,7 @@ typedef struct ReadPack ReadPack;
 
 struct ReadRepository {
     //ReadPack** packBuffer;
-	dsrc::fq::FastqDataChunk** packBuffer;
+    dsrc::fq::FastqDataChunk **packBuffer;
     atomic_long readPos;
     atomic_long writePos;
     //std::mutex mtx;
@@ -71,41 +71,64 @@ struct ReadRepository {
     //std::condition_variable repoNotEmpty;
 };
 
+struct NewRead {
+    const char *namePos;
+    const char *seqPos;
+    const char *strandPos;
+    const char *qualiPos;
+    unsigned long nameLen;
+    unsigned long seqLen;
+    unsigned long strandLen;
+    unsigned long qualiLen;
+};
+
 typedef struct ReadRepository ReadRepository;
 
-class SingleEndProcessor{
+class SingleEndProcessor {
 public:
-    SingleEndProcessor(Options* opt);
+    SingleEndProcessor(Options *opt);
+
     ~SingleEndProcessor();
+
     bool process();
 
 private:
-    bool processSingleEnd(ReadPack* pack, ThreadConfig* config);
+    bool processSingleEnd(ReadPack *pack, ThreadConfig *config);
+
     void initPackRepository();
+
     void destroyPackRepository();
-    void producePack(dsrc::fq::FastqDataChunk* pack);
-    void consumePack(ThreadConfig* config);
+
+    void producePack(dsrc::fq::FastqDataChunk *pack);
+
+    void consumePack(ThreadConfig *config);
+
     void producerTask();
-    void consumerTask(ThreadConfig* config);
-    void initConfig(ThreadConfig* config);
+
+    void consumerTask(ThreadConfig *config);
+
+    void initConfig(ThreadConfig *config);
+
     void initOutput();
+
     void closeOutput();
-    void writeTask(WriterThread* config);
+
+    void writeTask(WriterThread *config);
 
 private:
-    Options* mOptions;
+    Options *mOptions;
     ReadRepository mRepo;
     atomic_bool mProduceFinished;
     atomic_int mFinishedThreads;
     std::mutex mInputMtx;
     std::mutex mOutputMtx;
-    Filter* mFilter;
+    Filter *mFilter;
     gzFile mZipFile;
-    ofstream* mOutStream;
-    UmiProcessor* mUmiProcessor;
-    WriterThread* mLeftWriter;
-    Duplicate* mDuplicate;
-	dsrc::fq::FastqDataPool* fastqPool;
+    ofstream *mOutStream;
+    UmiProcessor *mUmiProcessor;
+    WriterThread *mLeftWriter;
+    Duplicate *mDuplicate;
+    dsrc::fq::FastqDataPool *fastqPool;
 };
 
 

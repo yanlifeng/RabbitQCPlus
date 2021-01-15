@@ -45,6 +45,7 @@ ThreadConfig::ThreadConfig(Options *opt, int threadId, bool paired) {
     cost11 = 0;
     cost12 = 0;
     cost13 = 0;
+    cost14 = 0;
     totCnt = 0;
     costFormat = 0;
     mOptions = opt;

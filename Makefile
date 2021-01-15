@@ -15,8 +15,9 @@ TARGET := rabbit_qc
 BIN_TARGET := ${TARGET}
 
 CXX := g++-8
-CXXFLAGS := -std=c++11 -g -fopenmp -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
-#CXXFLAGS := -std=c++11 -funroll-loops -flto -fopenmp -mavx2  -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
+#CXXFLAGS := -DTimer -std=c++11 -g -fopenmp -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
+#CXXFLAGS := -DTimer -std=c++11 -funroll-loops -flto -fopenmp -mavx2  -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
+CXXFLAGS := -std=c++11 -funroll-loops -flto -fopenmp -mavx2  -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 LIBS :=  -lz -lpthread -fopenmp
 LD_FLAGS := $(foreach librarydir,$(LIBRARY_DIRS),-L$(librarydir)) $(LIBS)
 

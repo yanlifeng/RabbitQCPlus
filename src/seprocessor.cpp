@@ -208,7 +208,7 @@ bool SingleEndProcessor::process() {
     out.seekp(0, ios::beg);
     out.write(reinterpret_cast<char *>(mDuplicate->mDups), mDuplicate->mKeyLenInBit * sizeof(uint64));
     out.close();
-
+#ifdef Timer
     double cost = 0;
     double cost1 = 0;
     double cost2 = 0;
@@ -223,6 +223,7 @@ bool SingleEndProcessor::process() {
     double cost11 = 0;
     double cost12 = 0;
     double cost13 = 0;
+    double cost14 = 0;
     double costFormat = 0;
     int totCnt = 0;
 
@@ -241,6 +242,7 @@ bool SingleEndProcessor::process() {
         cost11 += configs[t]->cost11;
         cost12 += configs[t]->cost12;
         cost13 += configs[t]->cost13;
+        cost14 += configs[t]->cost14;
         totCnt += configs[t]->totCnt;
         costFormat += configs[t]->costFormat;
     }
@@ -258,12 +260,13 @@ bool SingleEndProcessor::process() {
     printf("total outstr += r1->toString() =========: %.5f\n", cost11);
     printf("total getPostStats1()->statRead(r1) ====: %.5f\n", cost12);
     printf("total delete r1 ========================: %.5f\n", cost13);
+    printf("total ready output ========================: %.5f\n", cost14);
     printf("total costTotel ========================: %.5f\n",
            cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11 + cost12 + cost13);
     printf("total cost =============================: %.5f\n", cost);
     printf("total  =================================: %d\n", totCnt);
     printf("total format =================================: %.5f\n", costFormat);
-
+#endif
 
     cerr << "Read1 before filtering:" << endl;
     finalPreStats->print();
@@ -280,7 +283,7 @@ bool SingleEndProcessor::process() {
     double *dupMeanGC = NULL;
     double dupRate = 0.0;
     if (mOptions->duplicate.enabled) {
-        printf("duplicate enabled is true\n");
+//        printf("duplicate enabled is true\n");
         dupHist = new int[mOptions->duplicate.histSize];
         memset(dupHist, 0, sizeof(int) * mOptions->duplicate.histSize);
         dupMeanGC = new double[mOptions->duplicate.histSize];
@@ -351,43 +354,48 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
     //2. add getTGStats function in ThreadConfig file;
     //3. add TGStats menber variable in ThreadConfig class
     //---------------------------------------------------
-
+#ifdef Timer
     config->totCnt += 1;
     double t0, t1;
-
-
     t0 = get_wall_time();
+#endif
+    vector<NewRead> newOut;
 
     for (int p = 0; p < pack->count; p++) {
 
         // original read1
         Read *or1 = pack->data[p];
         // stats the original read before trimming
+#ifdef Timer
         t1 = get_wall_time();
+#endif
         config->getPreStats1()->statRead(or1);//cost 12/57
+#ifdef Timer
         config->cost1 += get_wall_time() - t1;
-
-
         // handling the duplication profiling
         t1 = get_wall_time();
-
+#endif
         //TODO maybe mDuplicate is not thread safe
         if (mDuplicate)
             mDuplicate->statRead(or1);//cost 14/57
+#ifdef Timer
         config->cost2 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+#endif
         // filter by index
         if (mOptions->indexFilter.enabled && mFilter->filterByIndex(or1)) {
-            printf("mOptions->indexFilter ...");
+//            printf("mOptions->indexFilter ...");
             delete or1;
             continue;
         }
+#ifdef Timer
         config->cost3 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+#endif
         // umi processing
 
         //TODO maybe this can be the big hotspot
@@ -395,109 +403,166 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 //            printf("mOptions->umi ...");
             mUmiProcessor->process(or1);
         }
+#ifdef Timer
         config->cost4 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+#endif
         // trim in head and tail, and apply quality cut in sliding window
         //not in
         //TODO look what will do in this function and how to open this function
         //TODO maybe this can be the big hotspot
         Read *r1 = mFilter->trimAndCut(or1, mOptions->trim.front1, mOptions->trim.tail1);
+#ifdef Timer
         config->cost5 += get_wall_time() - t1;
 
-
+        //poly just has resize operator
         t1 = get_wall_time();
+#endif
         if (r1 != NULL) {
             //not in because xx is false
             if (mOptions->polyGTrim.enabled) {
-                printf("polyGTrim ...\n");
+//                printf("polyGTrim ...\n");
                 PolyX::trimPolyG(r1, config->getFilterResult(), mOptions->polyGTrim.minLen);
 
             }
             //not in because xx is false
             if (mOptions->polyXTrim.enabled) {
-                printf("polyXTrim ...\n");
+//                printf("polyXTrim ...\n");
                 PolyX::trimPolyX(r1, config->getFilterResult(), mOptions->polyXTrim.minLen);
 
             }
         }
+#ifdef Timer
         config->cost6 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+#endif
         //not in because mOptions->adapter.hasSeqR1 is false
         if (r1 != NULL && mOptions->adapter.enabled && mOptions->adapter.hasSeqR1) {
-            printf("AdapterTrimmer::trimBySequence ...\n");
+//            printf("AdapterTrimmer::trimBySequence ...\n");
             AdapterTrimmer::trimBySequence(r1, config->getFilterResult(), mOptions->adapter.sequence);
         }
+#ifdef Timer
         config->cost7 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+#endif
         if (r1 != NULL) {
             // not in because mOptions->trim.maxLen1 is 0
             if (mOptions->trim.maxLen1 > 0 && mOptions->trim.maxLen1 < r1->length()) {
-                printf("r1->resize ...\n");
+//                printf("r1->resize ...\n");
                 r1->resize(mOptions->trim.maxLen1);
             }
         }
+#ifdef Timer
         config->cost8 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+#endif
         //in ! O(len)
         int result = mFilter->passFilter(r1);
+#ifdef Timer
         config->cost9 += get_wall_time() - t1;
 
 
         t1 = get_wall_time();
+#endif
         config->addFilterResult(result);
+#ifdef Timer
         config->cost10 += get_wall_time() - t1;
-
+#endif
         //in !
 //        if (result != PASS_FILTER) {
 //            cout << r1->toString() << endl;
 //        }
         if (r1 != NULL && result == PASS_FILTER) {
+#ifdef Timer
             t1 = get_wall_time();
+#endif
+//            newOut.push_back(
+//                    NewRead{r1->mName.c_str(), r1->mSeq.mStr.c_str(), r1->mStrand.c_str(), r1->mQuality.c_str(),
+//                            r1->mName.length(), r1->mSeq.mStr.length(), r1->mStrand.length(), r1->mQuality.length()});
             outstr += r1->toString();
+#ifdef Timer
             config->cost11 += get_wall_time() - t1;
             // stats the read after filtering
             t1 = get_wall_time();
+#endif
             config->getPostStats1()->statRead(r1);//cost 23/57
+#ifdef Timer
             config->cost12 += get_wall_time() - t1;
+#endif
             readPassed++;
         }
 
-
+#ifdef Timer
         t1 = get_wall_time();
-        delete or1;
-        // if no trimming applied, r1 should be identical to or1
-        if (r1 != or1 && r1 != NULL)
-            delete r1;
+#endif
+//        delete or1;
+//         if no trimming applied, r1 should be identical to or1
+//        if (r1 != or1 && r1 != NULL)
+//            delete r1;
+#ifdef Timer
         config->cost13 += get_wall_time() - t1;
+#endif
     }
+#ifdef Timer
     config->cost += get_wall_time() - t0;
-
+    t0 = get_wall_time();
+#endif
     // if splitting output, then no lock is need since different threads write different files
     if (!mOptions->split.enabled)
         mOutputMtx.lock();
     if (mOptions->outputToSTDOUT) {
-        printf("mOptions->outputToSTDOUT\n");
+//        printf("mOptions->outputToSTDOUT\n");
         fwrite(outstr.c_str(), 1, outstr.length(), stdout);
     } else if (mOptions->split.enabled) {
         // split output by each worker thread
         if (!mOptions->out1.empty()) {
-            printf("mOptions->split.enabled and !mOptions->out1.empty()\n");
+//            printf("mOptions->split.enabled and !mOptions->out1.empty()\n");
             config->getWriter1()->writeString(outstr);
         }
     } else {
         if (mLeftWriter) {
 //            printf("mLeftWriter\n");
+
             char *ldata = new char[outstr.size()];
             memcpy(ldata, outstr.c_str(), outstr.size());
             mLeftWriter->input(ldata, outstr.size());
+
+//
+//            unsigned long totSize = 0;
+//            for (int i = 0; i < newOut.size(); i++) {
+//                NewRead now = newOut[i];
+//                totSize += now.nameLen + now.seqLen + now.strandLen + now.qualiLen + 4;
+//            }
+//            char *ldata = new char[totSize];
+//            char *nowPos = ldata;
+//            for (int i = 0; i < newOut.size(); i++) {
+//                NewRead now = newOut[i];
+//                memcpy(nowPos, now.namePos, now.nameLen);
+//                nowPos += now.nameLen;
+//                *nowPos = '\n';
+//                nowPos++;
+//                memcpy(nowPos, now.seqPos, now.seqLen);
+//                nowPos += now.seqLen;
+//                *nowPos = '\n';
+//                nowPos++;
+//                memcpy(nowPos, now.strandPos, now.strandLen);
+//                nowPos += now.strandLen;
+//                *nowPos = '\n';
+//                nowPos++;
+//                memcpy(nowPos, now.qualiPos, now.qualiLen);
+//                nowPos += now.qualiLen;
+//                *nowPos = '\n';
+//                nowPos++;
+//            }
+//            mLeftWriter->input(ldata, totSize);
         }
     }
 
@@ -510,8 +575,12 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         config->markProcessed(pack->count);
 
     //delete pack->data;
+    //TODO how this swap delete pack->data
     std::vector<Read *>().swap(pack->data);
     delete pack;
+#ifdef Timer
+    config->cost14 += get_wall_time() - t0;
+#endif
     return true;
 }
 

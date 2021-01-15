@@ -3,6 +3,7 @@
 TODO
   - [ ] 研究main函数中每一个参数的意义
   - [x] 打开trimAndCut
+  - [x] 打开polg
   - [ ]  解决mDuplicate线程不安全问题
   - [x]  打开mUmiProcessor
   - [ ]  --[haoz:] I think it 3GS can add here
@@ -399,19 +400,39 @@ total  =================================: 186
 
 关于mDumplite的bug还是没有解决，先去换string吧。
 
+./rabbit_qc -w 1 -i ../data/test.fq -o p.fq --umi --umi_loc index1
+
+开启umi，但是依旧不是热点，而且cut里面的substr似乎并不慢（初步猜测是s=s.substr的原因）。
+
+### 0115
+
+./rabbit_qc -w 1 -i ../data/test.fq -o p.fq --umi --umi_loc index1 index2 -t 4 -5 -3 -g -x
+
+开启PolyX，也不算是热点。
+
+还差一个AdapterTrimmer::trimBySequence没有打开，带adapter的数据正在下，下午开开试试。
+
+目前se的所有功能似乎都没有删除的操作，对字符串的修改都是cut，因此string换char*的思路是可以的。
+
 研究一下项目的输出系统：
 
 首先，mOptions->split.enabled即，输出要不要split成多个文件，默认是关闭的；
 
 initOutput()中声明了mLeftWriter，默认情况下就是new了1e7的数组，开了一个输出流；
 
-./rabbit_qc -w 1 -i ../data/test.fq -o p.fq --umi --umi_loc index1
+每一个Task（即处理一个Pack）之后都会把拼接好的临时变量outstr复制到一个新的空间，然后把地址和大小存好，准备最后统一输出；
 
-开启umi，但是依旧不是热点。
-
-而且cut里面的substr似乎并不慢（初步猜测是s=s.substr的原因）
+![IMG_0480.PNG](https://i.loli.net/2021/01/15/CIE6swqjOWuGDYU.png)
 
 
 
+中间data的变化答题就是这样的，初步的思路是Read中不再有新的string，而是两个指针。
 
+晚上找zz讨论了一下，他说这样有点激进，那就先把outstr去掉吧，还能剩下Read类：
+
+|            | test.fq | SRR2496709_1.fastq |
+| ---------- | ------- | ------------------ |
+| STD        |         |                    |
+| Now        |         |                    |
+| no out_str |         |                    |
 
