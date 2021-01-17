@@ -334,7 +334,6 @@ bool SingleEndProcessor::process() {
 
 bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) {
 
-
     //debug for losing last line
     //cerr << pack->data[pack->count - 1]->mName << endl;
     //cerr << pack->data[pack->count - 1]->mQuality << endl;
@@ -359,8 +358,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
     double t0, t1;
     t0 = get_wall_time();
 #endif
-    vector<NewRead> newOut;
-
+//    vector<NewRead> newOut;
+    vector<Read *> newOut;
     for (int p = 0; p < pack->count; p++) {
 
         // original read1
@@ -484,10 +483,12 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 #ifdef Timer
             t1 = get_wall_time();
 #endif
+//            printf("push %d\n", p);
+            newOut.push_back(r1);
 //            newOut.push_back(
 //                    NewRead{r1->mName.c_str(), r1->mSeq.mStr.c_str(), r1->mStrand.c_str(), r1->mQuality.c_str(),
 //                            r1->mName.length(), r1->mSeq.mStr.length(), r1->mStrand.length(), r1->mQuality.length()});
-            outstr += r1->toString();
+//            outstr += r1->toString();
 #ifdef Timer
             config->cost11 += get_wall_time() - t1;
             // stats the read after filtering
@@ -503,8 +504,9 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 #ifdef Timer
         t1 = get_wall_time();
 #endif
+        //         if no trimming applied, r1 should be identical to or1
+
 //        delete or1;
-//         if no trimming applied, r1 should be identical to or1
 //        if (r1 != or1 && r1 != NULL)
 //            delete r1;
 #ifdef Timer
@@ -531,38 +533,40 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         if (mLeftWriter) {
 //            printf("mLeftWriter\n");
 
-            char *ldata = new char[outstr.size()];
-            memcpy(ldata, outstr.c_str(), outstr.size());
-            mLeftWriter->input(ldata, outstr.size());
+//            char *ldata = new char[outstr.size()];
+//            memcpy(ldata, outstr.c_str(), outstr.size());
+//            mLeftWriter->input(ldata, outstr.size());
 
 //
-//            unsigned long totSize = 0;
-//            for (int i = 0; i < newOut.size(); i++) {
-//                NewRead now = newOut[i];
-//                totSize += now.nameLen + now.seqLen + now.strandLen + now.qualiLen + 4;
-//            }
-//            char *ldata = new char[totSize];
-//            char *nowPos = ldata;
-//            for (int i = 0; i < newOut.size(); i++) {
-//                NewRead now = newOut[i];
-//                memcpy(nowPos, now.namePos, now.nameLen);
-//                nowPos += now.nameLen;
-//                *nowPos = '\n';
-//                nowPos++;
-//                memcpy(nowPos, now.seqPos, now.seqLen);
-//                nowPos += now.seqLen;
-//                *nowPos = '\n';
-//                nowPos++;
-//                memcpy(nowPos, now.strandPos, now.strandLen);
-//                nowPos += now.strandLen;
-//                *nowPos = '\n';
-//                nowPos++;
-//                memcpy(nowPos, now.qualiPos, now.qualiLen);
-//                nowPos += now.qualiLen;
-//                *nowPos = '\n';
-//                nowPos++;
-//            }
-//            mLeftWriter->input(ldata, totSize);
+            unsigned long totSize = 0;
+            for (int i = 0; i < newOut.size(); i++) {
+                Read *now = newOut[i];
+                totSize += now->mName.size() + now->mSeq.mStr.size() + now->mStrand.size() + now->mQuality.size() + 4;
+            }
+//            printf("%ld\n", totSize);
+            char *ldata = new char[totSize];
+            char *nowPos = ldata;
+            for (int i = 0; i < newOut.size(); i++) {
+                Read *now = newOut[i];
+                memcpy(nowPos, now->mName.c_str(), now->mName.size());
+                nowPos += now->mName.size();
+                *nowPos = '\n';
+                nowPos++;
+                memcpy(nowPos, now->mSeq.mStr.c_str(), now->mSeq.length());
+                nowPos += now->mSeq.length();
+                *nowPos = '\n';
+                nowPos++;
+                memcpy(nowPos, now->mStrand.c_str(), now->mStrand.size());
+                nowPos += now->mStrand.size();
+                *nowPos = '\n';
+                nowPos++;
+                memcpy(nowPos, now->mQuality.c_str(), now->mQuality.size());
+                nowPos += now->mQuality.size();
+                *nowPos = '\n';
+                nowPos++;
+                delete now;
+            }
+            mLeftWriter->input(ldata, totSize);
         }
     }
 
@@ -576,8 +580,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
     //delete pack->data;
     //TODO how this swap delete pack->data
-    std::vector<Read *>().swap(pack->data);
-    delete pack;
+//    vector<Read *>().swap(pack->data);
+//    delete pack;
 #ifdef Timer
     config->cost14 += get_wall_time() - t0;
 #endif
@@ -658,8 +662,10 @@ void SingleEndProcessor::consumePack(ThreadConfig *config) {
     double t = get_wall_time();
     //data format for from dsrc to fastp
     data->count = dsrc::fq::chunkFormat(chunk, data->data, true);
-
     config->costFormat += get_wall_time() - t;
+
+
+
     //cerr << (char*)chunk->data.Pointer() << endl;
     fastqPool->Release(chunk);
 
