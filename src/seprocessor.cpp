@@ -89,20 +89,31 @@ bool SingleEndProcessor::process() {
         threads[t] = new std::thread(std::bind(&SingleEndProcessor::consumerTask, this, configs[t]));
     }
 
+//    std::thread *leftWriterThread = NULL;
+//    if (mLeftWriter) {
+////        printf("mLeftWriter is true, leftWriterThread pre ing ...\n");
+//        leftWriterThread = new std::thread(std::bind(&SingleEndProcessor::writeTask, this, mLeftWriter));
+//    }
+
+    producer.join();
+    printf("producer.join\n");
+    for (int t = 0; t < mOptions->thread; t++) {
+        threads[t]->join();
+    }
+    printf("threads.join\n");
+
+
+    //TODO right change this position?
     std::thread *leftWriterThread = NULL;
     if (mLeftWriter) {
 //        printf("mLeftWriter is true, leftWriterThread pre ing ...\n");
         leftWriterThread = new std::thread(std::bind(&SingleEndProcessor::writeTask, this, mLeftWriter));
     }
-
-    producer.join();
-    for (int t = 0; t < mOptions->thread; t++) {
-        threads[t]->join();
-    }
-
     if (!mOptions->split.enabled) {
-        if (leftWriterThread)
+        if (leftWriterThread) {
             leftWriterThread->join();
+            printf("leftWriterThread->join\n");
+        }
     }
 
     if (mOptions->verbose)
@@ -580,8 +591,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 
     //delete pack->data;
     //TODO how this swap delete pack->data
-//    vector<Read *>().swap(pack->data);
-//    delete pack;
+    vector<Read *>().swap(pack->data);
+    delete pack;
 #ifdef Timer
     config->cost14 += get_wall_time() - t0;
 #endif
@@ -869,6 +880,8 @@ void SingleEndProcessor::consumerTask(ThreadConfig *config) {
 }
 
 void SingleEndProcessor::writeTask(WriterThread *config) {
+    cout << "mInputCounter " << config->mInputCounter << endl;
+    cout << "mOutputCounter " << config->mOutputCounter << endl;
     while (true) {
         if (config->isCompleted()) {
             // last check for possible threading related issue

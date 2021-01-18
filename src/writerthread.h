@@ -41,39 +41,46 @@ SOFTWARE.
 
 using namespace std;
 
-class WriterThread{
+class WriterThread {
 public:
-    WriterThread(Options* opt, string filename);
+    WriterThread(Options *opt, string filename);
+
     ~WriterThread();
 
     void initWriter(string filename1);
-    void initWriter(ofstream* stream);
+
+    void initWriter(ofstream *stream);
+
     void initWriter(gzFile gzfile);
 
     void cleanup();
 
     bool isCompleted();
+
     void output();
-    void input(char* data, size_t size);
+
+    void input(char *data, size_t size);
+
     bool setInputCompleted();
 
     long bufferLength();
-    string getFilename() {return mFilename;}
+
+    string getFilename() { return mFilename; }
 
 private:
     void deleteWriter();
 
-private:
-    Writer* mWriter1;
-    Options* mOptions;
+public:
+    Writer *mWriter1;
+    Options *mOptions;
     string mFilename;
 
     // for spliting output
     bool mInputCompleted;
     atomic_long mInputCounter;
     atomic_long mOutputCounter;
-    char** mRingBuffer;
-    size_t* mRingBufferSizes;
+    char **mRingBuffer;
+    size_t *mRingBufferSizes;
 
     mutex mtx;
 

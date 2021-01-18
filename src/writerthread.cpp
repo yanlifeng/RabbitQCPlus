@@ -3,7 +3,7 @@
 #include <memory.h>
 #include <unistd.h>
 
-WriterThread::WriterThread(Options* opt, string filename){
+WriterThread::WriterThread(Options *opt, string filename) {
     mOptions = opt;
 
     mWriter1 = NULL;
@@ -13,8 +13,8 @@ WriterThread::WriterThread(Options* opt, string filename){
     mInputCompleted = false;
     mFilename = filename;
 
-    mRingBuffer = new char*[PACK_NUM_LIMIT];
-    memset(mRingBuffer, 0, sizeof(char*) * PACK_NUM_LIMIT);
+    mRingBuffer = new char *[PACK_NUM_LIMIT];
+    memset(mRingBuffer, 0, sizeof(char *) * PACK_NUM_LIMIT);
     mRingBufferSizes = new size_t[PACK_NUM_LIMIT];
     memset(mRingBufferSizes, 0, sizeof(size_t) * PACK_NUM_LIMIT);
     initWriter(filename);
@@ -25,8 +25,7 @@ WriterThread::~WriterThread() {
     delete mRingBuffer;
 }
 
-bool WriterThread::isCompleted() 
-{
+bool WriterThread::isCompleted() {
     return mInputCompleted && (mOutputCounter == mInputCounter);
 }
 
@@ -35,20 +34,22 @@ bool WriterThread::setInputCompleted() {
     return true;
 }
 
-void WriterThread::output(){
-    if(mOutputCounter >= mInputCounter) {
+void WriterThread::output() {
+    if (mOutputCounter >= mInputCounter) {
         usleep(100);
     }
-    while( mOutputCounter < mInputCounter) 
-    {
+    unsigned long nowTotle = 0;
+    while (mOutputCounter < mInputCounter) {
+        nowTotle += mRingBufferSizes[mOutputCounter];
         mWriter1->write(mRingBuffer[mOutputCounter], mRingBufferSizes[mOutputCounter]);
         delete mRingBuffer[mOutputCounter];
         mRingBuffer[mOutputCounter] = NULL;
         mOutputCounter++;
     }
+//    printf("nowTotle %ld b\n", nowTotle);
 }
 
-void  WriterThread::input(char* data, size_t size){
+void WriterThread::input(char *data, size_t size) {
     mRingBuffer[mInputCounter] = data;
     mRingBufferSizes[mInputCounter] = size;
     mInputCounter++;
@@ -59,7 +60,7 @@ void WriterThread::cleanup() {
 }
 
 void WriterThread::deleteWriter() {
-    if(mWriter1 != NULL) {
+    if (mWriter1 != NULL) {
         delete mWriter1;
         mWriter1 = NULL;
     }
@@ -70,7 +71,7 @@ void WriterThread::initWriter(string filename1) {
     mWriter1 = new Writer(filename1, mOptions->compression);
 }
 
-void WriterThread::initWriter(ofstream* stream) {
+void WriterThread::initWriter(ofstream *stream) {
     deleteWriter();
     mWriter1 = new Writer(stream);
 }
@@ -80,6 +81,6 @@ void WriterThread::initWriter(gzFile gzfile) {
     mWriter1 = new Writer(gzfile);
 }
 
-long WriterThread::bufferLength(){
+long WriterThread::bufferLength() {
     return mInputCounter - mOutputCounter;
 }

@@ -11,11 +11,12 @@ TODO
   - [x]  check all！
   - [ ]  把string换成char*  不在nwe新的空间
   - [ ]  关闭多线程动态调度，静态分配然后多线程处理，check多线程正确性
-  - [ ]  使用带adapter的数据
+  - [x]  使用带adapter的数据
   - [x]  去掉out_str
   - [ ]  改造Read
-  - [ ] 关于空间
+  - [x] 关于空间
   - [ ] 解决报错./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq -o p.fq -t 4 -5
+  - [ ] 为啥运行空间稳定1g不变，
   - [ ]  
 
 
