@@ -8,6 +8,7 @@
 Duplicate::Duplicate(Options *opt) {
     mOptions = opt;
     mKeyLenInBase = mOptions->duplicate.keylen;
+    printf("mKeyLenInBase %d\n", mKeyLenInBase);
     mKeyLenInBit = 1 << (2 * mKeyLenInBase);
     mDups = new uint64[mKeyLenInBit];
     memset(mDups, 0, sizeof(uint64) * mKeyLenInBit);
@@ -87,12 +88,13 @@ void Duplicate::statRead(Read *r) {
 
 //    lok.lock();
     // not calculated
-    if (mCounts[key] == 0) {
-        for (int i = 0; i < r->length(); i++) {
-            if (data[i] == 'C' || data[i] == 'T')
-                gc++;
-        }
+    //TODO check correctness
+//    if (mCounts[key] == 0) {
+    for (int i = 0; i < r->length(); i++) {
+        if (data[i] == 'C' || data[i] == 'T')
+            gc++;
     }
+//    }
 
     gc = round(255.0 * (double) gc / (double) r->length());
 

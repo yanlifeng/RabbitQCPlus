@@ -76,6 +76,9 @@ bool Filter::passLowComplexityFilter(Read *r) {
 }
 
 Read *Filter::trimAndCut(Read *r, int front, int tail) {
+
+    //Sliding window quality pruning
+    //消除开头或结尾中质量不高的部分
     // return the same read for speed if no change needed
     if (front == 0 && tail == 0 && !mOptions->qualityCut.enabled5 && !mOptions->qualityCut.enabled3)
         return r;
@@ -103,13 +106,14 @@ Read *Filter::trimAndCut(Read *r, int front, int tail) {
     const char *qualstr = r->mQuality.c_str();
     const char *seq = r->mSeq.mStr.c_str();
     // quality cutting forward
+    // 从front进行
     if (mOptions->qualityCut.enabled5) {
         int s = front;
         if (l - front - tail - w <= 0)
             return NULL;
 
         int totalQual = 0;
-
+//窗口一开始在最左边，滑倒平均质量高于阈值就停下
         // preparing rolling
         for (int i = 0; i < w - 1; i++)
             totalQual += qualstr[s + i];
@@ -134,6 +138,7 @@ Read *Filter::trimAndCut(Read *r, int front, int tail) {
         rlen = l - front - tail;
     }
 
+    //从tail进行
     // quality cutting backward
     if (mOptions->qualityCut.enabled3) {
         if (l - front - tail - w <= 0)

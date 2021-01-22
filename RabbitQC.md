@@ -464,3 +464,52 @@ initOutput()中声明了mLeftWriter，默认情况下就是new了1e7的数组，
 
 
 
+```c++
+./rabbit_qc -w 1 -i ../data/test.fq -o p.fq -U --umi_loc=read1 --umi_len=8
+total getPreStats1()->statRead(or1) ====: 1.45745
+total mDuplicate->statRead(or1) ========: 0.50807
+total mOptions->indexFilter()  =========: 0.05273
+total mUmiProcessor->process(or1) ======: 0.98117
+total mFilter->trimAndCut() ============: 0.06615
+total PolyX::trimPolyG() ===============: 0.98117
+total trimBySequence ===================: 0.05326
+total r1->resize() =====================: 0.05256
+total mFilter->passFilter(r1) ==========: 0.14185
+total addFilterResult(result) ==========: 0.05432
+total outstr += r1->toString() =========: 0.23384
+total getPostStats1()->statRead(r1) ====: 1.01119
+total delete r1 ========================: 0.05133
+total ready output ========================: 1.70261
+total costTotel ========================: 4.71656
+total cost =============================: 5.45134
+total  =================================: 186
+total format =================================: 2.82441
+Read1 before filtering:
+total reads: 2000000
+total bases: 200000000
+Q20 bases: 196873669(98.4368%)
+Q30 bases: 192134023(96.067%)
+
+Read1 after filtering:
+total reads: 1977633
+total bases: 181942236
+Q20 bases: 180366667(99.134%)
+Q30 bases: 175978730(96.7223%)
+
+Filtering result:
+reads passed filter: 1977633
+reads failed due to low quality: 22143
+reads failed due to too many N: 224
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.153535%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../data/test.fq -o p.fq -U --umi_loc=read1 --umi_len=8 
+rabbit_qc v0.0.1, time used: 11.7879 seconds
+```
+

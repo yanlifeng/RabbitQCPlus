@@ -31,7 +31,7 @@
 	"duplication": {
 		"rate": 0.00153535,
 		"histogram": [1685012,2525,32,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-		"mean_gc": [0.465813,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+		"mean_gc": [0.465794,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 	},
 	"read1_before_filtering": {
 		"total_reads": 2000000,
@@ -213,5 +213,5 @@
 		"overrepresented_sequences": {
 		}
 	},
-	"command": "./rabbit_qc -w 2 -i ../data/test.fq -o p.fq "
+	"command": "./rabbit_qc -w 1 -i ../data/test.fq -o p.fq "
 }
