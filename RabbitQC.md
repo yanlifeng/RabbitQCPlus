@@ -4,7 +4,7 @@ TODO
   - [ ] 研究main函数中每一个参数的意义
   - [x] 打开trimAndCut
   - [x] 打开polg
-  - [ ]  解决mDuplicate线程不安全问题
+  - [x]  解决mDuplicate线程不安全问题
   - [x]  打开mUmiProcessor
   - [ ]  --[haoz:] I think it 3GS can add here
   - [ ]  解决带adapter的数据每次统计信息输出都不一样的问题
@@ -16,7 +16,7 @@ TODO
   - [ ]  改造Read
   - [x] 关于空间
   - [ ] 解决报错./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq -o p.fq -t 4 -5
-  - [ ] 为啥运行空间稳定1g不变，
+  - [x] 为啥运行空间稳定1g不变，
   - [ ]  
 
 
@@ -431,7 +431,7 @@ initOutput()中声明了mLeftWriter，默认情况下就是new了1e7的数组，
 
 
 
-中间data的变化答题就是这样的，初步的思路是Read中不再有新的string，而是两个指针。
+中间data的变化大体就是这样的，初步的思路是Read中不再有新的string，而是两个指针。
 
 晚上找zz讨论了一下，他说这样有点激进，那就先把outstr去掉吧，还能剩下Read类：
 
@@ -511,5 +511,369 @@ HTML report: RabbitQC.html
 
 ./rabbit_qc -w 1 -i ../data/test.fq -o p.fq -U --umi_loc=read1 --umi_len=8 
 rabbit_qc v0.0.1, time used: 11.7879 seconds
+```
+
+
+
+
+
+#### 0327
+
+gkd gkd
+
+现在的版本：修改了mduplicate的bug，写线程还在原位置，加了check，如果没有指定-o，则不生成outstr等，指定了的话直接存指针，减少了一步内存拷贝。
+
+on Mac thread 1:
+
+```
+➜  RabbitQCPlus git:(ylf) ✗ ./rabbit_qc -w 1 -i ../data/test.fq
+8 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+mKeyLenInBase 12
+producer.join
+threads.join
+total getPreStats1()->statRead(or1) ====: 1.03896
+total mDuplicate->statRead(or1) ========: 0.61504
+total mOptions->indexFilter()  =========: 0.06373
+total mUmiProcessor->process(or1) ======: 0.06161
+total mFilter->trimAndCut() ============: 0.06570
+total PolyX::trimPolyG() ===============: 0.06161
+total trimBySequence ===================: 0.06265
+total r1->resize() =====================: 0.06206
+total mFilter->passFilter(r1) ==========: 0.10780
+total addFilterResult(result) ==========: 0.06479
+total outstr += r1->toString() =========: 0.06240
+total getPostStats1()->statRead(r1) ====: 0.98106
+total delete r1 ========================: 0.93583
+total ready output ========================: 0.00093
+total costTotel ========================: 4.18400
+total cost =============================: 5.02375
+total  =================================: 186
+total format =================================: 3.05091
+Read1 before filtering:
+total reads: 2000000
+total bases: 200000000
+Q20 bases: 196873669(98.4368%)
+Q30 bases: 192134023(96.067%)
+
+Read1 after filtering:
+total reads: 1979553
+total bases: 197955300
+Q20 bases: 196261878(99.1445%)
+Q30 bases: 191688154(96.8341%)
+
+Filtering result:
+reads passed filter: 1979553
+reads failed due to low quality: 20180
+reads failed due to too many N: 267
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.153535%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../data/test.fq
+rabbit_qc v0.0.1, time used: 9.28793 seconds
+
+
+➜  STD git:(STD) ✗ ./rabbit_qc -w 1 -i ../data/test.fq
+8 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+all thread created
+producer join
+consumers join
+writer join
+total getPreStats1()->statRead(or1) ====: 1.08322
+total mDuplicate->statRead(or1) ========: 1.70167
+total mOptions->indexFilter()  =========: 0.06277
+total mUmiProcessor->process(or1) ======: 0.06253
+total mFilter->trimAndCut() ============: 0.06567
+total PolyX::trimPolyG() ===============: 0.06253
+total trimBySequence ===================: 0.06258
+total r1->resize() =====================: 0.06189
+total mFilter->passFilter(r1) ==========: 0.13293
+total addFilterResult(result) ==========: 0.06650
+total outstr += r1->toString() =========: 1.22935
+total getPostStats1()->statRead(r1) ====: 0.91797
+total delete r1 ========================: 0.96272
+total ready output ========================: 0.00084
+total costTotel ========================: 6.47184
+total cost =============================: 7.34789
+total  =================================: 186
+total format =================================: 3.14067
+Read1 before filtering:
+total reads: 2000000
+total bases: 200000000
+Q20 bases: 196873669(98.4368%)
+Q30 bases: 192134023(96.067%)
+
+Read1 after filtering:
+total reads: 1979553
+total bases: 197955300
+Q20 bases: 196261878(99.1445%)
+Q30 bases: 191688154(96.8341%)
+
+Filtering result:
+reads passed filter: 1979553
+reads failed due to low quality: 20180
+reads failed due to too many N: 267
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.153535%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../data/test.fq
+rabbit_qc v0.0.1, time used: 11.7177 seconds
+
+
+
+
+➜  RabbitQCPlus git:(ylf) ✗ ./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq
+8 CPUs detected
+Detecting adapter sequence for read1...
+Illumina TruSeq Adapter Read 1: AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+
+mKeyLenInBase 12
+producer.join
+threads.join
+total getPreStats1()->statRead(or1) ====: 9.58512
+total mDuplicate->statRead(or1) ========: 1.89019
+total mOptions->indexFilter()  =========: 0.40946
+total mUmiProcessor->process(or1) ======: 0.39962
+total mFilter->trimAndCut() ============: 0.42816
+total PolyX::trimPolyG() ===============: 0.39962
+total trimBySequence ===================: 9.00838
+total r1->resize() =====================: 0.40214
+total mFilter->passFilter(r1) ==========: 0.71852
+total addFilterResult(result) ==========: 0.41392
+total outstr += r1->toString() =========: 0.40031
+total getPostStats1()->statRead(r1) ====: 6.21279
+total delete r1 ========================: 6.47128
+total ready output ========================: 0.00556
+total costTotel ========================: 36.74017
+total cost =============================: 42.22726
+total  =================================: 1124
+total format =================================: 18.93405
+Read1 before filtering:
+total reads: 12607412
+total bases: 1260741163
+Q20 bases: 1160816635(92.0741%)
+Q30 bases: 548113298(43.4755%)
+
+Read1 after filtering:
+total reads: 12375424
+total bases: 1229937278
+Q20 bases: 1146407885(93.2086%)
+Q30 bases: 543968479(44.2273%)
+
+Filtering result:
+reads passed filter: 12375424
+reads failed due to low quality: 228241
+reads failed due to too many N: 3687
+reads failed due to too short: 60
+reads with adapter trimmed: 481110
+bases trimmed due to adapters: 7646566
+
+Duplication rate (may be overestimated since this is SE data): 64.1312%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq
+rabbit_qc v0.0.1, time used: 62.2956 seconds
+
+
+➜  STD git:(STD) ✗ ./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq
+8 CPUs detected
+Detecting adapter sequence for read1...
+Illumina TruSeq Adapter Read 1: AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+
+all thread created
+producer join
+consumers join
+writer join
+total getPreStats1()->statRead(or1) ====: 10.66436
+total mDuplicate->statRead(or1) ========: 6.25781
+total mOptions->indexFilter()  =========: 0.42511
+total mUmiProcessor->process(or1) ======: 0.42186
+total mFilter->trimAndCut() ============: 0.44781
+total PolyX::trimPolyG() ===============: 0.42186
+total trimBySequence ===================: 10.28335
+total r1->resize() =====================: 0.41633
+total mFilter->passFilter(r1) ==========: 0.92623
+total addFilterResult(result) ==========: 0.44656
+total outstr += r1->toString() =========: 9.26387
+total getPostStats1()->statRead(r1) ====: 7.23739
+total delete r1 ========================: 6.78670
+total ready output ========================: 0.00575
+total costTotel ========================: 53.99258
+total cost =============================: 59.95749
+total  =================================: 1124
+total format =================================: 21.38945
+Read1 before filtering:
+total reads: 12607412
+total bases: 1260741163
+Q20 bases: 1160816627(92.0741%)
+Q30 bases: 548113277(43.4755%)
+
+Read1 after filtering:
+total reads: 12375423
+total bases: 1229937215
+Q20 bases: 1146407842(93.2086%)
+Q30 bases: 543968436(44.2273%)
+
+Filtering result:
+reads passed filter: 12375423
+reads failed due to low quality: 228242
+reads failed due to too many N: 3687
+reads failed due to too short: 60
+reads with adapter trimmed: 481110
+bases trimmed due to adapters: 7646566
+
+Duplication rate (may be overestimated since this is SE data): 64.1312%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq
+rabbit_qc v0.0.1, time used: 82.6602 seconds
+```
+
+
+
+on 6148 thread 1:
+
+```
+ylf@gold6148:~/QC/STD$ ./rm.sh && time ./rabbit_qc -w 1 -i ../../data/test.fq
+40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+all thread created
+producer join
+consumers join
+writer join
+total getPreStats1()->statRead(or1) ====: 0.98390
+total mDuplicate->statRead(or1) ========: 1.37794
+total mOptions->indexFilter()  =========: 0.04385
+total mUmiProcessor->process(or1) ======: 0.10784
+total mFilter->trimAndCut() ============: 0.05045
+total PolyX::trimPolyG() ===============: 0.10784
+total trimBySequence ===================: 0.04439
+total r1->resize() =====================: 0.04411
+total mFilter->passFilter(r1) ==========: 0.11005
+total addFilterResult(result) ==========: 0.04653
+total outstr += r1->toString() =========: 0.46217
+total getPostStats1()->statRead(r1) ====: 0.93202
+total delete r1 ========================: 0.23774
+total ready output ========================: 0.01627
+total costTotel ========================: 4.48514
+total cost =============================: 5.10614
+total  =================================: 186
+total format =================================: 1.43115
+Read1 before filtering:
+total reads: 2000000
+total bases: 200000000
+Q20 bases: 196873669(98.4368%)
+Q30 bases: 192134023(96.067%)
+
+Read1 after filtering:
+total reads: 1979553
+total bases: 197955300
+Q20 bases: 196261878(99.1445%)
+Q30 bases: 191688154(96.8341%)
+
+Filtering result:
+reads passed filter: 1979553
+reads failed due to low quality: 20180
+reads failed due to too many N: 267
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.153535%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/test.fq
+rabbit_qc v0.0.1, time used: 7.14761 seconds
+
+real	0m7.156s
+user	0m9.127s
+sys	0m0.482s
+
+ylf@gold6148:~/QC/RabbitQC$ ./rm.sh && time ./rabbit_qc -w 1 -i ../../data/test.fq
+40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+mKeyLenInBase 12
+producer.join
+threads.join
+total getPreStats1()->statRead(or1) ====: 0.94659
+total mDuplicate->statRead(or1) ========: 0.68595
+total mOptions->indexFilter()  =========: 0.04383
+total mUmiProcessor->process(or1) ======: 0.04287
+total mFilter->trimAndCut() ============: 0.04946
+total PolyX::trimPolyG() ===============: 0.04287
+total trimBySequence ===================: 0.04391
+total r1->resize() =====================: 0.04414
+total mFilter->passFilter(r1) ==========: 0.09220
+total addFilterResult(result) ==========: 0.04671
+total outstr += r1->toString() =========: 0.04407
+total getPostStats1()->statRead(r1) ====: 0.87878
+total delete r1 ========================: 0.19308
+total ready output ========================: 0.08632
+total costTotel ========================: 3.15576
+total cost =============================: 3.75207
+total  =================================: 186
+total format =================================: 1.46433
+Read1 before filtering:
+total reads: 2000000
+total bases: 200000000
+Q20 bases: 196873669(98.4368%)
+Q30 bases: 192134023(96.067%)
+
+Read1 after filtering:
+total reads: 1979553
+total bases: 197955300
+Q20 bases: 196261878(99.1445%)
+Q30 bases: 191688154(96.8341%)
+
+Filtering result:
+reads passed filter: 1979553
+reads failed due to low quality: 20180
+reads failed due to too many N: 267
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.153535%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/test.fq
+rabbit_qc v0.0.1, time used: 5.97684 seconds
+
+real	0m5.986s
+user	0m7.657s
+sys	0m0.716s
+
+
+
+
 ```
 

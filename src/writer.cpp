@@ -89,7 +89,7 @@ bool Writer::writeString(string& str){
 bool Writer::write(char* strdata, size_t size) {
 	size_t written;
 	bool status;
-	
+
 	if(mZipped){
 		written = gzwrite(mZipFile, strdata, size);
 		status = size == written;

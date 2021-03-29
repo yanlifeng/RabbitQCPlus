@@ -2,7 +2,9 @@ import hashlib
 
 p1 = "./"
 p2 = "../STD/"
-files = ["preStatsKmer", "postStatsKmer", "mDuplicateCount", "mDuplicateGC", "mDuplicateDups", "p.fq"]
+#files = ["preStatsKmer", "postStatsKmer", "mDuplicateCount", "mDuplicateGC", "mDuplicateDups", "p.fq"]
+
+files = ["preStatsKmer", "postStatsKmer", "mDuplicateCount", "mDuplicateGC", "mDuplicateDups"]
 
 for it in files:
 

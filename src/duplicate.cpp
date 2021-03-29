@@ -41,7 +41,7 @@ uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) 
 
 
 void Duplicate::addRecord(uint32 key, uint64 kmer32, uint8 gc) {
-//    lok.lock();
+    lok.lock();
 //    printf("thread %d is duplicating ...\n", this_thread::get_id());
     //TODO what if kmer1 == kmer2 but gc1 != gc2 (of cause key1 == key2)
     //even if set lock in this function, it is stall thread unsafe.
@@ -62,7 +62,7 @@ void Duplicate::addRecord(uint32 key, uint64 kmer32, uint8 gc) {
             mGC[key] = gc;
         }
     }
-//    lok.unlock();
+    lok.unlock();
 }
 
 void Duplicate::statRead(Read *r) {

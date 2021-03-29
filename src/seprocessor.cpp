@@ -96,11 +96,11 @@ bool SingleEndProcessor::process() {
     }
 
     producer.join();
-//    printf("producer.join\n");
+    printf("producer.join\n");
     for (int t = 0; t < mOptions->thread; t++) {
         threads[t]->join();
     }
-//    printf("threads.join\n");
+    printf("threads.join\n");
 
 
     //TODO right change this position?
@@ -112,7 +112,7 @@ bool SingleEndProcessor::process() {
     if (!mOptions->split.enabled) {
         if (leftWriterThread) {
             leftWriterThread->join();
-//            printf("leftWriterThread->join\n");
+            printf("leftWriterThread->join\n");
         }
     }
 
@@ -345,33 +345,28 @@ bool SingleEndProcessor::process() {
 
 bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) {
 
-    //debug for losing last line
-    //cerr << pack->data[pack->count - 1]->mName << endl;
-    //cerr << pack->data[pack->count - 1]->mQuality << endl;
-    //debug
+    int outTag = 0;
+    //TODO motify for stdout and split
+    if (mOptions->outputToSTDOUT) {
+        outTag = 1;
+    } else if (mOptions->split.enabled) {
+        outTag = 2;
+    } else {
+        if (mLeftWriter) {
+            outTag = 3;
+        } else {
+            outTag = 4;
+        }
+    }
+
     string outstr;
     int readPassed = 0;
-    //------------------my thinking---------------------------------
-    /*
-    if (mOptions -> thirdgene){
-      for(int p = 0; p < pack->data[p]; p++){
-        Read* or1 = pack->data[p];
-        config -> getTGStats() -> tgsStatRead(or1);
-      }
-    }
-    */
-    //1. add TGStats class in project
-    //2. add getTGStats function in ThreadConfig file;
-    //3. add TGStats menber variable in ThreadConfig class
-    //---------------------------------------------------
 #ifdef Timer
     config->totCnt += 1;
     double t0, t1;
     t0 = get_wall_time();
 #endif
-//    vector<NewRead> newOut;
     vector<Read *> newOut;
-//    random_shuffle(pack->data.begin(), pack->data.end());
     for (int p = 0; p < pack->count; p++) {
 
         // original read1
@@ -497,12 +492,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 #ifdef Timer
             t1 = get_wall_time();
 #endif
-//            printf("push %d\n", p);
-            newOut.push_back(r1);
-//            newOut.push_back(
-//                    NewRead{r1->mName.c_str(), r1->mSeq.mStr.c_str(), r1->mStrand.c_str(), r1->mQuality.c_str(),
-//                            r1->mName.length(), r1->mSeq.mStr.length(), r1->mStrand.length(), r1->mQuality.length()});
-//            outstr += r1->toString();
+            if (outTag <= 2) outstr += r1->toString();
+            else if (outTag == 3)newOut.push_back(r1);
 #ifdef Timer
             config->cost11 += get_wall_time() - t1;
             // stats the read after filtering
@@ -519,10 +510,12 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         t1 = get_wall_time();
 #endif
         //         if no trimming applied, r1 should be identical to or1
+        if (outTag <= 2 || outTag == 4) {
+            delete or1;
+            if (r1 != or1 && r1 != NULL)
+                delete r1;
+        }
 
-//        delete or1;
-//        if (r1 != or1 && r1 != NULL)
-//            delete r1;
 #ifdef Timer
         config->cost13 += get_wall_time() - t1;
 #endif
@@ -545,19 +538,11 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         }
     } else {
         if (mLeftWriter) {
-//            printf("mLeftWriter\n");
-
-//            char *ldata = new char[outstr.size()];
-//            memcpy(ldata, outstr.c_str(), outstr.size());
-//            mLeftWriter->input(ldata, outstr.size());
-
-//
             unsigned long totSize = 0;
             for (int i = 0; i < newOut.size(); i++) {
                 Read *now = newOut[i];
                 totSize += now->mName.size() + now->mSeq.mStr.size() + now->mStrand.size() + now->mQuality.size() + 4;
             }
-//            printf("%ld\n", totSize);
             char *ldata = new char[totSize];
             char *nowPos = ldata;
             for (int i = 0; i < newOut.size(); i++) {
