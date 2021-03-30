@@ -282,7 +282,6 @@ inline void error_exit(const string &msg) {
 
 extern mutex logmtx;
 
-static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
 
 inline void loginfo(const string s) {
     logmtx.lock();

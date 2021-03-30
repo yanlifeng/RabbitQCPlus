@@ -1,1 +1,1 @@
-rm -rf mDuplicateCount mDuplicateDups mDuplicateGC preStatsKmer postStatsKmer p.fq
+rm -rf mDuplicateCount mDuplicateDups mDuplicateGC preStatsKmer postStatsKmer preStatsTotalBase preStatsTotalQual postStatsTotalBase postStatsTotalQual p.fq

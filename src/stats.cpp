@@ -37,18 +37,33 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
         mQ30Bases[i] = 0;
         mBaseContents[i] = 0;
 
-        mCycleQ30Bases[i] = new long[mBufLen];
-        memset(mCycleQ30Bases[i], 0, sizeof(long) * mBufLen);
-
-        mCycleQ20Bases[i] = new long[mBufLen];
-        memset(mCycleQ20Bases[i], 0, sizeof(long) * mBufLen);
-
-        mCycleBaseContents[i] = new long[mBufLen];
-        memset(mCycleBaseContents[i], 0, sizeof(long) * mBufLen);
-
-        mCycleBaseQual[i] = new long[mBufLen];
-        memset(mCycleBaseQual[i], 0, sizeof(long) * mBufLen);
+//        mCycleQ30Bases[i] = new long[mBufLen];
+//        memset(mCycleQ30Bases[i], 0, sizeof(long) * mBufLen);
+//
+//        mCycleQ20Bases[i] = new long[mBufLen];
+//        memset(mCycleQ20Bases[i], 0, sizeof(long) * mBufLen);
+//
+//        mCycleBaseContents[i] = new long[mBufLen];
+//        memset(mCycleBaseContents[i], 0, sizeof(long) * mBufLen);
+//
+//        mCycleBaseQual[i] = new long[mBufLen];
+//        memset(mCycleBaseQual[i], 0, sizeof(long) * mBufLen);
     }
+
+
+    mCycleQ30BasesR = new long[mBufLen * 8];
+    memset(mCycleQ30BasesR, 0, sizeof(long) * mBufLen * 8);
+
+    mCycleQ20BasesR = new long[mBufLen * 8];
+    memset(mCycleQ20BasesR, 0, sizeof(long) * mBufLen * 8);
+
+    mCycleBaseContentsR = new long[mBufLen * 8];
+    memset(mCycleBaseContentsR, 0, sizeof(long) * mBufLen * 8);
+
+    mCycleBaseQualR = new long[mBufLen * 8];
+    memset(mCycleBaseQualR, 0, sizeof(long) * mBufLen * 8);
+
+
     mCycleTotalBase = new long[mBufLen];
     memset(mCycleTotalBase, 0, sizeof(long) * mBufLen);
 
@@ -69,37 +84,65 @@ void Stats::extendBuffer(int newBufLen) {
 
 
     long *newBuf = NULL;
+//
+//    for (int i = 0; i < 8; i++) {
+//        newBuf = new long[newBufLen];
+//        memset(newBuf, 0, sizeof(long) * newBufLen);
+//        memcpy(newBuf, mCycleQ30Bases[i], sizeof(long) * mBufLen);
+//        delete mCycleQ30Bases[i];
+//        mCycleQ30Bases[i] = newBuf;
+//
+//        newBuf = new long[newBufLen];
+//        memset(newBuf, 0, sizeof(long) * newBufLen);
+//        memcpy(newBuf, mCycleQ20Bases[i], sizeof(long) * mBufLen);
+//        delete mCycleQ20Bases[i];
+//        mCycleQ20Bases[i] = newBuf;
+//
+//        newBuf = new long[newBufLen];
+//        memset(newBuf, 0, sizeof(long) * newBufLen);
+//        memcpy(newBuf, mCycleBaseContents[i], sizeof(long) * mBufLen);
+//        delete mCycleBaseContents[i];
+//        mCycleBaseContents[i] = newBuf;
+//
+//        newBuf = new long[newBufLen];
+//        memset(newBuf, 0, sizeof(long) * newBufLen);
+//        memcpy(newBuf, mCycleBaseQual[i], sizeof(long) * mBufLen);
+//        delete mCycleBaseQual[i];
+//        mCycleBaseQual[i] = newBuf;
+//    }
 
-    for (int i = 0; i < 8; i++) {
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long) * newBufLen);
-        memcpy(newBuf, mCycleQ30Bases[i], sizeof(long) * mBufLen);
-        delete mCycleQ30Bases[i];
-        mCycleQ30Bases[i] = newBuf;
 
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long) * newBufLen);
-        memcpy(newBuf, mCycleQ20Bases[i], sizeof(long) * mBufLen);
-        delete mCycleQ20Bases[i];
-        mCycleQ20Bases[i] = newBuf;
+    newBuf = new long[newBufLen * 8];
+    memset(newBuf, 0, sizeof(long) * newBufLen * 8);
+    memcpy(newBuf, mCycleQ30BasesR, sizeof(long) * mBufLen * 8);
+    delete mCycleQ30BasesR;
+    mCycleQ30BasesR = newBuf;
 
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long) * newBufLen);
-        memcpy(newBuf, mCycleBaseContents[i], sizeof(long) * mBufLen);
-        delete mCycleBaseContents[i];
-        mCycleBaseContents[i] = newBuf;
 
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long) * newBufLen);
-        memcpy(newBuf, mCycleBaseQual[i], sizeof(long) * mBufLen);
-        delete mCycleBaseQual[i];
-        mCycleBaseQual[i] = newBuf;
-    }
+    newBuf = new long[newBufLen * 8];
+    memset(newBuf, 0, sizeof(long) * newBufLen * 8);
+    memcpy(newBuf, mCycleQ20BasesR, sizeof(long) * mBufLen * 8);
+    delete mCycleQ20BasesR;
+    mCycleQ20BasesR = newBuf;
+
+    newBuf = new long[newBufLen * 8];
+    memset(newBuf, 0, sizeof(long) * newBufLen * 8);
+    memcpy(newBuf, mCycleBaseContentsR, sizeof(long) * mBufLen * 8);
+    delete mCycleBaseContentsR;
+    mCycleBaseContentsR = newBuf;
+
+    newBuf = new long[newBufLen * 8];
+    memset(newBuf, 0, sizeof(long) * newBufLen * 8);
+    memcpy(newBuf, mCycleBaseQualR, sizeof(long) * mBufLen * 8);
+    delete mCycleBaseQualR;
+    mCycleBaseQualR = newBuf;
+
     newBuf = new long[newBufLen];
     memset(newBuf, 0, sizeof(long) * newBufLen);
     memcpy(newBuf, mCycleTotalBase, sizeof(long) * mBufLen);
     delete mCycleTotalBase;
     mCycleTotalBase = newBuf;
+
 
     newBuf = new long[newBufLen];
     memset(newBuf, 0, sizeof(long) * newBufLen);
@@ -111,22 +154,32 @@ void Stats::extendBuffer(int newBufLen) {
 }
 
 Stats::~Stats() {
-    for (int i = 0; i < 8; i++) {
-        delete mCycleQ30Bases[i];
-        mCycleQ30Bases[i] = NULL;
+//    for (int i = 0; i < 8; i++) {
+//        delete mCycleQ30Bases[i];
+//        mCycleQ30Bases[i] = NULL;
+//
+//        delete mCycleQ20Bases[i];
+//        mCycleQ20Bases[i] = NULL;
+//
+//        delete mCycleBaseContents[i];
+//        mCycleBaseContents[i] = NULL;
+//
+//        delete mCycleBaseQual[i];
+//        mCycleBaseQual[i] = NULL;
+//    }
 
-        delete mCycleQ20Bases[i];
-        mCycleQ20Bases[i] = NULL;
-
-        delete mCycleBaseContents[i];
-        mCycleBaseContents[i] = NULL;
-
-        delete mCycleBaseQual[i];
-        mCycleBaseQual[i] = NULL;
-    }
+    delete mCycleQ30BasesR;
+    mCycleQ30BasesR = NULL;
+    delete mCycleQ20BasesR;
+    mCycleQ20BasesR = NULL;
+    delete mCycleBaseContentsR;
+    mCycleBaseContentsR = NULL;
+    delete mCycleBaseQualR;
+    mCycleBaseQualR = NULL;
 
     delete mCycleTotalBase;
     delete mCycleTotalQual;
+
 
     // delete memory of curves
     map<string, double *>::iterator iter;
@@ -157,16 +210,28 @@ void Stats::summarize(bool forced) {
         mCycles = mBufLen;
 
     // Q20, Q30, base content
-    for (int i = 0; i < 8; i++) {
-        for (int c = 0; c < mCycles; c++) {
-            mQ20Bases[i] += mCycleQ20Bases[i][c];
-            mQ30Bases[i] += mCycleQ30Bases[i][c];
-            mBaseContents[i] += mCycleBaseContents[i][c];
+//    for (int i = 0; i < 8; i++) {
+//        for (int c = 0; c < mCycles; c++) {
+//            mQ20Bases[i] += mCycleQ20Bases[i][c];
+//            mQ30Bases[i] += mCycleQ30Bases[i][c];
+//            mBaseContents[i] += mCycleBaseContents[i][c];
+//        }
+//        mQ20Total += mQ20Bases[i];
+//        mQ30Total += mQ30Bases[i];
+//    }
+
+    for (int c = 0; c < mCycles; c++) {
+        for (int i = 0; i < 8; i++) {
+            mQ20Bases[i] += mCycleQ20BasesR[c * 8 + i];
+            mQ30Bases[i] += mCycleQ30BasesR[c * 8 + i];
+            mBaseContents[i] += mCycleBaseContentsR[c * 8 + i];
         }
+    }
+
+    for (int i = 0; i < 8; i++) {
         mQ20Total += mQ20Bases[i];
         mQ30Total += mQ30Bases[i];
     }
-
 
     // quality curve for mean qual
     double *meanQualCurve = new double[mCycles];
@@ -187,11 +252,16 @@ void Stats::summarize(bool forced) {
         double *contentCurve = new double[mCycles];
         memset(contentCurve, 0, sizeof(double) * mCycles);
         for (int c = 0; c < mCycles; c++) {
-            if (mCycleBaseContents[b][c] == 0)
+//            if (mCycleBaseContents[b][c] == 0)
+//                qualCurve[c] = meanQualCurve[c];
+//            else
+//                qualCurve[c] = (double) mCycleBaseQual[b][c] / (double) mCycleBaseContents[b][c];
+//            contentCurve[c] = (double) mCycleBaseContents[b][c] / (double) mCycleTotalBase[c];
+            if (mCycleBaseContentsR[c * 8 + b] == 0)
                 qualCurve[c] = meanQualCurve[c];
             else
-                qualCurve[c] = (double) mCycleBaseQual[b][c] / (double) mCycleBaseContents[b][c];
-            contentCurve[c] = (double) mCycleBaseContents[b][c] / (double) mCycleTotalBase[c];
+                qualCurve[c] = (double) mCycleBaseQualR[c * 8 + b] / (double) mCycleBaseContentsR[c * 8 + b];
+            contentCurve[c] = (double) mCycleBaseContentsR[c * 8 + b] / (double) mCycleTotalBase[c];
         }
         mQualityCurves[string(1, base)] = qualCurve;
         mContentCurves[string(1, base)] = contentCurve;
@@ -203,8 +273,11 @@ void Stats::summarize(bool forced) {
     char gBase = 'G' & 0x07;
     char cBase = 'C' & 0x07;
     for (int c = 0; c < mCycles; c++) {
+//        gcContentCurve[c] =
+//                (double) (mCycleBaseContents[gBase][c] + mCycleBaseContents[cBase][c]) / (double) mCycleTotalBase[c];
         gcContentCurve[c] =
-                (double) (mCycleBaseContents[gBase][c] + mCycleBaseContents[cBase][c]) / (double) mCycleTotalBase[c];
+                (double) (mCycleBaseContentsR[c * 8 + gBase] + mCycleBaseContentsR[c * 8 + cBase]) /
+                (double) mCycleTotalBase[c];
     }
     mContentCurves["GC"] = gcContentCurve;
 
@@ -227,6 +300,7 @@ int Stats::getMeanLength() {
         return mLengthSum / mReads;
 }
 
+static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
 
 void Stats::statRead(Read *r) {
     int len = r->length();
@@ -243,28 +317,58 @@ void Stats::statRead(Read *r) {
     const char q30 = '?';
     int flag = 4;
     for (int i = 0; i < len; i++) {
-        char base = seqstr[i];
-        char qual = qualstr[i];
-        // get last 3 bits
-        char b = base & 0x07;
-        if (qual >= q30) {
-            mCycleQ30Bases[b][i]++;
-            mCycleQ20Bases[b][i]++;
-        } else if (qual >= q20) {
-            mCycleQ20Bases[b][i]++;
-        }
-
-        mCycleBaseContents[b][i]++;
-        mCycleBaseQual[b][i] += (qual - 33);
-
         mCycleTotalBase[i]++;
-        mCycleTotalQual[i] += (qual - 33);
-        if (base == 'N')flag = 5;
-        int val = valAGCT[base & 0x07];
+        mCycleTotalQual[i] += (qualstr[i] - 33);
+    }
+//TODO !!!
+    for (int i = 0; i < len; i++) {
+        char b = seqstr[i] & 0x07;
+        mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
+        mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
+        mCycleBaseContentsR[i * 8 + b]++;
+        mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
+        if (seqstr[i] == 'N')flag = 5;
+        int val = valAGCT[seqstr[i] & 0x07];
         kmer = ((kmer << 2) & 0x3FC) | val;
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
+//    int i = 0;
+//    for (; i + 8 <= len; i += 8) {
+//
+//        for (int j = i; j < i + 8; j++) {
+//            char b = seqstr[j] & 0x07;
+//            mCycleQ30BasesR[j * 8 + b] += qualstr[j] >= q30;
+//            mCycleQ20BasesR[j * 8 + b] += qualstr[j] >= q20;
+//            mCycleBaseContentsR[j * 8 + b]++;
+//            mCycleBaseQualR[j * 8 + b] += (qualstr[j] - 33);
+//            mCycleTotalBase[j]++;
+//            mCycleTotalQual[j] += (qualstr[j] - 33);
+//        }
+//        for (int j = i; j < i + 8; j++) {
+//            if (seqstr[j] == 'N')flag = 5;
+//            int val = valAGCT[seqstr[j] & 0x07];
+//            kmer = ((kmer << 2) & 0x3FC) | val;
+//            if (flag <= 0)mKmer[kmer]++;
+//            flag--;
+//        }
+//    }
+//    for (; i < len; i++) {
+//        char b = seqstr[i] & 0x07;
+//        mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
+//        mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
+//        mCycleBaseContentsR[i * 8 + b]++;
+//        mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
+//        mCycleTotalBase[i]++;
+//        mCycleTotalQual[i] += (qualstr[i] - 33);
+//
+//        if (seqstr[i] == 'N')flag = 5;
+//        int val = valAGCT[seqstr[i] & 0x07];
+//        kmer = ((kmer << 2) & 0x3FC) | val;
+//        if (flag <= 0)mKmer[kmer]++;
+//        flag--;
+//
+//    }
     // do overrepresentation analysis for 1 of every 100 reads
     if (mOptions->overRepAnalysis.enabled) {
         if (mReads % mOptions->overRepAnalysis.sampling == 0) {
@@ -994,12 +1098,22 @@ Stats *Stats::merge(vector<Stats *> &list) {
         s->mLengthSum += list[t]->mLengthSum;
 
         // merge per cycle counting for different bases
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < cycles && j < curCycles; j++) {
-                s->mCycleQ30Bases[i][j] += list[t]->mCycleQ30Bases[i][j];
-                s->mCycleQ20Bases[i][j] += list[t]->mCycleQ20Bases[i][j];
-                s->mCycleBaseContents[i][j] += list[t]->mCycleBaseContents[i][j];
-                s->mCycleBaseQual[i][j] += list[t]->mCycleBaseQual[i][j];
+//        for (int i = 0; i < 8; i++) {
+//            for (int j = 0; j < cycles && j < curCycles; j++) {
+//                s->mCycleQ30Bases[i][j] += list[t]->mCycleQ30Bases[i][j];
+//                s->mCycleQ20Bases[i][j] += list[t]->mCycleQ20Bases[i][j];
+//                s->mCycleBaseContents[i][j] += list[t]->mCycleBaseContents[i][j];
+//                s->mCycleBaseQual[i][j] += list[t]->mCycleBaseQual[i][j];
+//            }
+//        }
+
+
+        for (int j = 0; j < cycles && j < curCycles; j++) {
+            for (int i = 0; i < 8; i++) {
+                s->mCycleQ30BasesR[j * 8 + i] += list[t]->mCycleQ30BasesR[j * 8 + i];
+                s->mCycleQ20BasesR[j * 8 + i] += list[t]->mCycleQ20BasesR[j * 8 + i];
+                s->mCycleBaseContentsR[j * 8 + i] = list[t]->mCycleBaseContentsR[j * 8 + i];
+                s->mCycleBaseQualR[j * 8 + i] += list[t]->mCycleBaseQualR[j * 8 + i];
             }
         }
 

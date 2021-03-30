@@ -24,6 +24,34 @@ Duplicate::~Duplicate() {
 }
 
 
+//uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) {
+//    uint64 ret = 0;
+//    for (int i = 0; i < keylen; i++) {
+//        switch (data[start + i]) {
+//            case 'A':
+//                ret += 0;
+//                break;
+//            case 'T':
+//                ret += 1;
+//                break;
+//            case 'C':
+//                ret += 2;
+//                break;
+//            case 'G':
+//                ret += 3;
+//                break;
+//            default:
+//                valid = false;
+//                return 0;
+//        }
+//        // if it's not the last one, shift it by 2 bits
+//        if (i != keylen - 1)
+//            ret <<= 2;
+//    }
+//    return ret;
+//}
+
+static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
 uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) {
     uint64 ret = 0;
     for (int i = 0; i < keylen; i++) {
@@ -41,7 +69,7 @@ uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) 
 
 
 void Duplicate::addRecord(uint32 key, uint64 kmer32, uint8 gc) {
-    lok.lock();
+//    lok.lock();
 //    printf("thread %d is duplicating ...\n", this_thread::get_id());
     //TODO what if kmer1 == kmer2 but gc1 != gc2 (of cause key1 == key2)
     //even if set lock in this function, it is stall thread unsafe.
@@ -62,7 +90,7 @@ void Duplicate::addRecord(uint32 key, uint64 kmer32, uint8 gc) {
             mGC[key] = gc;
         }
     }
-    lok.unlock();
+//    lok.unlock();
 }
 
 void Duplicate::statRead(Read *r) {

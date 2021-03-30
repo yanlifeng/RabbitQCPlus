@@ -523,6 +523,8 @@ gkd gkd
 
 现在的版本：修改了mduplicate的bug，写线程还在原位置，加了check，如果没有指定-o，则不生成outstr等，指定了的话直接存指针，减少了一步内存拷贝。
 
+#### 0329
+
 on Mac thread 1:
 
 ```
@@ -874,6 +876,255 @@ sys	0m0.716s
 
 
 
+ylf@gold6148:~/QC/STD$ ./rm.sh && time ./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+all thread created
+producer join
+consumers join
+writer join
+total getPreStats1()->statRead(or1) ====: 13.42695
+total mDuplicate->statRead(or1) ========: 19.12346
+total mOptions->indexFilter()  =========: 0.60050
+total mUmiProcessor->process(or1) ======: 1.07507
+total mFilter->trimAndCut() ============: 0.71319
+total PolyX::trimPolyG() ===============: 1.07507
+total trimBySequence ===================: 0.60844
+total r1->resize() =====================: 0.60799
+total mFilter->passFilter(r1) ==========: 1.54834
+total addFilterResult(result) ==========: 0.63633
+total outstr += r1->toString() =========: 6.30583
+total getPostStats1()->statRead(r1) ====: 12.78121
+total delete r1 ========================: 3.28333
+total ready output ========================: 0.21955
+total costTotel ========================: 61.32007
+total cost =============================: 69.85758
+total  =================================: 2552
+total format =================================: 18.90963
+Read1 before filtering:
+total reads: 27497479
+total bases: 2749747900
+Q20 bases: 2707938680(98.4795%)
+Q30 bases: 2645554729(96.2108%)
+
+Read1 after filtering:
+total reads: 27219050
+total bases: 2721905000
+Q20 bases: 2699552056(99.1788%)
+Q30 bases: 2639324248(96.9661%)
+
+Filtering result:
+reads passed filter: 27219050
+reads failed due to low quality: 274717
+reads failed due to too many N: 3712
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.159583%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+rabbit_qc v0.0.1, time used: 89.6717 seconds
+
+real	1m29.680s
+user	1m31.963s
+sys	0m3.520s
+
+
+ylf@gold6148:~/QC/RabbitQC$ ./rm.sh && time ./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq 40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+mKeyLenInBase 12
+producer.join
+threads.join
+total getPreStats1()->statRead(or1) ====: 12.76642
+total mDuplicate->statRead(or1) ========: 6.90075
+total mOptions->indexFilter()  =========: 0.59985
+total mUmiProcessor->process(or1) ======: 0.59829
+total mFilter->trimAndCut() ============: 0.74826
+total PolyX::trimPolyG() ===============: 0.59829
+total trimBySequence ===================: 0.60584
+total r1->resize() =====================: 0.60534
+total mFilter->passFilter(r1) ==========: 1.26489
+total addFilterResult(result) ==========: 0.61683
+total outstr += r1->toString() =========: 0.60175
+total getPostStats1()->statRead(r1) ====: 12.22309
+total delete r1 ========================: 2.64687
+total ready output ========================: 1.03176
+total costTotel ========================: 40.78560
+total cost =============================: 48.94914
+total  =================================: 2552
+total format =================================: 17.36762
+
+Read1 before filtering:
+total reads: 27497479
+total bases: 2749747900
+Q20 bases: 2707938680(98.4795%)
+Q30 bases: 2645554729(96.2108%)
+
+Read1 after filtering:
+total reads: 27219050
+total bases: 2721905000
+Q20 bases: 2699552056(99.1788%)
+Q30 bases: 2639324248(96.9661%)
+
+Filtering result:
+reads passed filter: 27219050
+reads failed due to low quality: 274717
+reads failed due to too many N: 3712
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.159583%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+rabbit_qc v0.0.1, time used: 67.9869 seconds
+
+real	1m7.997s
+user	1m10.412s
+sys	0m3.542s
+
+
+
+ylf@gold6148:~/QC/STD$ ./rm.sh && time ./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq -o p.fq
+40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+all thread created
+producer join
+consumers join
+writer join
+total getPreStats1()->statRead(or1) ====: 13.40239
+total mDuplicate->statRead(or1) ========: 19.18981
+total mOptions->indexFilter()  =========: 0.60235
+total mUmiProcessor->process(or1) ======: 1.09326
+total mFilter->trimAndCut() ============: 0.67057
+total PolyX::trimPolyG() ===============: 1.09326
+total trimBySequence ===================: 0.60988
+total r1->resize() =====================: 0.60936
+total mFilter->passFilter(r1) ==========: 1.52353
+total addFilterResult(result) ==========: 0.64401
+total outstr += r1->toString() =========: 6.78953
+total getPostStats1()->statRead(r1) ====: 13.11158
+total delete r1 ========================: 3.33387
+total ready output ========================: 1.02309
+total costTotel ========================: 62.18672
+total cost =============================: 70.72930
+total  =================================: 2552
+total format =================================: 19.04990
+Read1 before filtering:
+total reads: 27497479
+total bases: 2749747900
+Q20 bases: 2707938680(98.4795%)
+Q30 bases: 2645554729(96.2108%)
+
+Read1 after filtering:
+total reads: 27219050
+total bases: 2721905000
+Q20 bases: 2699552056(99.1788%)
+Q30 bases: 2639324248(96.9661%)
+
+Filtering result:
+reads passed filter: 27219050
+reads failed due to low quality: 274717
+reads failed due to too many N: 3712
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.159583%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq -o p.fq
+rabbit_qc v0.0.1, time used: 91.4922 seconds
+
+real	1m31.504s
+user	1m34.372s
+sys	0m8.842s
+
+
+ylf@gold6148:~/QC/RabbitQC$ ./rm.sh && time ./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq  -o p.fq
+40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+mKeyLenInBase 12
+producer.join
+threads.join
+leftWriterThread->join
+total getPreStats1()->statRead(or1) ====: 13.27610
+total mDuplicate->statRead(or1) ========: 5.24192
+total mOptions->indexFilter()  =========: 0.60064
+total mUmiProcessor->process(or1) ======: 1.14907
+total mFilter->trimAndCut() ============: 0.72638
+total PolyX::trimPolyG() ===============: 1.14907
+total trimBySequence ===================: 0.60698
+total r1->resize() =====================: 0.60780
+total mFilter->passFilter(r1) ==========: 1.30622
+total addFilterResult(result) ==========: 0.62687
+total outstr += r1->toString() =========: 0.64608
+total getPostStats1()->statRead(r1) ====: 12.08483
+total delete r1 ========================: 0.60040
+total ready output ========================: 6.29991
+total costTotel ========================: 38.08050
+total cost =============================: 46.26352
+total  =================================: 2552
+total format =================================: 19.72727
+Read1 before filtering:
+total reads: 27497479
+total bases: 2749747900
+Q20 bases: 2707938680(98.4795%)
+Q30 bases: 2645554729(96.2108%)
+
+Read1 after filtering:
+total reads: 27219050
+total bases: 2721905000
+Q20 bases: 2699552056(99.1788%)
+Q30 bases: 2639324248(96.9661%)
+
+Filtering result:
+reads passed filter: 27219050
+reads failed due to low quality: 274717
+reads failed due to too many N: 3712
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.159583%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq -o p.fq
+rabbit_qc v0.0.1, time used: 72.9528 seconds
+
+real	1m12.968s
+user	1m15.486s
+sys	0m8.658s
+```
+
+下面研究优化state：
+
+首先比较容易想到的是对统计信息的for循环做向量化，但是由于访存的不规律，不太好弄。暂时先把原来的[base] [pos]换成[pos] [base]提高cache的命中率，并且方便后面的向量化：
+
+emmmm没啥用啊，如果把12维调换，然后8个8个的来处理，看汇编发现并没有自动向量化，毕竟内存中本来就不连续，-Ofast什么的只是把循环展开了，关于cache命中率可能也没啥用。
+
+现在的版本把12维调换了（暂时没什么用，可以先保留着），然后把一维的两个变量摘出来做自动向量化。
+
+```
 
 ```
 

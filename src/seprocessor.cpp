@@ -142,58 +142,15 @@ bool SingleEndProcessor::process() {
 //    }
     fstream out;
 
-    fstream in1, in2, in3;
     string outFileName1 = "preStatsKmer";
     string outFileName2 = "postStatsKmer";
     string outFileName3 = "mDuplicateCount";
     string outFileName4 = "mDuplicateGC";
     string outFileName5 = "mDuplicateDups";
-
-//
-//    string checkGC = "../STD/mDuplicateGC";
-//    string checkKmer = "../STD/mDuplicateDups";
-//    string checkCnt = "../STD/mDuplicateCount";
-//    // Read sampling file
-//    uint8 *tempGC = new uint8[mDuplicate->mKeyLenInBit];
-//    uint64 *tempKmer = new uint64[mDuplicate->mKeyLenInBit];
-//    uint16 *tempCnt = new uint16[mDuplicate->mKeyLenInBit];
-//    in1.open(checkGC, ios::in | ios::binary);
-//    if (!in1) {
-//        printf("Can't open file \"%s\"\n", checkGC.c_str());
-//    } else {
-//        in1.seekg(0, ios::beg);
-//        in1.read(reinterpret_cast<char *>(tempGC), mDuplicate->mKeyLenInBit * sizeof(uint8));
-//    }
-//    in1.close();
-//    in2.open(checkKmer, ios::in | ios::binary);
-//    if (!in2) {
-//        printf("Can't open file \"%s\"\n", checkKmer.c_str());
-//    } else {
-//        in2.seekg(0, ios::beg);
-//        in2.read(reinterpret_cast<char *>(tempKmer), mDuplicate->mKeyLenInBit * sizeof(uint64));
-//    }
-//    in2.close();
-//    in3.open(checkCnt, ios::in | ios::binary);
-//    if (!in3) {
-//        printf("Can't open file \"%s\"\n", checkCnt.c_str());
-//    } else {
-//        in3.seekg(0, ios::beg);
-//        in3.read(reinterpret_cast<char *>(tempCnt), mDuplicate->mKeyLenInBit * sizeof(uint16));
-//    }
-//    in3.close();
-//    printf("=================================================\n");
-//    for (int i = 0; i < mDuplicate->mKeyLenInBit; i++) {
-//        assert(tempCnt[i] == mDuplicate->mCounts[i]);
-//        assert(tempKmer[i] == mDuplicate->mDups[i]);
-//
-////        for (int i = 0; i < 10000; i++) {
-//        if (tempGC[i] != mDuplicate->mGC[i]) {
-//            printf("GG on test %d  STD : %ld %d %d  Now : %ld %d %d\n", i, tempKmer[i], (int) tempGC[i], (int)
-//                    tempCnt[i], mDuplicate->mDups[i], (int) mDuplicate->mGC[i], (int) mDuplicate->mCounts[i]);
-//        }
-////            printf("%ld\n", temp[i]);
-//    }
-//    printf("=================================================\n");
+    string outFileName6 = "preStatsTotalBase";
+    string outFileName7 = "preStatsTotalQual";
+    string outFileName8 = "postStatsTotalBase";
+    string outFileName9 = "postStatsTotalQual";
 
     out.open(outFileName1.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
@@ -219,6 +176,28 @@ bool SingleEndProcessor::process() {
     out.seekp(0, ios::beg);
     out.write(reinterpret_cast<char *>(mDuplicate->mDups), mDuplicate->mKeyLenInBit * sizeof(uint64));
     out.close();
+
+    out.open(outFileName6.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalBase), finalPreStats->mBufLen * sizeof(long));
+    out.close();
+
+    out.open(outFileName7.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalQual), finalPreStats->mBufLen * sizeof(long));
+    out.close();
+
+    out.open(outFileName8.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalBase), finalPostStats->mBufLen * sizeof(long));
+    out.close();
+
+    out.open(outFileName9.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalQual), finalPostStats->mBufLen * sizeof(long));
+    out.close();
+
+
 #ifdef Timer
     double cost = 0;
     double cost1 = 0;
