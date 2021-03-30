@@ -39,26 +39,44 @@ SOFTWARE.
 #include <vector>
 
 #include "Fastq.h"
+
 using namespace std;
 
-class Read{
+class Read {
 public:
-	Read(string name, string seq, string strand, string quality, bool phred64=false);
-    Read(string name, Sequence seq, string strand, string quality, bool phred64=false);
-	Read(string name, string seq, string strand);
+    Read(string name, string seq, string strand, string quality, bool phred64 = false);
+
+    Read(string name, Sequence seq, string strand, string quality, bool phred64 = false);
+
+    Read(string name, string seq, string strand);
+
     Read(string name, Sequence seq, string strand);
+
+    Read(bool phred64 = false);
+
     Read(Read &r);
-	void print();
-    void printFile(ofstream& file);
-    Read* reverseComplement();
+
+    void print();
+
+    void printFile(ofstream &file);
+
+    Read *reverseComplement();
+
     string firstIndex();
+
     string lastIndex();
+
     // default is Q20
-    int lowQualCount(int qual=20);
+    int lowQualCount(int qual = 20);
+
     int length();
+
     string toString();
+
     void resize(int len);
+
     void convertPhred64To33();
+
     void trimFront(int len);
 
 public:
@@ -68,56 +86,58 @@ private:
 
 
 public:
-	string mName;
-	Sequence mSeq;
-	string mStrand;
-	string mQuality;
-	bool mHasQuality;
+    string mName;
+    Sequence mSeq;
+    string mStrand;
+    string mQuality;
+    bool mHasQuality;
 };
 
-class ReadPair{
+class ReadPair {
 public:
-    ReadPair(Read* left, Read* right);
+    ReadPair(Read *left, Read *right);
+
     ~ReadPair();
 
     // merge a pair, without consideration of seq error caused false INDEL
-    Read* fastMerge();
+    Read *fastMerge();
+
 public:
-    Read* mLeft;
-    Read* mRight;
+    Read *mLeft;
+    Read *mRight;
 
 public:
     static bool test();
 };
 
 //add by yzk for fast I/O
-struct Record{
-	char *mName;
-	char *mSeq;
-	char *mStrand;
-	char *mQuality;
-	bool mHasQuality;
-	int nameLen;
-	int seqLen;
-	int strandLen;
-	int qLen;
+struct Record {
+    char *mName;
+    char *mSeq;
+    char *mStrand;
+    char *mQuality;
+    bool mHasQuality;
+    int nameLen;
+    int seqLen;
+    int strandLen;
+    int qLen;
 
 //offset for each line
-	int nameOff;
-	int seqOff;
-	int strandOff;
-	int qualityOff;
+    int nameOff;
+    int seqOff;
+    int strandOff;
+    int qualityOff;
 };
 
-struct Chunk{
-	char *data;
-	Record *records;
-	int count;
+struct Chunk {
+    char *data;
+    Record *records;
+    int count;
 };
 
-struct ChunkPair{
-	dsrc::fq::FastqDataChunk* leftpart;
-	dsrc::fq::FastqDataChunk* rightpart;
+struct ChunkPair {
+    dsrc::fq::FastqDataChunk *leftpart;
+    dsrc::fq::FastqDataChunk *rightpart;
 };
 
 #endif

@@ -2,6 +2,11 @@
 #include <sstream>
 #include "util.h"
 
+
+Read::Read(bool phred64) {
+
+}
+
 Read::Read(string name, string seq, string strand, string quality, bool phred64) {
     mName = name;
     mSeq = Sequence(seq);

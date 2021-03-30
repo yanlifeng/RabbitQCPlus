@@ -17,6 +17,8 @@ TODO
   - [x] 关于空间
   - [ ] 解决报错./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq -o p.fq -t 4 -5
   - [x] 为啥运行空间稳定1g不变，
+  - [ ] 优化duplicate中的round
+  - [ ] state中尝试*8/16的向量化
   - [ ]  
 
 
@@ -1125,6 +1127,64 @@ emmmm没啥用啊，如果把12维调换，然后8个8个的来处理，看汇�
 现在的版本把12维调换了（暂时没什么用，可以先保留着），然后把一维的两个变量摘出来做自动向量化。
 
 ```
+ylf@gold6148:~/QC/RabbitQC$ ./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
 
+mKeyLenInBase 12
+producer.join
+threads.join
+total getPreStats1()->statRead(or1) ====: 12.34479
+total mDuplicate->statRead(or1) ========: 4.93429
+total mOptions->indexFilter()  =========: 0.59897
+total mUmiProcessor->process(or1) ======: 0.89748
+total mFilter->trimAndCut() ============: 0.74583
+total PolyX::trimPolyG() ===============: 0.89748
+total trimBySequence ===================: 0.60313
+total r1->resize() =====================: 0.60471
+total mFilter->passFilter(r1) ==========: 1.27222
+total addFilterResult(result) ==========: 0.60432
+total outstr += r1->toString() =========: 0.59924
+total getPostStats1()->statRead(r1) ====: 11.93036
+total delete r1 ========================: 2.69691
+total ready output ========================: 1.12396
+total costTotel ========================: 38.43762
+total cost =============================: 46.54946
+total  =================================: 2552
+total format =================================: 17.74351
+Read1 before filtering:
+total reads: 27497479
+total bases: 2749747900
+Q20 bases: 2707938680(98.4795%)
+Q30 bases: 2645554729(96.2108%)
+
+Read1 after filtering:
+total reads: 27219050
+total bases: 2721905000
+Q20 bases: 2699552056(99.1788%)
+Q30 bases: 2639324248(96.9661%)
+
+Filtering result:
+reads passed filter: 27219050
+reads failed due to low quality: 274717
+reads failed due to too many N: 3712
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.159583%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+rabbit_qc v0.0.1, time used: 66.4818 seconds
 ```
+
+#### 0330
+
+state的向量化暂时没啥思路了，唯一的可能性就是*8/16。
+
+format中new read时有一遍多余的内存拷贝，去掉大约能快5s(SRR2530740.sra.fastq 7.5G)。
 
