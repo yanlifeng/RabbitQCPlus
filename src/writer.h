@@ -51,6 +51,7 @@ public:
 	~Writer();
 	bool isZipped();
 	bool writeString(string& s);
+	bool writeString(char* strdata,size_t size);
 	bool writeLine(string& linestr);
 	bool write(char* strdata, size_t size);
 	string filename();

@@ -16,6 +16,7 @@ BIN_TARGET := ${TARGET}
 
 CXX := g++
 CXXFLAGS := -std=c++11 -g -fopenmp -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
+MYFLAGS := -march=native
 LIBS := -lz -lpthread -fopenmp 
 LD_FLAGS := $(foreach librarydir,$(LIBRARY_DIRS),-L$(librarydir)) $(LIBS)
 
@@ -24,7 +25,7 @@ ${BIN_TARGET}:${OBJ}
 	$(CXX) $(OBJ) -O3 -o $@ $(LD_FLAGS)
 
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp
-	$(CXX) $(CXXFLAGS) -O3 -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(MYFLAGS) -O3 -c $< -o $@
 
 .PHONY:clean
 clean:

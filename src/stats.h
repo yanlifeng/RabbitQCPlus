@@ -38,6 +38,8 @@ SOFTWARE.
 #include "read.h"
 #include "options.h"
 
+#define ARRLEN 8
+
 using namespace std;
 
 class Stats{
@@ -97,10 +99,10 @@ private:
     'G' % 8 = 7
     'N' % 8 = 6
     */
-    long *mCycleQ30Bases[8];
-    long *mCycleQ20Bases[8];
-    long *mCycleBaseContents[8];
-    long *mCycleBaseQual[8];
+    long *mCycleQ30Bases;
+    long *mCycleQ20Bases;
+    long *mCycleBaseContents;
+    long *mCycleBaseQual;
     long *mCycleTotalBase;
     long *mCycleTotalQual;
     long *mKmer;

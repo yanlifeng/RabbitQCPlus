@@ -38,7 +38,7 @@ public:
 	{
 		ASSERT(size_ != 0);
 
-#if (USE_64BIT_MEMORY)
+#if (USE_64BIT_MEMORY) //64bit memory 最小寻址单元64bit
 		uint64 size64 = size_ / 8;
 		if (size64 * 8 < size_)
 			size64 += 1;

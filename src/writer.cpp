@@ -85,6 +85,22 @@ bool Writer::writeString(string& str){
 
 	return status;
 }
+bool Writer::writeString(char* strdata,size_t size){
+	
+	
+	size_t written;
+	bool status;
+	if(mZipped){
+		written = gzwrite(mZipFile, strdata, size);
+		status = size == written;
+	}
+	else{
+		mOutStream->write(strdata, size);
+		status = !mOutStream->fail();
+	}
+
+	return status;
+}
 
 bool Writer::write(char* strdata, size_t size) {
 	size_t written;

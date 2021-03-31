@@ -1,0 +1,1 @@
+make&&time ./rabbit_qc -w 1 -i ./testdata/check.fq -o ./testdata/out.fq

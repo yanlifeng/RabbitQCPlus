@@ -1,8 +1,10 @@
 .DS_Store
 fastp
+testdata
 
 # Prerequisites
 *.d
+
 
 # Compiled Object files
 *.slo
@@ -33,3 +35,7 @@ fastp
 *.exe
 *.out
 *.app
+
+*.html
+*.json
+rabbit_qc

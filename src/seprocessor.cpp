@@ -187,7 +187,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
 		//cerr << pack->data[pack->count - 1]->mName << endl;
 		//cerr << pack->data[pack->count - 1]->mQuality << endl;
 	//debug
-    string outstr;
+    char* outstr=new char[pack->count*4*100];
+    int cap=pack->count*4*100,len=0;
     int readPassed = 0;
 	//------------------my thinking---------------------------------
 	/*
@@ -248,8 +249,18 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
         config->addFilterResult(result);
 
         if( r1 != NULL &&  result == PASS_FILTER) {
-            outstr += r1->toString();
-
+            // outstr += r1->toString();
+            string out_tmp=r1->toString();
+            if(len+out_tmp.length()>=cap){
+                cap*=1.5;
+                char* newbuffer=new char[cap];
+                
+                memcpy(newbuffer,outstr,len);
+                delete[] outstr;
+                outstr=newbuffer;
+            }
+            memcpy(outstr+len,out_tmp.c_str(),out_tmp.length());
+            len+=out_tmp.length();
             // stats the read after filtering
             config->getPostStats1()->statRead(r1);
             readPassed++;
@@ -264,17 +275,17 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
     if(!mOptions->split.enabled)
         mOutputMtx.lock();
     if(mOptions->outputToSTDOUT) {
-        fwrite(outstr.c_str(), 1, outstr.length(), stdout);
+        fwrite(outstr, 1, len, stdout);
     } else if(mOptions->split.enabled) {
         // split output by each worker thread
         if(!mOptions->out1.empty())
-            config->getWriter1()->writeString(outstr);
+            config->getWriter1()->writeString(outstr,len);
     } 
     else {
         if(mLeftWriter) {
-            char* ldata = new char[outstr.size()];
-            memcpy(ldata, outstr.c_str(), outstr.size());
-            mLeftWriter->input(ldata, outstr.size());
+            // char* ldata = new char[outstr.size()];
+            // memcpy(ldata, outstr.c_str(), outstr.size());
+            mLeftWriter->input(outstr, len);
         }
     }
     if(!mOptions->split.enabled)
@@ -284,6 +295,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack* pack, ThreadConfig* config){
         config->markProcessed(readPassed);
     else
         config->markProcessed(pack->count);
+    
 
     //delete pack->data;
 	std::vector<Read*>().swap(pack->data);
@@ -340,7 +352,7 @@ void SingleEndProcessor::consumePack(ThreadConfig* config){
         //mRepo.repoNotEmpty.wait(lock);
     }*/
 
-    mInputMtx.lock();
+    mInputMtx.lock();//usleep的作用 类似自旋锁？
     while(mRepo.writePos <= mRepo.readPos) {
         usleep(1000);
         if(mProduceFinished) {

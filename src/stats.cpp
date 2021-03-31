@@ -1,8 +1,10 @@
 #include "stats.h"
 #include <memory.h>
 #include <sstream>
+#include<immintrin.h>
 #include "util.h"
 
+#define VEC
 #define KMER_LEN 5
 
 Stats::Stats(Options* opt, bool isRead2, int guessedCycles, int bufferMargin){
@@ -30,22 +32,29 @@ Stats::Stats(Options* opt, bool isRead2, int guessedCycles, int bufferMargin){
     // extend the buffer to make sure it's long enough
     mBufLen = guessedCycles + bufferMargin;
 
+    mCycleQ30Bases = new long[mBufLen*ARRLEN];
+    memset(mCycleQ30Bases, 0, ARRLEN*sizeof(long) * mBufLen);
+
+    mCycleQ20Bases = new long[mBufLen*ARRLEN];
+    memset(mCycleQ20Bases, 0, ARRLEN*sizeof(long) * mBufLen);
+
+    mCycleBaseContents = new long[mBufLen*ARRLEN];
+    memset(mCycleBaseContents, 0, ARRLEN*sizeof(long) * mBufLen);
+
+    mCycleBaseQual = new long[mBufLen*ARRLEN];
+    memset(mCycleBaseQual, 0, ARRLEN*sizeof(long) * mBufLen);
+
     for(int i=0; i<8; i++){
         mQ20Bases[i] = 0;
         mQ30Bases[i] = 0;
         mBaseContents[i] = 0;
 
-        mCycleQ30Bases[i] = new long[mBufLen];
-        memset(mCycleQ30Bases[i], 0, sizeof(long) * mBufLen);
 
-        mCycleQ20Bases[i] = new long[mBufLen];
-        memset(mCycleQ20Bases[i], 0, sizeof(long) * mBufLen);
+        // mCycleBaseContents[i] = new long[mBufLen];
+        // memset(mCycleBaseContents[i], 0, sizeof(long) * mBufLen);
 
-        mCycleBaseContents[i] = new long[mBufLen];
-        memset(mCycleBaseContents[i], 0, sizeof(long) * mBufLen);
-
-        mCycleBaseQual[i] = new long[mBufLen];
-        memset(mCycleBaseQual[i], 0, sizeof(long) * mBufLen);
+        // mCycleBaseQual[i] = new long[mBufLen];
+        // memset(mCycleBaseQual[i], 0, sizeof(long) * mBufLen);
     }
     mCycleTotalBase = new long[mBufLen];
     memset(mCycleTotalBase, 0, sizeof(long)*mBufLen);
@@ -64,33 +73,53 @@ void Stats::extendBuffer(int newBufLen){
     if(newBufLen <= mBufLen)
         return ;
 
-    long* newBuf = NULL;
+    long* newBuf1 = NULL,*newBuf2=NULL,*newBuf3=NULL,*newBuf4=NULL,*newBuf=NULL;
+    newBuf1 = new long[newBufLen*ARRLEN];
+    memset(newBuf1, 0, sizeof(long)*newBufLen*ARRLEN);
+
+    newBuf2 = new long[newBufLen*ARRLEN];
+    memset(newBuf2, 0, sizeof(long)*newBufLen*ARRLEN);
+
+    newBuf3 = new long[newBufLen*ARRLEN];
+    memset(newBuf3, 0, sizeof(long)*newBufLen*ARRLEN);
+
+    newBuf4 = new long[newBufLen*ARRLEN];
+    memset(newBuf4, 0, sizeof(long)*newBufLen*ARRLEN);
 
     for(int i=0; i<8; i++){
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long)*newBufLen);
-        memcpy(newBuf, mCycleQ30Bases[i], sizeof(long) * mBufLen);
-        delete mCycleQ30Bases[i];
-        mCycleQ30Bases[i] = newBuf;
+        
+        memcpy(newBuf1+i*newBufLen, mCycleQ30Bases+i*mBufLen, sizeof(long) * mBufLen);
+        // delete mCycleQ30Bases[i];
+        // mCycleQ30Bases[i] = newBuf;
 
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long)*newBufLen);
-        memcpy(newBuf, mCycleQ20Bases[i], sizeof(long) * mBufLen);
-        delete mCycleQ20Bases[i];
-        mCycleQ20Bases[i] = newBuf;
+        
+        memcpy(newBuf2+i*newBufLen, mCycleQ20Bases+i*mBufLen, sizeof(long) * mBufLen);
+        // delete mCycleQ20Bases[i];
+        // mCycleQ20Bases[i] = newBuf;
 
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long)*newBufLen);
-        memcpy(newBuf, mCycleBaseContents[i], sizeof(long) * mBufLen);
-        delete mCycleBaseContents[i];
-        mCycleBaseContents[i] = newBuf;
+        // newBuf = new long[newBufLen];
+        // memset(newBuf, 0, sizeof(long)*newBufLen);
+        memcpy(newBuf3+i*newBufLen, mCycleBaseContents+i*mBufLen, sizeof(long) * mBufLen);
+        // delete mCycleBaseContents[i];
+        // mCycleBaseContents[i] = newBuf;
 
-        newBuf = new long[newBufLen];
-        memset(newBuf, 0, sizeof(long)*newBufLen);
-        memcpy(newBuf, mCycleBaseQual[i], sizeof(long) * mBufLen);
-        delete mCycleBaseQual[i];
-        mCycleBaseQual[i] = newBuf;
+        // newBuf = new long[newBufLen];
+        // memset(newBuf, 0, sizeof(long)*newBufLen);
+        memcpy(newBuf4+i*newBufLen, mCycleBaseQual+i*mBufLen, sizeof(long) * mBufLen);
+        // delete mCycleBaseQual[i];
+        // mCycleBaseQual[i] = newBuf;
     }
+
+    delete[] mCycleQ30Bases;
+    delete[] mCycleQ20Bases;
+    delete[] mCycleBaseContents;
+    delete[] mCycleBaseQual;
+
+    mCycleQ30Bases=newBuf1;
+    mCycleQ20Bases=newBuf2;
+    mCycleBaseContents=newBuf3;
+    mCycleBaseQual=newBuf4;
+
     newBuf = new long[newBufLen];
     memset(newBuf, 0, sizeof(long)*newBufLen);
     memcpy(newBuf, mCycleTotalBase, sizeof(long)*mBufLen);
@@ -107,19 +136,19 @@ void Stats::extendBuffer(int newBufLen){
 }
 
 Stats::~Stats() {
-    for(int i=0; i<8; i++){
-        delete mCycleQ30Bases[i];
-        mCycleQ30Bases[i] = NULL;
+    // for(int i=0; i<8; i++){
+        delete mCycleQ30Bases;
+        mCycleQ30Bases = NULL;
 
-        delete mCycleQ20Bases[i];
-        mCycleQ20Bases[i] = NULL;
+        delete mCycleQ20Bases;
+        mCycleQ20Bases = NULL;
 
-        delete mCycleBaseContents[i];
-        mCycleBaseContents[i] = NULL;
+        delete mCycleBaseContents;
+        mCycleBaseContents = NULL;
 
-        delete mCycleBaseQual[i];
-        mCycleBaseQual[i] = NULL;
-    }
+        delete mCycleBaseQual;
+        mCycleBaseQual = NULL;
+    // }
 
     delete mCycleTotalBase;
     delete mCycleTotalQual;
@@ -155,9 +184,9 @@ void Stats::summarize(bool forced) {
     // Q20, Q30, base content
     for(int i=0; i<8; i++) {
         for(int c=0; c<mCycles; c++) {
-            mQ20Bases[i] += mCycleQ20Bases[i][c];
-            mQ30Bases[i] += mCycleQ30Bases[i][c];
-            mBaseContents[i] += mCycleBaseContents[i][c];
+            mQ20Bases[i] += mCycleQ20Bases[i*mBufLen+c];
+            mQ30Bases[i] += mCycleQ30Bases[i*mBufLen+c];
+            mBaseContents[i] += mCycleBaseContents[i*mBufLen+c];
         }
         mQ20Total += mQ20Bases[i];
         mQ30Total += mQ30Bases[i];
@@ -183,11 +212,11 @@ void Stats::summarize(bool forced) {
         double* contentCurve = new double[mCycles];
         memset(contentCurve, 0, sizeof(double)*mCycles);
         for(int c=0; c<mCycles; c++) {
-            if(mCycleBaseContents[b][c] == 0)
+            if(mCycleBaseContents[b*mBufLen+c] == 0)
                 qualCurve[c] = meanQualCurve[c];
             else
-                qualCurve[c] = (double)mCycleBaseQual[b][c] / (double)mCycleBaseContents[b][c];
-            contentCurve[c] = (double)mCycleBaseContents[b][c] / (double)mCycleTotalBase[c];
+                qualCurve[c] = (double)mCycleBaseQual[b*mBufLen+c] / (double)mCycleBaseContents[b*mBufLen+c];
+            contentCurve[c] = (double)mCycleBaseContents[b*mBufLen+c] / (double)mCycleTotalBase[c];
         }
         mQualityCurves[string(1, base)] = qualCurve;
         mContentCurves[string(1, base)] = contentCurve;
@@ -199,7 +228,7 @@ void Stats::summarize(bool forced) {
     char gBase = 'G' & 0x07;
     char cBase = 'C' & 0x07;
     for(int c=0; c<mCycles; c++) {
-        gcContentCurve[c] = (double)(mCycleBaseContents[gBase][c] + mCycleBaseContents[cBase][c]) / (double)mCycleTotalBase[c];
+        gcContentCurve[c] = (double)(mCycleBaseContents[gBase*mBufLen+c] + mCycleBaseContents[cBase*mBufLen+c]) / (double)mCycleTotalBase[c];
     }
     mContentCurves["GC"] = gcContentCurve;
 
@@ -235,28 +264,78 @@ void Stats::statRead(Read* r) {
 
     int kmer = 0;
     bool needFullCompute = true;
+#ifdef VEC
+    int vec_bound=len/8*8;
+    
+
+    __m512i q20_vec=_mm512_set1_epi64((long long)'5');
+    __m512i q30_vec=_mm512_set1_epi64((long long)'?');
+    __m256i mBufLen_vec=_mm256_set1_epi32(mBufLen);
+    __m512i incre_vec=_mm512_set1_epi64(1);
+    __m512i ascii_vec=_mm512_set1_epi64(33);
+#endif
+
     for(int i=0; i<len; i++) {
         char base = seqstr[i];
         char qual = qualstr[i];
-        // get last 3 bits
-        char b = base & 0x07;
+#ifdef VEC
+        if(i%8==0&&i<vec_bound){
+            __m256i i_vec=_mm256_set_epi32(i+7,i+6,i+5,i+4,
+            i+3,i+2,i+1,i);
+            __m256i base_vec=_mm256_set_epi32(seqstr[i+7],seqstr[i+6],seqstr[i+5],seqstr[i+4],
+            seqstr[i+3],seqstr[i+2],seqstr[i+1],seqstr[i]);
+            __m512i qual_vec=_mm512_set_epi64(qualstr[i+7],qualstr[i+6],qualstr[i+5],qualstr[i+4],
+            qualstr[i+3],qualstr[i+2],qualstr[i+1],qualstr[i]);
 
-        const char q20 = '5';
-        const char q30 = '?';
+            __m256i b_vec=_mm256_and_si256(base_vec,_mm256_set1_epi32(0x07));
+            __mmask8 q30_mask=_mm512_cmp_epi64_mask(qual_vec,q30_vec,_MM_CMPINT_NLT);
+            __mmask8 q20_mask=_mm512_cmp_epi64_mask(qual_vec,q20_vec,_MM_CMPINT_NLT);
+            __m256i index_vec=_mm256_add_epi32(_mm256_mullo_epi32(b_vec,mBufLen_vec),i_vec);
+            __m512i mCycleQ30Bases_vec=_mm512_i32gather_epi64(index_vec,(long long*)mCycleQ30Bases,8);
+            __m512i mCycleQ20Bases_vec=_mm512_i32gather_epi64(index_vec,(long long*)mCycleQ20Bases,8);
+            mCycleQ30Bases_vec=_mm512_mask_add_epi64(mCycleQ30Bases_vec,q30_mask,mCycleQ30Bases_vec,incre_vec);
+            mCycleQ20Bases_vec=_mm512_mask_add_epi64(mCycleQ20Bases_vec,q20_mask,mCycleQ20Bases_vec,incre_vec);
+            _mm512_i32scatter_epi64((long long*)mCycleQ30Bases,index_vec,mCycleQ30Bases_vec,8);
+            _mm512_i32scatter_epi64((long long*)mCycleQ20Bases,index_vec,mCycleQ20Bases_vec,8);
+            
+            __m512i mCycleBaseContents_vec=_mm512_i32gather_epi64(index_vec,(long long*)mCycleBaseContents,8);
+            __m512i mCycleBaseQual_vec=_mm512_i32gather_epi64(index_vec,(long long*)mCycleBaseQual,8);
+            mCycleBaseContents_vec=_mm512_add_epi64(mCycleBaseContents_vec,incre_vec);
+            mCycleBaseQual_vec=_mm512_add_epi64(mCycleBaseQual_vec,_mm512_sub_epi64(qual_vec,ascii_vec));
+            _mm512_i32scatter_epi64((long long*)mCycleBaseContents,index_vec,mCycleBaseContents_vec,8);
+            _mm512_i32scatter_epi64((long long*)mCycleBaseQual,index_vec,mCycleBaseQual_vec,8);
 
-        if(qual >= q30) {
-            mCycleQ30Bases[b][i]++;
-            mCycleQ20Bases[b][i]++;
-        } else if(qual >= q20) {
-            mCycleQ20Bases[b][i]++;
+            __m512i mCycleTotalBase_vec=_mm512_loadu_si512(mCycleTotalBase+i);
+            __m512i mCycleTotalQual_vec=_mm512_loadu_si512(mCycleTotalQual+i);
+            mCycleTotalBase_vec=_mm512_add_epi64(mCycleTotalBase_vec,incre_vec);
+            mCycleTotalQual_vec=_mm512_add_epi64(mCycleTotalQual_vec,_mm512_sub_epi64(qual_vec,ascii_vec));
+            _mm512_storeu_si512(mCycleTotalBase+i,mCycleTotalBase_vec);
+            _mm512_storeu_si512(mCycleTotalQual+i,mCycleTotalQual_vec);
+            
+        }else if(i>=vec_bound){
+#endif
+            // get last 3 bits
+            char b = base & 0x07;
+
+            const char q20 = '5';
+            const char q30 = '?';
+
+            if(qual >= q30) {
+                mCycleQ30Bases[b*mBufLen+i]++;
+                mCycleQ20Bases[b*mBufLen+i]++;
+            } else if(qual >= q20) {
+                mCycleQ20Bases[b*mBufLen+i]++;
+            }
+
+            mCycleBaseContents[b*mBufLen+i]++;
+            mCycleBaseQual[b*mBufLen+i] += (qual-33);
+
+            mCycleTotalBase[i]++;
+            mCycleTotalQual[i] += (qual-33);
+#ifdef VEC
         }
-
-        mCycleBaseContents[b][i]++;
-        mCycleBaseQual[b][i] += (qual-33);
-
-        mCycleTotalBase[i]++;
-        mCycleTotalQual[i] += (qual-33);
-
+#endif
+        
         if(base == 'N'){
             needFullCompute = true;
             continue;
@@ -903,10 +982,10 @@ Stats* Stats::merge(vector<Stats*>& list) {
         // merge per cycle counting for different bases
         for(int i=0; i<8; i++){
             for(int j=0; j<cycles && j<curCycles; j++) {
-                s->mCycleQ30Bases[i][j] += list[t]->mCycleQ30Bases[i][j];
-                s->mCycleQ20Bases[i][j] += list[t]->mCycleQ20Bases[i][j];
-                s->mCycleBaseContents[i][j] += list[t]->mCycleBaseContents[i][j];
-                s->mCycleBaseQual[i][j] += list[t]->mCycleBaseQual[i][j];
+                s->mCycleQ30Bases[i*s->mBufLen+j] += list[t]->mCycleQ30Bases[i*list[t]->mBufLen+j];
+                s->mCycleQ20Bases[i*s->mBufLen+j] += list[t]->mCycleQ20Bases[i*list[t]->mBufLen+j];
+                s->mCycleBaseContents[i*s->mBufLen+j] += list[t]->mCycleBaseContents[i*list[t]->mBufLen+j];
+                s->mCycleBaseQual[i*s->mBufLen+j] += list[t]->mCycleBaseQual[i*list[t]->mBufLen+j];
             }
         }
 
