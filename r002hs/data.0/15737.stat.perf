@@ -1,0 +1,31 @@
+# AMPLXE_PERF_STAT
+# hostname : ubuntu
+# os release : 4.4.0-187-generic
+# arch : x86_64
+# cpuid : GenuineIntel,6,85,4
+# cpudesc : Intel(R) Xeon(R) W-2123 CPU @ 3.60GHz
+# total memory : 32608172 kB
+# nrcpus online : 8
+# nrcpus avail : 8
+# sibling cores : 0-7
+# sibling threads : 0,4
+# sibling threads : 1,5
+# sibling threads : 2,6
+# sibling threads : 3,7
+# process id : 15737
+;;28790037888;0
+;;30109347450;1
+;;46244861876;2
+;;191286749;3
+;;150096819;4
+;;0;5
+;;0;6
+;;0;7
+;;164659321;8
+;;0;9
+;;0;10
+;;408268;11
+;;50997986355;12
+;;54616201105;13
+;;29;14
+;;0;15

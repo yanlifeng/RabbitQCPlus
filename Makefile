@@ -14,16 +14,16 @@ TARGET := rabbit_qc
 
 BIN_TARGET := ${TARGET}
 
-CXX := g++-8
+CXX := g++
 #CXXFLAGS := -DTimer -std=c++11 -g -fopenmp -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
-CXXFLAGS := -DTimer -std=c++11 -g -funroll-loops -flto -fopenmp -mavx2  -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
+CXXFLAGS :=  -DTimer -std=c++11 -g -funroll-loops -flto -fopenmp -march=native -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 #CXXFLAGS := -std=c++11 -funroll-loops -flto -fopenmp -mavx2  -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 LIBS :=  -lz -lpthread -fopenmp
 LD_FLAGS := $(foreach librarydir,$(LIBRARY_DIRS),-L$(librarydir)) $(LIBS)
 
 
 ${BIN_TARGET}:${OBJ}
-	$(CXX) $(OBJ) -Ofast -flto -o $@ $(LD_FLAGS)
+	$(CXX) $(OBJ) -Ofast -flto -g -o $@ $(LD_FLAGS)
 
 ${DIR_OBJ}/%.o:${DIR_SRC}/%.cpp
 	$(CXX) $(CXXFLAGS) -Ofast -c $< -o $@
@@ -36,3 +36,4 @@ clean:
 install:
 	install $(TARGET) $(BINDIR)/$(TARGET)
 	@echo "Installed."
+

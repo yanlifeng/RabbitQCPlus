@@ -3,6 +3,12 @@
 #include <sstream>
 #include "util.h"
 
+#ifdef Vecopen
+
+#include <immintrin.h>
+
+#endif
+
 #define KMER_LEN 5
 
 Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
@@ -301,6 +307,30 @@ int Stats::getMeanLength() {
 }
 
 static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
+#ifdef Vecopen
+
+static void PP3(__m512i p) {
+    long long ar[8];
+    _mm512_store_si512(ar, p);
+    for (int i = 0; i < 8; i++)printf("%lld ", ar[i]);
+    printf("\n");
+}
+
+static void PP2(__m256i p) {
+    int ar[8];
+    _mm256_mask_store_epi32(ar, 0xFF, p);
+    for (int i = 0; i < 8; i++)printf("%d ", ar[i]);
+    printf("\n");
+}
+
+static void PP1(__m128i p) {
+    char ar[16];
+    _mm_mask_storeu_epi8(ar, 0xFF, p);
+    for (int i = 0; i < 8; i++)printf("%c ", ar[i]);
+    printf("\n");
+}
+
+#endif
 
 void Stats::statRead(Read *r) {
     int len = r->length();
@@ -316,11 +346,147 @@ void Stats::statRead(Read *r) {
     const char q20 = '5';
     const char q30 = '?';
     int flag = 4;
+
+#ifdef Vecopen
+#define ll long long
+    int i = 0;
+    ll *p1, *p2, *p3, *p4, *p5, *p6;
+    __m512i ad0, ad1, ad2, ad3, ad4, v1, v2, v3, v4, v5, v6, sub33, quamm;
+//    ad2 = _mm512_set1_epi64(1);
+//    ad3 = _mm512_set1_epi64(1);
+//    ad4 = _mm512_set1_epi64(1);
+    __m256i bse, and7, add8, idx;
+    __m128i ide;
+    bse = _mm256_set_epi32(7 * 8, 6 * 8, 5 * 8, 4 * 8, 3 * 8, 2 * 8, 1 * 8, 0 * 8);
+    ad0 = _mm512_set1_epi64(0);
+    ad1 = _mm512_set1_epi64(1);
+    and7 = _mm256_set1_epi32(0x07);
+    add8 = _mm256_set1_epi32(64);
+    sub33 = _mm512_set1_epi64(33);
+    __m512i q20_vec = _mm512_set1_epi64((ll) '5');
+    __m512i q30_vec = _mm512_set1_epi64((ll) '?');
+
+
+    //set 71.7254
+    //set去掉，gather和scatter也去掉，idx去掉  52.1386
+    //set去掉，除了第一个，，，，，，，，idx保留  54.8702
+    //，，，，，，，，一二，，，，，，，，，，，，  58.178
+    //64.979
+
+
+    for (; i + 8 <= len; i += 8) {
+//        ad2 = _mm512_set_epi64(qualstr[i + 7] - 33, qualstr[i + 6] - 33, qualstr[i + 5] - 33, qualstr[i + 4] - 33,
+//                               qualstr[i + 3] - 33, qualstr[i + 2] - 33, qualstr[i + 1] - 33, qualstr[i + 0] - 33);
+//        ad3 = _mm512_set_epi64(qualstr[i + 7] >= q30, qualstr[i + 6] >= q30, qualstr[i + 5] >= q30,
+//                               qualstr[i + 4] >= q30, qualstr[i + 3] >= q30, qualstr[i + 2] >= q30,
+//                               qualstr[i + 1] >= q30, qualstr[i + 0] >= q30);
+//        ad4 = _mm512_set_epi64(qualstr[i + 7] >= q20, qualstr[i + 6] >= q20, qualstr[i + 5] >= q20,
+//                               qualstr[i + 4] >= q20, qualstr[i + 3] >= q20, qualstr[i + 2] >= q20,
+//                               qualstr[i + 1] >= q20, qualstr[i + 0] >= q20);
+//        idx = _mm256_set_epi32((i + 7) * 8 + (seqstr[i + 7] & 0x07), (i + 6) * 8 + (seqstr[i + 6] & 0x07),
+//                               (i + 5) * 8 + (seqstr[i + 5] & 0x07), (i + 4) * 8 + (seqstr[i + 4] & 0x07),
+//                               (i + 3) * 8 + (seqstr[i + 3] & 0x07), (i + 2) * 8 + (seqstr[i + 2] & 0x07),
+//                               (i + 1) * 8 + (seqstr[i + 1] & 0x07), (i + 0) * 8 + (seqstr[i + 0] & 0x07));
+
+        //construct ad2
+        ide = _mm_maskz_loadu_epi8(0xFF, qualstr + i);
+        quamm = _mm512_cvtepi8_epi64(ide);
+        ad2 = _mm512_sub_epi64(quamm, sub33);
+//
+        //construct ad2
+        __mmask8 q30_mask = _mm512_cmp_epi64_mask(quamm, q30_vec, _MM_CMPINT_NLT);
+//
+
+        //construct ad2
+        __mmask8 q20_mask = _mm512_cmp_epi64_mask(quamm, q20_vec, _MM_CMPINT_NLT);
+
+        //construct idx and update bse
+        ide = _mm_maskz_loadu_epi8(0xFF, seqstr + i);
+        idx = _mm256_cvtepi8_epi32(ide);
+        idx = _mm256_and_si256(idx, and7);
+        idx = _mm256_add_epi32(bse, idx);
+        bse = _mm256_add_epi32(bse, add8);
+
+
+        //calculate
+        p1 = (ll *) (mCycleTotalBase + i);
+        v1 = _mm512_load_epi64(p1);
+        v1 = _mm512_add_epi64(v1, ad1);
+        _mm512_storeu_si512(p1, v1);
+
+        p2 = (ll *) (mCycleTotalQual + i);
+        v2 = _mm512_load_epi64(p2);
+        v2 = _mm512_add_epi64(v2, ad2);
+        _mm512_storeu_si512(p2, v2);
+
+        p3 = (ll *) mCycleBaseContentsR;
+        v3 = _mm512_i32gather_epi64(idx, p3, 8);
+//        v3 = _mm512_load_epi64(p3 + i);
+        v3 = _mm512_add_epi64(v3, ad1);
+        _mm512_i32scatter_epi64(p3, idx, v3, 8);
+//        _mm512_storeu_si512(p3 + i, v3);
+
+        p4 = (ll *) mCycleBaseQualR;
+        v4 = _mm512_i32gather_epi64(idx, p4, 8);
+//        v4 = _mm512_load_epi64(p4 + i);
+        v4 = _mm512_add_epi64(v4, ad2);
+        _mm512_i32scatter_epi64(p4, idx, v4, 8);
+//        _mm512_storeu_si512(p4 + i, v4);
+
+        p5 = (ll *) mCycleQ30BasesR;
+        v5 = _mm512_i32gather_epi64(idx, p5, 8);
+//        v5 = _mm512_load_epi64(p5 + i);
+        v5 = _mm512_mask_add_epi64(v5, q30_mask, v5, ad1);
+        _mm512_i32scatter_epi64(p5, idx, v5, 8);
+//        _mm512_storeu_si512(p5 + i, v5);
+
+        p6 = (ll *) mCycleQ20BasesR;
+        v6 = _mm512_i32gather_epi64(idx, p6, 8);
+//        v6 = _mm512_load_epi64(p6 + i);
+        v6 = _mm512_mask_add_epi64(v6, q20_mask, v6, ad1);
+        _mm512_i32scatter_epi64(p6, idx, v6, 8);
+//        _mm512_storeu_si512(p6 + i, v6);
+
+//
+//        for (int j = i; j < i + 8; j++) {
+//            char b = seqstr[j] & 0x07;
+//            mCycleQ30BasesR[j * 8 + b] += qualstr[j] >= q30;
+//            mCycleQ20BasesR[j * 8 + b] += qualstr[j] >= q20;
+//            mCycleBaseContentsR[j * 8 + b]++;
+//            mCycleBaseQualR[j * 8 + b] += (qualstr[j] - 33);
+//            mCycleTotalBase[j]++;
+//            mCycleTotalQual[j] += (qualstr[j] - 33);
+//        }
+
+        for (int j = i; j < i + 8; j++) {
+            if (seqstr[j] == 'N')flag = 5;
+            int val = valAGCT[seqstr[j] & 0x07];
+            kmer = ((kmer << 2) & 0x3FC) | val;
+            if (flag <= 0)mKmer[kmer]++;
+            flag--;
+        }
+    }
+    for (; i < len; i++) {
+        char b = seqstr[i] & 0x07;
+        mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
+        mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
+        mCycleBaseContentsR[i * 8 + b]++;
+        mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
+        mCycleTotalBase[i]++;
+        mCycleTotalQual[i] += (qualstr[i] - 33);
+
+        if (seqstr[i] == 'N')flag = 5;
+        int val = valAGCT[seqstr[i] & 0x07];
+        kmer = ((kmer << 2) & 0x3FC) | val;
+        if (flag <= 0)mKmer[kmer]++;
+        flag--;
+    }
+#else
+
     for (int i = 0; i < len; i++) {
         mCycleTotalBase[i]++;
         mCycleTotalQual[i] += (qualstr[i] - 33);
     }
-//TODO !!!
     for (int i = 0; i < len; i++) {
         char b = seqstr[i] & 0x07;
         mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
@@ -333,42 +499,9 @@ void Stats::statRead(Read *r) {
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
-//    int i = 0;
-//    for (; i + 8 <= len; i += 8) {
-//
-//        for (int j = i; j < i + 8; j++) {
-//            char b = seqstr[j] & 0x07;
-//            mCycleQ30BasesR[j * 8 + b] += qualstr[j] >= q30;
-//            mCycleQ20BasesR[j * 8 + b] += qualstr[j] >= q20;
-//            mCycleBaseContentsR[j * 8 + b]++;
-//            mCycleBaseQualR[j * 8 + b] += (qualstr[j] - 33);
-//            mCycleTotalBase[j]++;
-//            mCycleTotalQual[j] += (qualstr[j] - 33);
-//        }
-//        for (int j = i; j < i + 8; j++) {
-//            if (seqstr[j] == 'N')flag = 5;
-//            int val = valAGCT[seqstr[j] & 0x07];
-//            kmer = ((kmer << 2) & 0x3FC) | val;
-//            if (flag <= 0)mKmer[kmer]++;
-//            flag--;
-//        }
-//    }
-//    for (; i < len; i++) {
-//        char b = seqstr[i] & 0x07;
-//        mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
-//        mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
-//        mCycleBaseContentsR[i * 8 + b]++;
-//        mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
-//        mCycleTotalBase[i]++;
-//        mCycleTotalQual[i] += (qualstr[i] - 33);
-//
-//        if (seqstr[i] == 'N')flag = 5;
-//        int val = valAGCT[seqstr[i] & 0x07];
-//        kmer = ((kmer << 2) & 0x3FC) | val;
-//        if (flag <= 0)mKmer[kmer]++;
-//        flag--;
-//
-//    }
+
+
+#endif
     // do overrepresentation analysis for 1 of every 100 reads
     if (mOptions->overRepAnalysis.enabled) {
         if (mReads % mOptions->overRepAnalysis.sampling == 0) {
@@ -388,7 +521,6 @@ void Stats::statRead(Read *r) {
             }
         }
     }
-
     mReads++;
 }
 
