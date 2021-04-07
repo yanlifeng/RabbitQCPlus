@@ -3,6 +3,7 @@ project(rabbit_qc)
 
 set(CMAKE_CXX_STANDARD 14)
 add_definitions(-DVecopen)
+#add_definitions(-DVec256)
 
 aux_source_directory(./src/ DIR_HELLO_SRCS)
 add_executable(rabbit_qc ${DIR_HELLO_SRCS})
