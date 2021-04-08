@@ -58,14 +58,14 @@ static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
 uint64 Duplicate::seq2int(const char *data, int start, int keylen, bool &valid) {
     uint64 ret = 0;
     for (int i = 0; i < keylen; i++) {
+        ret <<= 2;
         if (valAGCT[data[start + i] & 0x07] == -1) {
             valid = false;
             return 0;
         }
         ret += valAGCT[data[start + i] & 0x07];
         // if it's not the last one, shift it by 2 bits
-        if (i != keylen - 1)
-            ret <<= 2;
+
     }
     return ret;
 }

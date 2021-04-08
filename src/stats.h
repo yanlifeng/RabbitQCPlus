@@ -37,6 +37,7 @@ SOFTWARE.
 #include <map>
 #include "read.h"
 #include "options.h"
+#define uint unsigned int
 
 using namespace std;
 
@@ -66,7 +67,13 @@ public:
 
     int getKmerSize();
 
+#ifdef UseLong
     long *getOneStats();
+#else
+
+    uint *getOneStats();
+
+#endif
 
     int getStatsSize();
 
@@ -140,6 +147,7 @@ public:
 //    long *mCycleBaseContents[8];
 //    long *mCycleBaseQual[8];
 
+#ifdef UseLong
     long *mCycleQ30BasesR;
     long *mCycleQ20BasesR;
     long *mCycleBaseContentsR;
@@ -147,6 +155,16 @@ public:
 
     long *mCycleTotalBase;
     long *mCycleTotalQual;
+
+#else
+    unsigned int *mCycleQ30BasesI;
+    unsigned int *mCycleQ20BasesI;
+    unsigned int *mCycleBaseContentsI;
+    unsigned int *mCycleBaseQualI;
+
+    unsigned int *mCycleTotalBaseI;
+    unsigned int *mCycleTotalQualI;
+#endif
     long *mKmer;
     bool *fg;
     map<string, double *> mQualityCurves;

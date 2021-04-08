@@ -3,6 +3,8 @@
 #include <sstream>
 #include "util.h"
 
+#define uint unsigned int
+
 #ifdef Vecopen
 
 #include <immintrin.h>
@@ -17,6 +19,8 @@
 
 #define KMER_LEN 5
 
+
+#ifdef UseLong
 Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
     mOptions = opt;
     mIsRead2 = isRead2;
@@ -89,7 +93,72 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
 
     initOverRepSeq();
 }
+#else
 
+Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
+    mOptions = opt;
+    mIsRead2 = isRead2;
+    mReads = 0;
+    mLengthSum = 0;
+
+    mEvaluatedSeqLen = mOptions->seqLen1;
+    if (mIsRead2)
+        mEvaluatedSeqLen = mOptions->seqLen2;
+
+    if (guessedCycles == 0) {
+        guessedCycles = mEvaluatedSeqLen;
+    }
+
+
+    mCycles = guessedCycles;
+    mBases = 0;
+    mQ20Total = 0;
+    mQ30Total = 0;
+    summarized = false;
+    mKmerMin = 0;
+    mKmerMax = 0;
+
+    // extend the buffer to make sure it's long enough
+    mBufLen = guessedCycles + bufferMargin;
+
+
+    for (int i = 0; i < 8; i++) {
+        mQ20Bases[i] = 0;
+        mQ30Bases[i] = 0;
+        mBaseContents[i] = 0;
+    }
+
+
+    mCycleQ30BasesI = new uint[mBufLen * 8];
+    memset(mCycleQ30BasesI, 0, sizeof(uint) * mBufLen * 8);
+
+    mCycleQ20BasesI = new uint[mBufLen * 8];
+    memset(mCycleQ20BasesI, 0, sizeof(uint) * mBufLen * 8);
+
+    mCycleBaseContentsI = new uint[mBufLen * 8];
+    memset(mCycleBaseContentsI, 0, sizeof(uint) * mBufLen * 8);
+
+    mCycleBaseQualI = new uint[mBufLen * 8];
+    memset(mCycleBaseQualI, 0, sizeof(uint) * mBufLen * 8);
+
+
+    mCycleTotalBaseI = new uint[mBufLen];
+    memset(mCycleTotalBaseI, 0, sizeof(uint) * mBufLen);
+
+    mCycleTotalQualI = new uint[mBufLen];
+    memset(mCycleTotalQualI, 0, sizeof(uint) * mBufLen);
+
+    mKmerBufLen = 2 << (KMER_LEN * 2);
+    mKmer = new long[mKmerBufLen];
+    fg = new bool[mBufLen];
+    memset(mKmer, 0, sizeof(long) * mKmerBufLen);
+
+    initOverRepSeq();
+}
+
+#endif
+
+#ifdef UseLong
 void Stats::extendBuffer(int newBufLen) {
     if (newBufLen <= mBufLen)
         return;
@@ -164,7 +233,57 @@ void Stats::extendBuffer(int newBufLen) {
 
     mBufLen = newBufLen;
 }
+#else
 
+void Stats::extendBuffer(int newBufLen) {
+    if (newBufLen <= mBufLen)
+        return;
+    uint *newBuf = NULL;
+
+    newBuf = new uint[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
+    memcpy(newBuf, mCycleQ30BasesI, sizeof(uint) * mBufLen * 8);
+    delete mCycleQ30BasesI;
+    mCycleQ30BasesI = newBuf;
+
+
+    newBuf = new uint[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
+    memcpy(newBuf, mCycleQ20BasesI, sizeof(uint) * mBufLen * 8);
+    delete mCycleQ20BasesI;
+    mCycleQ20BasesI = newBuf;
+
+    newBuf = new uint[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
+    memcpy(newBuf, mCycleBaseContentsI, sizeof(uint) * mBufLen * 8);
+    delete mCycleBaseContentsI;
+    mCycleBaseContentsI = newBuf;
+
+    newBuf = new uint[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
+    memcpy(newBuf, mCycleBaseQualI, sizeof(uint) * mBufLen * 8);
+    delete mCycleBaseQualI;
+    mCycleBaseQualI = newBuf;
+
+    newBuf = new uint[newBufLen];
+    memset(newBuf, 0, sizeof(uint) * newBufLen);
+    memcpy(newBuf, mCycleTotalBaseI, sizeof(uint) * mBufLen);
+    delete mCycleTotalBaseI;
+    mCycleTotalBaseI = newBuf;
+
+
+    newBuf = new uint[newBufLen];
+    memset(newBuf, 0, sizeof(uint) * newBufLen);
+    memcpy(newBuf, mCycleTotalQualI, sizeof(uint) * mBufLen);
+    delete mCycleTotalQualI;
+    mCycleTotalQualI = newBuf;
+
+    mBufLen = newBufLen;
+}
+
+#endif
+
+#ifdef UseLong
 Stats::~Stats() {
 //    for (int i = 0; i < 8; i++) {
 //        delete mCycleQ30Bases[i];
@@ -205,7 +324,40 @@ Stats::~Stats() {
 
     deleteOverRepSeqDist();
 }
+#else
 
+Stats::~Stats() {
+
+
+    delete mCycleQ30BasesI;
+    mCycleQ30BasesI = NULL;
+    delete mCycleQ20BasesI;
+    mCycleQ20BasesI = NULL;
+    delete mCycleBaseContentsI;
+    mCycleBaseContentsI = NULL;
+    delete mCycleBaseQualI;
+    mCycleBaseQualI = NULL;
+
+    delete mCycleTotalBaseI;
+    delete mCycleTotalQualI;
+
+
+    // delete memory of curves
+    map<string, double *>::iterator iter;
+    for (iter = mQualityCurves.begin(); iter != mQualityCurves.end(); iter++) {
+        delete iter->second;
+    }
+    for (iter = mContentCurves.begin(); iter != mContentCurves.end(); iter++) {
+        delete iter->second;
+    }
+    delete mKmer;
+
+    deleteOverRepSeqDist();
+}
+
+#endif
+
+#ifdef UseLong
 void Stats::summarize(bool forced) {
     if (summarized && !forced)
         return;
@@ -304,6 +456,91 @@ void Stats::summarize(bool forced) {
 
     summarized = true;
 }
+#else
+
+void Stats::summarize(bool forced) {
+    if (summarized && !forced)
+        return;
+
+    // first get the cycle and count total bases
+    for (int c = 0; c < mBufLen; c++) {
+        mBases += mCycleTotalBaseI[c];
+        if (mCycleTotalBaseI[c] == 0) {
+            mCycles = c;
+            break;
+        }
+    }
+    if (mCycleTotalBaseI[mBufLen - 1] > 0)
+        mCycles = mBufLen;
+
+
+    for (int c = 0; c < mCycles; c++) {
+        for (int i = 0; i < 8; i++) {
+            mQ20Bases[i] += mCycleQ20BasesI[c * 8 + i];
+            mQ30Bases[i] += mCycleQ30BasesI[c * 8 + i];
+            mBaseContents[i] += mCycleBaseContentsI[c * 8 + i];
+        }
+    }
+
+    for (int i = 0; i < 8; i++) {
+        mQ20Total += mQ20Bases[i];
+        mQ30Total += mQ30Bases[i];
+    }
+
+    // quality curve for mean qual
+    double *meanQualCurve = new double[mCycles];
+    memset(meanQualCurve, 0, sizeof(double) * mCycles);
+    for (int c = 0; c < mCycles; c++) {
+        meanQualCurve[c] = (double) mCycleTotalQualI[c] / (double) mCycleTotalBaseI[c];
+    }
+    mQualityCurves["mean"] = meanQualCurve;
+
+    // quality curves and base content curves for different nucleotides
+    char alphabets[5] = {'A', 'T', 'C', 'G', 'N'};
+    for (int i = 0; i < 5; i++) {
+        char base = alphabets[i];
+        // get last 3 bits
+        char b = base & 0x07;
+        double *qualCurve = new double[mCycles];
+        memset(qualCurve, 0, sizeof(double) * mCycles);
+        double *contentCurve = new double[mCycles];
+        memset(contentCurve, 0, sizeof(double) * mCycles);
+        for (int c = 0; c < mCycles; c++) {
+            if (mCycleBaseContentsI[c * 8 + b] == 0)
+                qualCurve[c] = meanQualCurve[c];
+            else
+                qualCurve[c] = (double) mCycleBaseQualI[c * 8 + b] / (double) mCycleBaseContentsI[c * 8 + b];
+            contentCurve[c] = (double) mCycleBaseContentsI[c * 8 + b] / (double) mCycleTotalBaseI[c];
+        }
+        mQualityCurves[string(1, base)] = qualCurve;
+        mContentCurves[string(1, base)] = contentCurve;
+    }
+
+    // GC content curve
+    double *gcContentCurve = new double[mCycles];
+    memset(gcContentCurve, 0, sizeof(double) * mCycles);
+    char gBase = 'G' & 0x07;
+    char cBase = 'C' & 0x07;
+    for (int c = 0; c < mCycles; c++) {
+        gcContentCurve[c] =
+                (double) (mCycleBaseContentsI[c * 8 + gBase] + mCycleBaseContentsI[c * 8 + cBase]) /
+                (double) mCycleTotalBaseI[c];
+    }
+    mContentCurves["GC"] = gcContentCurve;
+
+    mKmerMin = mKmer[0];
+    mKmerMax = mKmer[0];
+    for (int i = 0; i < mKmerBufLen; i++) {
+        if (mKmer[i] > mKmerMax)
+            mKmerMax = mKmer[i];
+        if (mKmer[i] < mKmerMin)
+            mKmerMin = mKmer[i];
+    }
+
+    summarized = true;
+}
+
+#endif
 
 int Stats::getMeanLength() {
     if (mReads == 0)
@@ -550,7 +787,7 @@ void Stats::statRead(Read *r) {
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
-#else
+#elif UseLong
 
     for (int i = 0; i < len; i++) {
         mCycleTotalBase[i]++;
@@ -568,8 +805,23 @@ void Stats::statRead(Read *r) {
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
-
-
+#else
+    for (int i = 0; i < len; i++) {
+        mCycleTotalBaseI[i]++;
+        mCycleTotalQualI[i] += (qualstr[i] - 33);
+    }
+    for (int i = 0; i < len; i++) {
+        char b = seqstr[i] & 0x07;
+        mCycleQ30BasesI[i * 8 + b] += qualstr[i] >= q30;
+        mCycleQ20BasesI[i * 8 + b] += qualstr[i] >= q20;
+        mCycleBaseContentsI[i * 8 + b]++;
+        mCycleBaseQualI[i * 8 + b] += (qualstr[i] - 33);
+        if (seqstr[i] == 'N')flag = 5;
+        int val = valAGCT[seqstr[i] & 0x07];
+        kmer = ((kmer << 2) & 0x3FC) | val;
+        if (flag <= 0)mKmer[kmer]++;
+        flag--;
+    }
 #endif
     // do overrepresentation analysis for 1 of every 100 reads
     if (mOptions->overRepAnalysis.enabled) {
@@ -758,9 +1010,17 @@ int Stats::getStatsSize() {
     return mBufLen;
 }
 
+#ifdef UseLong
 long *Stats::getOneStats() {
     return mCycleTotalQual;
 }
+#else
+
+uint *Stats::getOneStats() {
+    return mCycleTotalQualI;
+}
+
+#endif
 
 void Stats::print() {
     if (!summarized) {
@@ -1276,6 +1536,7 @@ void Stats::reportHtmlContents(ofstream &ofs, string filteringType, string readN
     delete[] x;
 }
 
+#ifdef UseLong
 Stats *Stats::merge(vector<Stats *> &list) {
     if (list.size() == 0)
         return NULL;
@@ -1346,6 +1607,71 @@ Stats *Stats::merge(vector<Stats *> &list) {
     return s;
 }
 
+#else
+
+Stats *Stats::merge(vector<Stats *> &list) {
+    if (list.size() == 0)
+        return NULL;
+
+    //get the most long cycles
+    int cycles = 0;
+    for (int t = 0; t < list.size(); t++) {
+        list[t]->summarize();
+        cycles = max(cycles, list[t]->getCycles());
+    }
+
+    Stats *s = new Stats(list[0]->mOptions, list[0]->mIsRead2, cycles, 0);
+
+    // init overrepresented seq maps
+    map<string, long>::iterator iter;
+
+    for (int t = 0; t < list.size(); t++) {
+        int curCycles = list[t]->getCycles();
+        // merge read number
+        s->mReads += list[t]->mReads;
+        s->mLengthSum += list[t]->mLengthSum;
+
+        // merge per cycle counting for different bases
+
+        for (int j = 0; j < cycles && j < curCycles; j++) {
+            for (int i = 0; i < 8; i++) {
+                s->mCycleQ30BasesI[j * 8 + i] += list[t]->mCycleQ30BasesI[j * 8 + i];
+                s->mCycleQ20BasesI[j * 8 + i] += list[t]->mCycleQ20BasesI[j * 8 + i];
+                s->mCycleBaseContentsI[j * 8 + i] = list[t]->mCycleBaseContentsI[j * 8 + i];
+                s->mCycleBaseQualI[j * 8 + i] += list[t]->mCycleBaseQualI[j * 8 + i];
+            }
+        }
+
+        // merge per cycle counting for all bases
+        for (int j = 0; j < cycles && j < curCycles; j++) {
+            s->mCycleTotalBaseI[j] += list[t]->mCycleTotalBaseI[j];
+            s->mCycleTotalQualI[j] += list[t]->mCycleTotalQualI[j];
+        }
+
+        // merge kMer
+        for (int i = 0; i < s->mKmerBufLen; i++) {
+            s->mKmer[i] += list[t]->mKmer[i];
+        }
+
+        // merge over rep seq
+        for (iter = s->mOverRepSeq.begin(); iter != s->mOverRepSeq.end(); iter++) {
+            string seq = iter->first;
+            s->mOverRepSeq[seq] += list[t]->mOverRepSeq[seq];
+            if (s->mIsRead2 != list[t]->mIsRead2 || list[t]->mOverRepSeqDist[seq] == NULL)
+                cerr << t << seq << ":" << (s->mIsRead2 ? 2 : 1) << "," << (list[t]->mIsRead2 ? 2 : 1) << endl;
+            for (int i = 0; i < s->mEvaluatedSeqLen; i++) {
+                s->mOverRepSeqDist[seq][i] += list[t]->mOverRepSeqDist[seq][i];
+            }
+        }
+    }
+
+    s->summarize();
+
+    return s;
+}
+
+#endif
+
 void Stats::initOverRepSeq() {
     map<string, long> overRepSeq;
     if (mIsRead2)
@@ -1371,4 +1697,3 @@ void Stats::deleteOverRepSeqDist() {
         mOverRepSeqDist[seq] = NULL;
     }
 }
-

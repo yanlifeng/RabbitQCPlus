@@ -11,6 +11,7 @@
 #include "adaptertrimmer.h"
 #include "polyx.h"
 
+#define uint unsigned int
 
 SingleEndProcessor::SingleEndProcessor(Options *opt) {
     mOptions = opt;
@@ -140,7 +141,7 @@ bool SingleEndProcessor::process() {
 //        preStats.push_back(configs[t]->getPreStats1());
 //        postStats.push_back(configs[t]->getPostStats1());
 //    }
-    fstream out;
+    fstream out, in, inn;
 
     string outFileName1 = "preStatsKmer";
     string outFileName2 = "postStatsKmer";
@@ -176,7 +177,7 @@ bool SingleEndProcessor::process() {
     out.seekp(0, ios::beg);
     out.write(reinterpret_cast<char *>(mDuplicate->mDups), mDuplicate->mKeyLenInBit * sizeof(uint64));
     out.close();
-
+#ifdef UseLong
     out.open(outFileName6.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
     out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalBase), finalPreStats->mBufLen * sizeof(long));
@@ -196,7 +197,63 @@ bool SingleEndProcessor::process() {
     out.seekp(0, ios::beg);
     out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalQual), finalPostStats->mBufLen * sizeof(long));
     out.close();
+#else
+    out.open(outFileName6.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalBaseI), finalPreStats->mBufLen * sizeof(uint));
+    out.close();
 
+    out.open(outFileName7.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalQualI), finalPreStats->mBufLen * sizeof(uint));
+    out.close();
+
+    out.open(outFileName8.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalBaseI), finalPostStats->mBufLen * sizeof(uint));
+    out.close();
+
+    out.open(outFileName9.c_str(), ios::out | ios::binary);
+    out.seekp(0, ios::beg);
+    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalQualI), finalPostStats->mBufLen * sizeof(uint));
+    out.close();
+
+//
+//    string fn[4] = {"preStatsTotalBase", "preStatsTotalQual", "postStatsTotalBase", "postStatsTotalQual"};
+//    string fr[4] = {"../STD/preStatsTotalBase", "../STD/preStatsTotalQual", "../STD/postStatsTotalBase",
+//                    "../STD/postStatsTotalQual"};
+//
+//
+//    auto tlen = finalPreStats->mBufLen;
+//    for (int tt = 0; tt < 4; tt++) {
+//        uint *f1 = new uint[tlen];
+//        long *f2 = new long[tlen];
+//        cout << fn[tt] << " " << fr[tt] << endl;
+//        in.open(fn[tt].c_str(), ios::in | ios::binary);
+//        inn.open(fr[tt].c_str(), ios::in | ios::binary);
+//        if (!in) {
+//            printf("Can't open file \"%s\"\n", fn[tt].c_str());
+//        } else if (!inn) {
+//            printf("Can't open file \"%s\"\n", fr[tt].c_str());
+//        } else {
+//            in.seekg(0, ios::beg);
+//            in.read(reinterpret_cast<char *>(f1), tlen * sizeof(uint));
+//            inn.seekg(0, ios::beg);
+//            inn.read(reinterpret_cast<char *>(f2), tlen * sizeof(long));
+//            printf("=================================================\n");
+//            for (int i = 0; i < tlen; i++) {
+//                if (f1[i] != f2[i]) {
+//                    printf("GG on test %d  STD : %u   Now : %ld\n", i, f1[i], f2[i]);
+//                }
+//            }
+//            printf("=================================================\n");
+//        }
+//        in.close();
+//        inn.close();
+//    }
+
+
+#endif
 
 #ifdef Timer
     double cost = 0;
@@ -258,15 +315,27 @@ bool SingleEndProcessor::process() {
     printf("total format =================================: %.5f\n", costFormat);
 #endif
 
-    cerr << "Read1 before filtering:" << endl;
-    finalPreStats->print();
-    cerr << endl;
-    cerr << "Read1 after filtering:" << endl;
-    finalPostStats->print();
+    cerr << "Read1 before filtering:" <<
+         endl;
+    finalPreStats->
 
-    cerr << endl;
-    cerr << "Filtering result:" << endl;
-    finalFilterResult->print();
+            print();
+
+    cerr <<
+         endl;
+    cerr << "Read1 after filtering:" <<
+         endl;
+    finalPostStats->
+
+            print();
+
+    cerr <<
+         endl;
+    cerr << "Filtering result:" <<
+         endl;
+    finalFilterResult->
+
+            print();
 
     int *dupHist = NULL;
     double *dupMeanTlen = NULL;
@@ -275,48 +344,73 @@ bool SingleEndProcessor::process() {
     if (mOptions->duplicate.enabled) {
 //        printf("duplicate enabled is true\n");
         dupHist = new int[mOptions->duplicate.histSize];
-        memset(dupHist, 0, sizeof(int) * mOptions->duplicate.histSize);
+        memset(dupHist,
+               0, sizeof(int) * mOptions->duplicate.histSize);
         dupMeanGC = new double[mOptions->duplicate.histSize];
-        memset(dupMeanGC, 0, sizeof(double) * mOptions->duplicate.histSize);
+        memset(dupMeanGC,
+               0, sizeof(double) * mOptions->duplicate.histSize);
         dupRate = mDuplicate->statAll(dupHist, dupMeanGC, mOptions->duplicate.histSize);
-        cerr << endl;
-        cerr << "Duplication rate (may be overestimated since this is SE data): " << dupRate * 100.0 << "%" << endl;
+        cerr <<
+             endl;
+        cerr << "Duplication rate (may be overestimated since this is SE data): " << dupRate * 100.0 << "%" <<
+             endl;
     }
 
-    // make JSON report
+// make JSON report
     JsonReporter jr(mOptions);
-    jr.setDupHist(dupHist, dupMeanGC, dupRate);
-    jr.report(finalFilterResult, finalPreStats, finalPostStats);
+    jr.
+            setDupHist(dupHist, dupMeanGC, dupRate
+    );
+    jr.
+            report(finalFilterResult, finalPreStats, finalPostStats
+    );
 
-    // make HTML report
+// make HTML report
     HtmlReporter hr(mOptions);
-    hr.setDupHist(dupHist, dupMeanGC, dupRate);
-    hr.report(finalFilterResult, finalPreStats, finalPostStats);
+    hr.
+            setDupHist(dupHist, dupMeanGC, dupRate
+    );
+    hr.
+            report(finalFilterResult, finalPreStats, finalPostStats
+    );
 
-    // clean up
-    for (int t = 0; t < mOptions->thread; t++) {
+// clean up
+    for (
+            int t = 0;
+            t < mOptions->
+                    thread;
+            t++) {
         delete threads[t];
         threads[t] = NULL;
         delete configs[t];
         configs[t] = NULL;
     }
 
-    delete finalPreStats;
-    delete finalPostStats;
-    delete finalFilterResult;
+    delete
+            finalPreStats;
+    delete
+            finalPostStats;
+    delete
+            finalFilterResult;
 
     if (mOptions->duplicate.enabled) {
-        delete[] dupHist;
-        delete[] dupMeanGC;
+        delete[]
+                dupHist;
+        delete[]
+                dupMeanGC;
     }
 
-    delete[] threads;
-    delete[] configs;
+    delete[]
+            threads;
+    delete[]
+            configs;
 
     if (leftWriterThread)
-        delete leftWriterThread;
+        delete
+                leftWriterThread;
 
     if (!mOptions->split.enabled)
+
         closeOutput();
 
     return true;

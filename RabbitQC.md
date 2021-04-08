@@ -1203,3 +1203,73 @@ _mm512_load_epi64 :  65.8957
 
 好像是不知道为啥native的版本没有向量化，手写了一部分，现在总时间和全部自动向量化差不多。。。。
 
+....
+
+添加了mm256的版本，但是还有点bug。
+
+#### 0407
+
+现在自动向量化的版本
+
+```
+ylf@gold6148:~/QC/RabbitQC$ ./rm.sh && time ./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+40 CPUs detected
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+mKeyLenInBase 12
+producer.join
+threads.join
+total getPreStats1()->statRead(or1) ====: 12.36815
+total mDuplicate->statRead(or1) ========: 4.96933
+total mOptions->indexFilter()  =========: 0.59926
+total mUmiProcessor->process(or1) ======: 0.95765
+total mFilter->trimAndCut() ============: 0.66535
+total PolyX::trimPolyG() ===============: 0.95765
+total trimBySequence ===================: 0.60368
+total r1->resize() =====================: 0.60566
+total mFilter->passFilter(r1) ==========: 1.24261
+total addFilterResult(result) ==========: 0.65178
+total outstr += r1->toString() =========: 0.60243
+total getPostStats1()->statRead(r1) ====: 11.97133
+total delete r1 ========================: 2.70405
+total ready output ========================: 1.22500
+total costTotel ========================: 38.54645
+total cost =============================: 46.69251
+total  =================================: 2552
+total format =================================: 13.03277
+Read1 before filtering:
+total reads: 27497479
+total bases: 2749747900
+Q20 bases: 2707938680(98.4795%)
+Q30 bases: 2645554729(96.2108%)
+
+Read1 after filtering:
+total reads: 27219050
+total bases: 2721905000
+Q20 bases: 2699552056(99.1788%)
+Q30 bases: 2639324248(96.9661%)
+
+Filtering result:
+reads passed filter: 27219050
+reads failed due to low quality: 274717
+reads failed due to too many N: 3712
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.159583%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+rabbit_qc v0.0.1, time used: 61.641 seconds
+
+real	1m1.681s
+user	1m3.682s
+sys	0m4.101s
+```
+
+把state里面的long换成unsigned int。统计信息
+
