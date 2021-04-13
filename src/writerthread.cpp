@@ -2,6 +2,7 @@
 #include "util.h"
 #include <memory.h>
 #include <unistd.h>
+#include "read.h"
 
 WriterThread::WriterThread(Options *opt, string filename) {
     mOptions = opt;
@@ -53,6 +54,34 @@ void WriterThread::input(char *data, size_t size) {
     mRingBuffer[mInputCounter] = data;
     mRingBufferSizes[mInputCounter] = size;
     mInputCounter++;
+}
+
+//TODO
+void WriterThread::input(vector<Read *> newOut) {
+//
+//    for (int i = 0; i < newOut.size(); i++) {
+//        Read *now = newOut[i];
+//        memcpy(nowPos, now->mName.c_str(), now->mName.size());
+//        nowPos += now->mName.size();
+//        *nowPos = '\n';
+//        nowPos++;
+//        memcpy(nowPos, now->mSeq.mStr.c_str(), now->mSeq.length());
+//        nowPos += now->mSeq.length();
+//        *nowPos = '\n';
+//        nowPos++;
+//        memcpy(nowPos, now->mStrand.c_str(), now->mStrand.size());
+//        nowPos += now->mStrand.size();
+//        *nowPos = '\n';
+//        nowPos++;
+//        memcpy(nowPos, now->mQuality.c_str(), now->mQuality.size());
+//        nowPos += now->mQuality.size();
+//        *nowPos = '\n';
+//        nowPos++;
+//        delete now;
+//    }
+//    mRingBuffer[mInputCounter] = data;
+//    mRingBufferSizes[mInputCounter] = size;
+//    mInputCounter++;
 }
 
 void WriterThread::cleanup() {

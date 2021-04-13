@@ -16,6 +16,7 @@ string command;
 mutex logmtx;
 
 int main(int argc, char *argv[]) {
+    double t1 = get_wall_time();
     // display version info if no argument is given
     if (argc == 1) {
         cerr << "rabbit_qc: an ultra-fast all-in-one FASTQ preprocessor" << endl << "version " << RABBITQC_VER << endl;
@@ -393,7 +394,7 @@ int main(int argc, char *argv[]) {
     command = ss.str();
 
 
-    double t1 = get_wall_time();
+    cout << "parser cmd cost " << get_wall_time() - t1 << " seconds" << endl;
 
     bool supportEvaluation = !opt.inputFromSTDIN && opt.in1 != "/dev/stdin";
 
@@ -468,12 +469,9 @@ int main(int argc, char *argv[]) {
             opt.polyGTrim.enabled = true;
         }
     }
+    cout << "adapter detected cost " << get_wall_time() - t1 << " seconds" << endl;
 
-//
-//    for (int i = 0; i < 200; i++) {
-//        printf("%d ", valAGCT[i]);
-//    }
-//    printf("\n");
+
     Processor p(&opt);
     p.process();
 

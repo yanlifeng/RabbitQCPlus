@@ -1,1 +1,1 @@
-time ./rabbit_qc -w $1 -i ../data/test.fq && ./check.sh
+./rm.sh && time ./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq

@@ -96,7 +96,7 @@ void Duplicate::addRecord(uint32 key, uint64 kmer32, uint8 gc) {
 //    lok.unlock();
 }
 
-#ifdef Vecopen
+#ifdef Vce512
 
 static void PP3(__m512i p) {
     long long ar[8];
@@ -145,7 +145,7 @@ void Duplicate::statRead(Read *r) {
     // not calculated
     //TODO check correctness
 //    if (mCounts[key] == 0) {
-#ifdef Vecopen
+#ifdef Vce512
     int i = 0;
     __m512i gcV = _mm512_set1_epi32(0);
     __m512i ad1 = _mm512_set1_epi32(1);

@@ -5,7 +5,7 @@
 
 #define uint unsigned int
 
-#ifdef Vecopen
+#ifdef Vce512
 
 #include <immintrin.h>
 
@@ -21,6 +21,7 @@
 
 
 #ifdef UseLong
+
 Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
     mOptions = opt;
     mIsRead2 = isRead2;
@@ -93,6 +94,7 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
 
     initOverRepSeq();
 }
+
 #else
 
 Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
@@ -159,6 +161,7 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
 #endif
 
 #ifdef UseLong
+
 void Stats::extendBuffer(int newBufLen) {
     if (newBufLen <= mBufLen)
         return;
@@ -233,6 +236,7 @@ void Stats::extendBuffer(int newBufLen) {
 
     mBufLen = newBufLen;
 }
+
 #else
 
 void Stats::extendBuffer(int newBufLen) {
@@ -284,6 +288,7 @@ void Stats::extendBuffer(int newBufLen) {
 #endif
 
 #ifdef UseLong
+
 Stats::~Stats() {
 //    for (int i = 0; i < 8; i++) {
 //        delete mCycleQ30Bases[i];
@@ -324,6 +329,7 @@ Stats::~Stats() {
 
     deleteOverRepSeqDist();
 }
+
 #else
 
 Stats::~Stats() {
@@ -358,6 +364,7 @@ Stats::~Stats() {
 #endif
 
 #ifdef UseLong
+
 void Stats::summarize(bool forced) {
     if (summarized && !forced)
         return;
@@ -456,6 +463,7 @@ void Stats::summarize(bool forced) {
 
     summarized = true;
 }
+
 #else
 
 void Stats::summarize(bool forced) {
@@ -550,7 +558,7 @@ int Stats::getMeanLength() {
 }
 
 static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
-#ifdef Vecopen
+#ifdef Vce512
 
 static void PP3(__m512i p) {
     long long ar[8];
@@ -593,6 +601,7 @@ static void PP1(__m128i p) {
 }
 
 #endif
+#define ll long long
 
 void Stats::statRead(Read *r) {
     int len = r->length();
@@ -609,9 +618,9 @@ void Stats::statRead(Read *r) {
     const char q30 = '?';
     int flag = 4;
 
-#ifdef Vec256
-#define ll long long
 
+#ifdef UseLong
+#ifdef Vec256
     int i = 0;
     ll *p1, *p2, *p3, *p4, *p5, *p6;
     __m256i ad0, ad1, ad2, ad3, ad4, v1, v2, v3, v4, v5, v6, sub33, quamm;
@@ -698,14 +707,7 @@ void Stats::statRead(Read *r) {
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
-
-
-#endif
-
-
-#ifdef Vecopen
-#define ll long long
-
+#elif Vce512
     int i = 0;
     ll *p1, *p2, *p3, *p4, *p5, *p6;
     __m512i ad0, ad1, ad2, ad3, ad4, v1, v2, v3, v4, v5, v6, sub33, quamm;
@@ -787,8 +789,7 @@ void Stats::statRead(Read *r) {
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
-#elif UseLong
-
+#else
     for (int i = 0; i < len; i++) {
         mCycleTotalBase[i]++;
         mCycleTotalQual[i] += (qualstr[i] - 33);
@@ -805,6 +806,13 @@ void Stats::statRead(Read *r) {
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
+#endif
+#else
+
+#ifdef Vec256
+    cout << "pending..." << endl;
+#elif Vce512
+    cout << "pending..." << endl;
 #else
     for (int i = 0; i < len; i++) {
         mCycleTotalBaseI[i]++;
@@ -823,6 +831,8 @@ void Stats::statRead(Read *r) {
         flag--;
     }
 #endif
+#endif
+
     // do overrepresentation analysis for 1 of every 100 reads
     if (mOptions->overRepAnalysis.enabled) {
         if (mReads % mOptions->overRepAnalysis.sampling == 0) {
@@ -1011,9 +1021,11 @@ int Stats::getStatsSize() {
 }
 
 #ifdef UseLong
+
 long *Stats::getOneStats() {
     return mCycleTotalQual;
 }
+
 #else
 
 uint *Stats::getOneStats() {
@@ -1537,6 +1549,7 @@ void Stats::reportHtmlContents(ofstream &ofs, string filteringType, string readN
 }
 
 #ifdef UseLong
+
 Stats *Stats::merge(vector<Stats *> &list) {
     if (list.size() == 0)
         return NULL;

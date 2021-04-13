@@ -35,6 +35,7 @@ SOFTWARE.
 #include <string>
 #include <vector>
 #include "writer.h"
+#include "read.h"
 #include "options.h"
 #include <atomic>
 #include <mutex>
@@ -60,6 +61,8 @@ public:
     void output();
 
     void input(char *data, size_t size);
+
+    void input(vector<Read *>);
 
     bool setInputCompleted();
 

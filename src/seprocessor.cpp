@@ -730,12 +730,15 @@ void SingleEndProcessor::consumePack(ThreadConfig *config) {
         mRepo.readPos = 0;*/
     mInputMtx.unlock();
 
-
+#ifdef Timer
     double t = get_wall_time();
+#endif
     //data format for from dsrc to fastp
     data->count = dsrc::fq::chunkFormat(chunk, data->data, true);
-    config->costFormat += get_wall_time() - t;
+#ifdef Timer
 
+    config->costFormat += get_wall_time() - t;
+#endif
 
 
     //cerr << (char*)chunk->data.Pointer() << endl;

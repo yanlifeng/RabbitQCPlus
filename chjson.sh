@@ -1,0 +1,1 @@
+md5sum RabbitQC.json ../STD/RabbitQC.json  &&  diff RabbitQC.json ../STD/RabbitQC.json
