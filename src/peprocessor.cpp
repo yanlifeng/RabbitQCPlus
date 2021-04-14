@@ -75,6 +75,11 @@ void PairEndProcessor::initConfig(ThreadConfig *config) {
     }
 }
 
+int c0 = 0;
+int c1 = 0;
+int c2 = 0;
+int c3 = 0;
+int d1 = 0, d2 = 0, d3 = 0;
 
 bool PairEndProcessor::process() {
     if (!mOptions->split.enabled)
@@ -137,6 +142,15 @@ bool PairEndProcessor::process() {
     Stats *finalPostStats2 = Stats::merge(postStats2);
     FilterResult *finalFilterResult = FilterResult::merge(filterResults);
     fstream out, in, inn;
+
+    cout << " c0 is " << c0 << endl;
+    cout << " c1 is " << c1 << endl;
+    cout << " c2 is " << c2 << endl;
+    cout << " c3 is " << c3 << endl;
+
+    cout << " d1 is " << d1 << endl;
+    cout << " d2 is " << d2 << endl;
+    cout << " d3 is " << d3 << endl;
 
     string outFileName1 = "preStats1Kmer";
     string outFileName11 = "preStats2Kmer";
@@ -263,41 +277,6 @@ bool PairEndProcessor::process() {
     out.close();
 
     cout << "finalPostStats1->mBufLen  " << finalPostStats1->mBufLen << endl;
-
-//
-//    string fn[4] = {"preStatsTotalBase", "preStatsTotalQual", "postStatsTotalBase", "postStatsTotalQual"};
-//    string fr[4] = {"../STD/preStatsTotalBase", "../STD/preStatsTotalQual", "../STD/postStatsTotalBase",
-//                    "../STD/postStatsTotalQual"};
-//
-//
-//    auto tlen = finalPreStats->mBufLen;
-//    for (int tt = 0; tt < 4; tt++) {
-//        uint *f1 = new uint[tlen];
-//        long *f2 = new long[tlen];
-//        cout << fn[tt] << " " << fr[tt] << endl;
-//        in.open(fn[tt].c_str(), ios::in | ios::binary);
-//        inn.open(fr[tt].c_str(), ios::in | ios::binary);
-//        if (!in) {
-//            printf("Can't open file \"%s\"\n", fn[tt].c_str());
-//        } else if (!inn) {
-//            printf("Can't open file \"%s\"\n", fr[tt].c_str());
-//        } else {
-//            in.seekg(0, ios::beg);
-//            in.read(reinterpret_cast<char *>(f1), tlen * sizeof(uint));
-//            inn.seekg(0, ios::beg);
-//            inn.read(reinterpret_cast<char *>(f2), tlen * sizeof(long));
-//            printf("=================================================\n");
-//            for (int i = 0; i < tlen; i++) {
-//                if (f1[i] != f2[i]) {
-//                    printf("GG on test %d  STD : %u   Now : %ld\n", i, f1[i], f2[i]);
-//                }
-//            }
-//            printf("=================================================\n");
-//        }
-//        in.close();
-//        inn.close();
-//    }
-
 
 #endif
 
@@ -453,6 +432,7 @@ int PairEndProcessor::getPeakInsertSize() {
     return peak;
 }
 
+
 bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) {
     string outstr1;
     string outstr2;
@@ -530,6 +510,19 @@ bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) 
         bool isizeEvaluated = false;
         if (r1 != NULL && r2 != NULL && (mOptions->adapter.enabled || mOptions->correction.enabled)) {
             OverlapResult ov = OverlapAnalysis::analyze(r1, r2, mOptions->overlapDiffLimit, mOptions->overlapRequire);
+            /*
+             c0 is 3743702
+             c1 is 1586589
+             c2 is 1984683
+             c3 is 172430
+             d1 is 1586589
+             d2 is 78552391
+             d3 is 2397225
+             * */
+            c0++;
+            if (ov.offset == 0)c1++, d1++;
+            if (ov.offset > 0)c2++, d2 += ov.offset;
+            if (ov.offset < 0)c3++, d3 += -ov.offset;
             // we only use thread 0 to evaluae ISIZE
             if (config->getThreadId() == 0) {
                 statInsertSize(r1, r2, ov);

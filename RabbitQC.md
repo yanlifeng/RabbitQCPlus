@@ -1615,6 +1615,8 @@ total format =================================: 6.53803
 total getPreStats1()->statRead(or1) ====: 2.83674
 //long
 total getPreStats1()->statRead(or1) ====: 3.42496
+//long vec512
+total getPreStats1()->statRead(or1) ====: 3.48177
 total mDuplicate->statRead(or1) ========: 0.29832
 total mOptions->indexFilter()  =========: 0.08186
 total mUmiProcessor->process(or1) ======: 0.09000
@@ -1744,5 +1746,70 @@ rabbit_qc v0.0.1, time used: 21.336 seconds
 
 
 
+```
+
+现在uint的情况下使用vec512进行测试
+
+```
+没啥用。。
+```
+
+把两个一维的统计信息直接留到所有的readPack处理完之后一块弄，快一丢丢
+
+```
+40 CPUs detected
+parser cmd cost 0.000169992 seconds
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+adapter detected cost 0.401944 seconds
+mKeyLenInBase 12
+producer.join
+threads.join
+total getPreStats1()->statRead(or1) ====: 9.71836
+total mDuplicate->statRead(or1) ========: 4.97022
+total mOptions->indexFilter()  =========: 0.60722
+total mUmiProcessor->process(or1) ======: 1.08869
+total mFilter->trimAndCut() ============: 0.68315
+total PolyX::trimPolyG() ===============: 1.08869
+total trimBySequence ===================: 0.60953
+total r1->resize() =====================: 0.60990
+total mFilter->passFilter(r1) ==========: 1.25422
+total addFilterResult(result) ==========: 0.61375
+total outstr += r1->toString() =========: 0.60632
+total getPostStats1()->statRead(r1) ====: 9.28458
+total delete r1 ========================: 2.65708
+total ready output ========================: 1.22979
+total costTotel ========================: 33.31543
+total cost =============================: 41.51545
+total  =================================: 2552
+total format =================================: 13.00359
+Read1 before filtering:
+total reads: 27497479
+total bases: 2749747900
+Q20 bases: 2707938680(98.4795%)
+Q30 bases: 2645554729(96.2108%)
+
+Read1 after filtering:
+total reads: 27219050
+total bases: 2721905000
+Q20 bases: 2699552056(99.1788%)
+Q30 bases: 2639324248(96.9661%)
+
+Filtering result:
+reads passed filter: 27219050
+reads failed due to low quality: 274717
+reads failed due to too many N: 3712
+reads failed due to too short: 0
+reads with adapter trimmed: 0
+bases trimmed due to adapters: 0
+
+Duplication rate (may be overestimated since this is SE data): 0.159583%
+
+JSON report: RabbitQC.json
+HTML report: RabbitQC.html
+
+./rabbit_qc -w 1 -i ../../data/SRR2530740.sra.fastq
+rabbit_qc v0.0.1, time used: 56.3852 seconds
 ```
 

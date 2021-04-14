@@ -37,6 +37,7 @@ SOFTWARE.
 #include <map>
 #include "read.h"
 #include "options.h"
+
 #define uint unsigned int
 
 using namespace std;
@@ -83,6 +84,8 @@ public:
     void print();
 
     void summarize(bool forced = false);
+
+    void getTotData();
 
     // a port of JSON report
     void reportJson(ofstream &ofs, string padding);

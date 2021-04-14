@@ -12,13 +12,13 @@
 #endif
 #ifdef Vec256
 
-#include <tmmintrin.h>
 #include <immintrin.h>
 
 #endif
 
 #define KMER_LEN 5
 
+#define ll long long
 
 #ifdef UseLong
 
@@ -96,6 +96,7 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
 }
 
 #else
+#define ll long long
 
 Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
     mOptions = opt;
@@ -466,9 +467,19 @@ void Stats::summarize(bool forced) {
 
 #else
 
+void Stats::getTotData() {
+    for (int i = 0; i < mBufLen; i++) {
+        for (int j = 0; j < 8; j++) {
+            mCycleTotalBaseI[i] += mCycleBaseContentsI[i * 8 + j];
+            mCycleTotalQualI[i] += mCycleBaseQualI[i * 8 + j];
+        }
+    }
+}
+
 void Stats::summarize(bool forced) {
     if (summarized && !forced)
         return;
+
 
     // first get the cycle and count total bases
     for (int c = 0; c < mBufLen; c++) {
@@ -558,50 +569,9 @@ int Stats::getMeanLength() {
 }
 
 static int valAGCT[8] = {-1, 0, -1, 2, 1, -1, -1, 3};
-#ifdef Vce512
-
-static void PP3(__m512i p) {
-    long long ar[8];
-    _mm512_store_si512(ar, p);
-    for (int i = 0; i < 8; i++)printf("%lld ", ar[i]);
-    printf("\n");
-}
-
-static void PP2(__m256i p) {
-    int ar[8];
-    _mm256_mask_store_epi32(ar, 0xFF, p);
-    for (int i = 0; i < 8; i++)printf("%d ", ar[i]);
-    printf("\n");
-}
-
-static void PP1(__m128i p) {
-    char ar[16];
-    _mm_mask_storeu_epi8(ar, 0xFF, p);
-    for (int i = 0; i < 8; i++)printf("%c ", ar[i]);
-    printf("\n");
-}
-
-#endif
-
-#ifdef Vec256
 
 
-static void PP2(__m256i p) {
-    int ar[4];
-    _mm256_mask_store_epi32(ar, 0xF, p);
-    for (int i = 0; i < 4; i++)printf("%lld ", ar[i]);
-    printf("\n");
-}
-
-static void PP1(__m128i p) {
-    char ar[16];
-    _mm_mask_storeu_epi8(ar, 0xFF, p);
-    for (int i = 0; i < 8; i++)printf("%c ", ar[i]);
-    printf("\n");
-}
-
-#endif
-#define ll long long
+#ifdef UseLong
 
 void Stats::statRead(Read *r) {
     int len = r->length();
@@ -619,94 +589,8 @@ void Stats::statRead(Read *r) {
     int flag = 4;
 
 
-#ifdef UseLong
 #ifdef Vec256
-    int i = 0;
-    ll *p1, *p2, *p3, *p4, *p5, *p6;
-    __m256i ad0, ad1, ad2, ad3, ad4, v1, v2, v3, v4, v5, v6, sub33, quamm;
-    __m128i bse, and7, add8, idx;
-    __m128i ide;
-    bse = _mm_set_epi32(3 * 8, 2 * 8, 1 * 8, 0 * 8);
-    ad0 = _mm256_set1_epi64x(0);
-    ad1 = _mm256_set1_epi64x(1);
-    and7 = _mm_set1_epi32(0x07);
-    add8 = _mm_set1_epi32(64);
-    sub33 = _mm256_set1_epi32(33);
-    __m256i q20_vec = _mm256_set1_epi32((ll) '5');
-    __m256i q30_vec = _mm256_set1_epi32((ll) '?');
-
-    for (; i + 4 <= len; i += 4) {
-
-        ide = _mm_maskz_loadu_epi8(0xF, qualstr + i);
-        quamm = _mm256_cvtepi8_epi64(ide);
-
-        ad2 = _mm256_sub_epi64(quamm, sub33);
-        __mmask8 q30_mask = _mm256_cmp_epi64_mask(quamm, q30_vec, _MM_CMPINT_NLT);
-        __mmask8 q20_mask = _mm256_cmp_epi64_mask(quamm, q20_vec, _MM_CMPINT_NLT);
-
-
-        ide = _mm_maskz_loadu_epi8(0xF, seqstr + i);
-        PP1(ide);
-        idx = _mm_cvtepi8_epi32(ide);
-        PP1(idx);
-        idx = _mm_maskz_and_epi32(0xF, idx, and7);
-        idx = _mm_add_epi32(bse, idx);
-        bse = _mm_add_epi32(bse, add8);
-
-        p1 = (ll *) (mCycleTotalBase + i);
-        v1 = _mm256_maskz_load_epi64(0xF, p1);
-        v1 = _mm256_add_epi64(v1, ad1);
-        _mm256_store_epi64(p1, v1);
-
-        p2 = (ll *) (mCycleTotalQual + i);
-        v2 = _mm256_maskz_load_epi64(0xF, p2);
-        v2 = _mm256_add_epi64(v2, ad2);
-        _mm256_store_epi64(p2, v2);
-
-        p3 = (ll *) mCycleBaseContentsR;
-        v3 = _mm256_mmask_i32gather_epi64(v3, 0xFF, idx, p3, 8);
-        v3 = _mm256_add_epi64(v3, ad1);
-        _mm256_i32scatter_epi64(p3, idx, v3, 8);
-
-        p4 = (ll *) mCycleBaseQualR;
-        v4 = _mm256_mmask_i32gather_epi64(v4, 0xFF, idx, p4, 8);
-        v4 = _mm256_add_epi64(v4, ad2);
-        _mm256_i32scatter_epi64(p4, idx, v4, 8);
-
-        p5 = (ll *) mCycleQ30BasesR;
-        v5 = _mm256_mmask_i32gather_epi64(v5, 0xFF, idx, p5, 8);
-        v5 = _mm256_mask_add_epi64(v5, q30_mask, v5, ad1);
-        _mm256_i32scatter_epi64(p5, idx, v5, 8);
-
-        p6 = (ll *) mCycleQ20BasesR;
-        v6 = _mm256_mmask_i32gather_epi64(v6, 0xFF, idx, p6, 8);
-        v6 = _mm256_mask_add_epi64(v6, q20_mask, v6, ad1);
-        _mm256_i32scatter_epi64(p6, idx, v6, 8);
-
-
-        for (int j = i; j < i + 4; j++) {
-            if (seqstr[j] == 'N')flag = 5;
-            int val = valAGCT[seqstr[j] & 0x07];
-            kmer = ((kmer << 2) & 0x3FC) | val;
-            if (flag <= 0)mKmer[kmer]++;
-            flag--;
-        }
-    }
-    for (; i < len; i++) {
-        char b = seqstr[i] & 0x07;
-        mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
-        mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
-        mCycleBaseContentsR[i * 8 + b]++;
-        mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
-        mCycleTotalBase[i]++;
-        mCycleTotalQual[i] += (qualstr[i] - 33);
-
-        if (seqstr[i] == 'N')flag = 5;
-        int val = valAGCT[seqstr[i] & 0x07];
-        kmer = ((kmer << 2) & 0x3FC) | val;
-        if (flag <= 0)mKmer[kmer]++;
-        flag--;
-    }
+    cout << "pending ... " << endl;
 #elif Vce512
     int i = 0;
     ll *p1, *p2, *p3, *p4, *p5, *p6;
@@ -807,17 +691,138 @@ void Stats::statRead(Read *r) {
         flag--;
     }
 #endif
+
+    // do overrepresentation analysis for 1 of every 100 reads
+    if (mOptions->overRepAnalysis.enabled) {
+        if (mReads % mOptions->overRepAnalysis.sampling == 0) {
+            const int steps[5] = {10, 20, 40, 100, min(150, mEvaluatedSeqLen - 2)};
+            for (int s = 0; s < 5; s++) {
+                int step = steps[s];
+                for (int i = 0; i < len - step; i++) {
+                    string seq = r->mSeq.mStr.substr(i, step);
+                    if (mOverRepSeq.count(seq) > 0) {
+                        mOverRepSeq[seq]++;
+                        for (int p = i; p < seq.length() + i && p < mEvaluatedSeqLen; p++) {
+                            mOverRepSeqDist[seq][p]++;
+                        }
+                        i += step;
+                    }
+                }
+            }
+        }
+    }
+    mReads++;
+}
+
 #else
+
+void Stats::statRead(Read *r) {
+    int len = r->length();
+    mLengthSum += len;
+
+    if (mBufLen < len) {
+        extendBuffer(max(len + 100, (int) (len * 1.5)));
+    }
+    const char *seqstr = r->mSeq.mStr.c_str();
+    const char *qualstr = r->mQuality.c_str();
+
+    int kmer = 0;
+    const char q20 = '5';
+    const char q30 = '?';
+    int flag = 4;
+
 
 #ifdef Vec256
     cout << "pending..." << endl;
 #elif Vce512
-    cout << "pending..." << endl;
-#else
-    for (int i = 0; i < len; i++) {
-        mCycleTotalBaseI[i]++;
-        mCycleTotalQualI[i] += (qualstr[i] - 33);
+    int i = 0;
+    int det = 16;
+    uint *p1, *p2, *p3, *p4, *p5, *p6;
+    __m512i ad0, ad1, ad2, ad3, ad4, v1, v2, v3, v4, v5, v6, sub33, quamm;
+    __m512i bse, and7, add8, idx;
+    __m128i ide;
+    bse = _mm512_set_epi32(15 * 8, 14 * 8, 13 * 8, 12 * 8, 11 * 8, 10 * 8, 9 * 8, 8 * 8, 7 * 8, 6 * 8, 5 * 8, 4 * 8,
+                           3 * 8, 2 * 8, 1 * 8, 0 * 8);
+//    ad0 = _mm512_set1_epi64(0);
+    ad1 = _mm512_set1_epi64(1);
+    and7 = _mm512_set1_epi32(0x07);
+    add8 = _mm512_set1_epi32(128);
+    sub33 = _mm512_set1_epi64(33);
+    __m512i q20_vec = _mm512_set1_epi32((int) '5');
+    __m512i q30_vec = _mm512_set1_epi32((int) '?');
+
+    for (; i + det <= len; i += det) {
+
+        ide = _mm_maskz_loadu_epi8(0xFFFF, qualstr + i);
+        quamm = _mm512_cvtepi8_epi32(ide);
+        ad2 = _mm512_sub_epi32(quamm, sub33);
+        __mmask16 q30_mask = _mm512_cmp_epi32_mask(quamm, q30_vec, _MM_CMPINT_NLT);
+        __mmask16 q20_mask = _mm512_cmp_epi32_mask(quamm, q20_vec, _MM_CMPINT_NLT);
+        ide = _mm_maskz_loadu_epi8(0xFFFF, seqstr + i);
+        idx = _mm512_cvtepi8_epi32(ide);
+        idx = _mm512_and_epi32(idx, and7);
+        idx = _mm512_add_epi32(bse, idx);
+        bse = _mm512_add_epi32(bse, add8);
+
+//        p1 = (uint *) (mCycleTotalBaseI + i);
+//        v1 = _mm512_load_epi32(p1);
+//        v1 = _mm512_add_epi32(v1, ad1);
+//        _mm512_store_epi32(p1, v1);
+//
+//        p2 = (uint *) (mCycleTotalQualI + i);
+//        v2 = _mm512_load_epi32(p2);
+//        v2 = _mm512_add_epi32(v2, ad2);
+//        _mm512_store_epi32(p2, v2);
+
+        p3 = (uint *) mCycleBaseContentsI;
+        v3 = _mm512_i32gather_epi32(idx, p3, 4);
+        v3 = _mm512_add_epi64(v3, ad1);
+        _mm512_i32scatter_epi32(p3, idx, v3, 4);
+
+        p4 = (uint *) mCycleBaseQualI;
+        v4 = _mm512_i32gather_epi32(idx, p4, 4);
+        v4 = _mm512_add_epi64(v4, ad2);
+        _mm512_i32scatter_epi32(p4, idx, v4, 4);
+
+        p5 = (uint *) mCycleQ30BasesI;
+        v5 = _mm512_i32gather_epi32(idx, p5, 4);
+        v5 = _mm512_mask_add_epi64(v5, q30_mask, v5, ad1);
+        _mm512_i32scatter_epi32(p5, idx, v5, 4);
+
+        p6 = (uint *) mCycleQ20BasesI;
+        v6 = _mm512_i32gather_epi32(idx, p6, 4);
+        v6 = _mm512_mask_add_epi64(v6, q20_mask, v6, ad1);
+        _mm512_i32scatter_epi32(p6, idx, v6, 4);
+
+
+        for (int j = i; j < i + det; j++) {
+            if (seqstr[j] == 'N')flag = 5;
+            int val = valAGCT[seqstr[j] & 0x07];
+            kmer = ((kmer << 2) & 0x3FC) | val;
+            if (flag <= 0)mKmer[kmer]++;
+            flag--;
+        }
     }
+    for (; i < len; i++) {
+        char b = seqstr[i] & 0x07;
+        mCycleQ30BasesI[i * 8 + b] += qualstr[i] >= q30;
+        mCycleQ20BasesI[i * 8 + b] += qualstr[i] >= q20;
+        mCycleBaseContentsI[i * 8 + b]++;
+        mCycleBaseQualI[i * 8 + b] += (qualstr[i] - 33);
+//        mCycleTotalBaseI[i]++;
+//        mCycleTotalQualI[i] += (qualstr[i] - 33);
+
+        if (seqstr[i] == 'N')flag = 5;
+        int val = valAGCT[seqstr[i] & 0x07];
+        kmer = ((kmer << 2) & 0x3FC) | val;
+        if (flag <= 0)mKmer[kmer]++;
+        flag--;
+    }
+#else
+    //    for (int i = 0; i < len; i++) {
+    //        mCycleTotalBaseI[i]++;
+    //        mCycleTotalQualI[i] += (qualstr[i] - 33);
+    //    }
     for (int i = 0; i < len; i++) {
         char b = seqstr[i] & 0x07;
         mCycleQ30BasesI[i * 8 + b] += qualstr[i] >= q30;
@@ -830,7 +835,6 @@ void Stats::statRead(Read *r) {
         if (flag <= 0)mKmer[kmer]++;
         flag--;
     }
-#endif
 #endif
 
     // do overrepresentation analysis for 1 of every 100 reads
@@ -855,106 +859,7 @@ void Stats::statRead(Read *r) {
     mReads++;
 }
 
-//
-//void Stats::statRead(Read *r) {
-//    int len = r->length();
-//
-//    mLengthSum += len;
-//
-//    if (mBufLen < len) {
-//        extendBuffer(max(len + 100, (int) (len * 1.5)));
-//    }
-//    const char *seqstr = r->mSeq.mStr.c_str();
-//    const char *qualstr = r->mQuality.c_str();
-//
-//    int kmer = 0;
-//    bool needFullCompute = true;
-//    for (int i = 0; i < len; i++) {
-//        char base = seqstr[i];
-//        char qual = qualstr[i];
-//        // get last 3 bits
-//        char b = base & 0x07;
-//
-//        const char q20 = '5';
-//        const char q30 = '?';
-//
-//        if (qual >= q30) {
-//            mCycleQ30Bases[b][i]++;
-//            mCycleQ20Bases[b][i]++;
-//        } else if (qual >= q20) {
-//            mCycleQ20Bases[b][i]++;
-//        }
-//
-//        mCycleBaseContents[b][i]++;
-//        mCycleBaseQual[b][i] += (qual - 33);
-//
-//        mCycleTotalBase[i]++;
-//        mCycleTotalQual[i] += (qual - 33);
-//
-//        if (base == 'N') {
-//            needFullCompute = true;
-//            continue;
-//        }
-//
-//        // 5 bases required for kmer computing
-//        if (i < 4)
-//            continue;
-//
-//        // calc 5 KMER
-//        // 0x3FC == 0011 1111 1100
-//        if (!needFullCompute) {
-//            int val = base2val(base);
-//            if (val < 0) {
-//                needFullCompute = true;
-//                continue;
-//            } else {
-//                kmer = ((kmer << 2) & 0x3FC) | val;
-//                mKmer[kmer]++;
-//            }
-//        } else {
-//            bool valid = true;
-//            kmer = 0;
-//            for (int k = 0; k < 5; k++) {
-//                int val = base2val(seqstr[i - 4 + k]);
-//                if (val < 0) {
-//                    valid = false;
-//                    break;
-//                }
-//                kmer = ((kmer << 2) & 0x3FC) | val;
-//            }
-//            if (!valid) {
-//                needFullCompute = true;
-//                continue;
-//            } else {
-//                mKmer[kmer]++;
-//                needFullCompute = false;
-//            }
-//        }
-//
-//    }
-//
-//    // do overrepresentation analysis for 1 of every 100 reads
-//    if (mOptions->overRepAnalysis.enabled) {
-//        if (mReads % mOptions->overRepAnalysis.sampling == 0) {
-//            const int steps[5] = {10, 20, 40, 100, min(150, mEvaluatedSeqLen - 2)};
-//            for (int s = 0; s < 5; s++) {
-//                int step = steps[s];
-//                for (int i = 0; i < len - step; i++) {
-//                    string seq = r->mSeq.mStr.substr(i, step);
-//                    if (mOverRepSeq.count(seq) > 0) {
-//                        mOverRepSeq[seq]++;
-//                        for (int p = i; p < seq.length() + i && p < mEvaluatedSeqLen; p++) {
-//                            mOverRepSeqDist[seq][p]++;
-//                        }
-//                        i += step;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    mReads++;
-//}
+#endif
 
 int Stats::base2val(char base) {
     switch (base) {

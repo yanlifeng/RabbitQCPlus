@@ -1,24 +1,24 @@
 #include "overlapanalysis.h"
 
-OverlapAnalysis::OverlapAnalysis(){
+OverlapAnalysis::OverlapAnalysis() {
 }
 
 
-OverlapAnalysis::~OverlapAnalysis(){
+OverlapAnalysis::~OverlapAnalysis() {
 }
 
-OverlapResult OverlapAnalysis::analyze(Read* r1, Read* r2, int overlapDiffLimit, int overlapRequire) {
+OverlapResult OverlapAnalysis::analyze(Read *r1, Read *r2, int overlapDiffLimit, int overlapRequire) {
     return analyze(r1->mSeq, r2->mSeq, overlapDiffLimit, overlapRequire);
 }
 
 // ported from the python code of AfterQC
-OverlapResult OverlapAnalysis::analyze(Sequence& r1, Sequence& r2, int overlapDiffLimit, int overlapRequire) {
+OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDiffLimit, int overlapRequire) {
     Sequence rcr2 = ~r2;
     int len1 = r1.length();
     int len2 = rcr2.length();
     // use the pointer directly for speed
-    const char* str1 = r1.mStr.c_str();
-    const char* str2 = rcr2.mStr.c_str();
+    const char *str1 = r1.mStr.c_str();
+    const char *str2 = rcr2.mStr.c_str();
 
     int complete_compare_require = 50;
 
@@ -28,21 +28,21 @@ OverlapResult OverlapAnalysis::analyze(Sequence& r1, Sequence& r2, int overlapDi
 
     // forward
     // a match of less than overlapRequire is considered as unconfident
-    while (offset < len1-overlapRequire) {
+    while (offset < len1 - overlapRequire) {
         // the overlap length of r1 & r2 when r2 is move right for offset
         overlap_len = min(len1 - offset, len2);
 
         diff = 0;
         int i = 0;
-        for (i=0; i<overlap_len; i++) {
-            if (str1[offset + i] != str2[i]){
+        for (i = 0; i < overlap_len; i++) {
+            if (str1[offset + i] != str2[i]) {
                 diff += 1;
                 if (diff >= overlapDiffLimit && i < complete_compare_require)
                     break;
             }
         }
-        
-        if (diff < overlapDiffLimit || (diff >= overlapDiffLimit && i>complete_compare_require)){
+
+        if (diff < overlapDiffLimit || (diff >= overlapDiffLimit && i > complete_compare_require)) {
             OverlapResult ov;
             ov.overlapped = true;
             ov.offset = offset;
@@ -61,21 +61,21 @@ OverlapResult OverlapAnalysis::analyze(Sequence& r1, Sequence& r2, int overlapDi
     // this only happens when insert DNA is shorter than sequencing read length, and some adapter/primer is sequenced but not trimmed cleanly
     // we go reversely
     offset = 0;
-    while (offset > -(len2-overlapRequire)){
+    while (offset > -(len2 - overlapRequire)) {
         // the overlap length of r1 & r2 when r2 is move right for offset
-        overlap_len = min(len1,  len2- abs(offset));
+        overlap_len = min(len1, len2 - abs(offset));
 
         diff = 0;
         int i = 0;
-        for (i=0; i<overlap_len; i++) {
-            if (str1[i] != str2[-offset + i]){
+        for (i = 0; i < overlap_len; i++) {
+            if (str1[i] != str2[-offset + i]) {
                 diff += 1;
                 if (diff >= overlapDiffLimit && i < complete_compare_require)
                     break;
             }
         }
-        
-        if (diff < overlapDiffLimit || (diff >= overlapDiffLimit && i>complete_compare_require)){
+
+        if (diff < overlapDiffLimit || (diff >= overlapDiffLimit && i > complete_compare_require)) {
             OverlapResult ov;
             ov.overlapped = true;
             ov.offset = offset;
@@ -93,13 +93,13 @@ OverlapResult OverlapAnalysis::analyze(Sequence& r1, Sequence& r2, int overlapDi
     return ov;
 }
 
-bool OverlapAnalysis::test(){
+bool OverlapAnalysis::test() {
     //Sequence r1("CAGCGCCTACGGGCCCCTTTTTCTGCGCGACCGCGTGGCTGTGGGCGCGGATGCCTTTGAGCGCGGTGACTTCTCACTGCGTATCGAGCCGCTGGAGGTCTCCC");
     //Sequence r2("ACCTCCAGCGGCTCGATACGCAGTGAGAAGTCACCGCGCTCAAAGGCATCCGCGCCCACAGCCACGCGGTCGCGCAGAAAAAGGGGCCCGTAGGCGCGGCTCCC");
 
     Sequence r1("CAGCGCCTACGGGCCCCTTTTTCTGCGCGACCGCGTGGCTGTGGGCGCGGATGCCTTTGAGCGCGGTGACTTCTCACTGCGTATCGAGC");
     Sequence r2("ACCTCCAGCGGCTCGATACGCAGTGAGAAGTCACCGCGCTCAAAGGCATCCGCGCCCACAGCCACGCGGTCGCGCAGAAAAAGGGGTCC");
-    
+
     OverlapResult ov = OverlapAnalysis::analyze(r1, r2);
 
     return ov.overlapped && ov.offset == 10 && ov.overlap_len == 79 && ov.diff == 1;

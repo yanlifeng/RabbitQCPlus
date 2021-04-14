@@ -125,6 +125,8 @@ bool SingleEndProcessor::process() {
     vector<Stats *> postStats;
     vector<FilterResult *> filterResults;
     for (int t = 0; t < mOptions->thread; t++) {
+        configs[t]->getPreStats1()->getTotData();
+        configs[t]->getPostStats1()->getTotData();
         preStats.push_back(configs[t]->getPreStats1());
         postStats.push_back(configs[t]->getPostStats1());
         filterResults.push_back(configs[t]->getFilterResult());
