@@ -5,7 +5,7 @@
 
 #define uint unsigned int
 
-#ifdef Vce512
+#ifdef Vec512
 
 #include <immintrin.h>
 
@@ -366,6 +366,15 @@ Stats::~Stats() {
 
 #ifdef UseLong
 
+void Stats::getTotData() {
+    for (int i = 0; i < mBufLen; i++) {
+        for (int j = 0; j < 8; j++) {
+            mCycleTotalBase[i] += mCycleBaseContentsR[i * 8 + j];
+            mCycleTotalQual[i] += mCycleBaseQualR[i * 8 + j];
+        }
+    }
+}
+
 void Stats::summarize(bool forced) {
     if (summarized && !forced)
         return;
@@ -591,14 +600,14 @@ void Stats::statRead(Read *r) {
 
 #ifdef Vec256
     cout << "pending ... " << endl;
-#elif Vce512
+#elif Vec512
     int i = 0;
     ll *p1, *p2, *p3, *p4, *p5, *p6;
     __m512i ad0, ad1, ad2, ad3, ad4, v1, v2, v3, v4, v5, v6, sub33, quamm;
     __m256i bse, and7, add8, idx;
     __m128i ide;
     bse = _mm256_set_epi32(7 * 8, 6 * 8, 5 * 8, 4 * 8, 3 * 8, 2 * 8, 1 * 8, 0 * 8);
-    ad0 = _mm512_set1_epi64(0);
+//    ad0 = _mm512_set1_epi64(0);
     ad1 = _mm512_set1_epi64(1);
     and7 = _mm256_set1_epi32(0x07);
     add8 = _mm256_set1_epi32(64);
@@ -619,15 +628,15 @@ void Stats::statRead(Read *r) {
         idx = _mm256_add_epi32(bse, idx);
         bse = _mm256_add_epi32(bse, add8);
 
-        p1 = (ll *) (mCycleTotalBase + i);
-        v1 = _mm512_load_epi64(p1);
-        v1 = _mm512_add_epi64(v1, ad1);
-        _mm512_storeu_si512(p1, v1);
-
-        p2 = (ll *) (mCycleTotalQual + i);
-        v2 = _mm512_load_epi64(p2);
-        v2 = _mm512_add_epi64(v2, ad2);
-        _mm512_storeu_si512(p2, v2);
+//        p1 = (ll *) (mCycleTotalBase + i);
+//        v1 = _mm512_load_epi64(p1);
+//        v1 = _mm512_add_epi64(v1, ad1);
+//        _mm512_storeu_si512(p1, v1);
+//
+//        p2 = (ll *) (mCycleTotalQual + i);
+//        v2 = _mm512_load_epi64(p2);
+//        v2 = _mm512_add_epi64(v2, ad2);
+//        _mm512_storeu_si512(p2, v2);
 
         p3 = (ll *) mCycleBaseContentsR;
         v3 = _mm512_i32gather_epi64(idx, p3, 8);
@@ -664,8 +673,8 @@ void Stats::statRead(Read *r) {
         mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
         mCycleBaseContentsR[i * 8 + b]++;
         mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
-        mCycleTotalBase[i]++;
-        mCycleTotalQual[i] += (qualstr[i] - 33);
+//        mCycleTotalBase[i]++;
+//        mCycleTotalQual[i] += (qualstr[i] - 33);
 
         if (seqstr[i] == 'N')flag = 5;
         int val = valAGCT[seqstr[i] & 0x07];
@@ -674,22 +683,22 @@ void Stats::statRead(Read *r) {
         flag--;
     }
 #else
-    for (int i = 0; i < len; i++) {
-        mCycleTotalBase[i]++;
-        mCycleTotalQual[i] += (qualstr[i] - 33);
-    }
-    for (int i = 0; i < len; i++) {
-        char b = seqstr[i] & 0x07;
-        mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
-        mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
-        mCycleBaseContentsR[i * 8 + b]++;
-        mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
-        if (seqstr[i] == 'N')flag = 5;
-        int val = valAGCT[seqstr[i] & 0x07];
-        kmer = ((kmer << 2) & 0x3FC) | val;
-        if (flag <= 0)mKmer[kmer]++;
-        flag--;
-    }
+    //    for (int i = 0; i < len; i++) {
+    //        mCycleTotalBase[i]++;
+    //        mCycleTotalQual[i] += (qualstr[i] - 33);
+    //    }
+        for (int i = 0; i < len; i++) {
+            char b = seqstr[i] & 0x07;
+            mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
+            mCycleQ20BasesR[i * 8 + b] += qualstr[i] >= q20;
+            mCycleBaseContentsR[i * 8 + b]++;
+            mCycleBaseQualR[i * 8 + b] += (qualstr[i] - 33);
+            if (seqstr[i] == 'N')flag = 5;
+            int val = valAGCT[seqstr[i] & 0x07];
+            kmer = ((kmer << 2) & 0x3FC) | val;
+            if (flag <= 0)mKmer[kmer]++;
+            flag--;
+        }
 #endif
 
     // do overrepresentation analysis for 1 of every 100 reads
@@ -734,7 +743,7 @@ void Stats::statRead(Read *r) {
 
 #ifdef Vec256
     cout << "pending..." << endl;
-#elif Vce512
+#elif Vec512
     int i = 0;
     int det = 16;
     uint *p1, *p2, *p3, *p4, *p5, *p6;
@@ -743,18 +752,21 @@ void Stats::statRead(Read *r) {
     __m128i ide;
     bse = _mm512_set_epi32(15 * 8, 14 * 8, 13 * 8, 12 * 8, 11 * 8, 10 * 8, 9 * 8, 8 * 8, 7 * 8, 6 * 8, 5 * 8, 4 * 8,
                            3 * 8, 2 * 8, 1 * 8, 0 * 8);
-//    ad0 = _mm512_set1_epi64(0);
-    ad1 = _mm512_set1_epi64(1);
+//    ad0 = _mm512_set1_epi32(0);
+    ad1 = _mm512_set1_epi32(1);
     and7 = _mm512_set1_epi32(0x07);
     add8 = _mm512_set1_epi32(128);
-    sub33 = _mm512_set1_epi64(33);
+    sub33 = _mm512_set1_epi32(33);
     __m512i q20_vec = _mm512_set1_epi32((int) '5');
     __m512i q30_vec = _mm512_set1_epi32((int) '?');
 
     for (; i + det <= len; i += det) {
 
         ide = _mm_maskz_loadu_epi8(0xFFFF, qualstr + i);
+
         quamm = _mm512_cvtepi8_epi32(ide);
+
+
         ad2 = _mm512_sub_epi32(quamm, sub33);
         __mmask16 q30_mask = _mm512_cmp_epi32_mask(quamm, q30_vec, _MM_CMPINT_NLT);
         __mmask16 q20_mask = _mm512_cmp_epi32_mask(quamm, q20_vec, _MM_CMPINT_NLT);
@@ -764,34 +776,36 @@ void Stats::statRead(Read *r) {
         idx = _mm512_add_epi32(bse, idx);
         bse = _mm512_add_epi32(bse, add8);
 
+
 //        p1 = (uint *) (mCycleTotalBaseI + i);
 //        v1 = _mm512_load_epi32(p1);
 //        v1 = _mm512_add_epi32(v1, ad1);
-//        _mm512_store_epi32(p1, v1);
+//        _mm512_storeu_si512(p1, v1);
+//
 //
 //        p2 = (uint *) (mCycleTotalQualI + i);
 //        v2 = _mm512_load_epi32(p2);
 //        v2 = _mm512_add_epi32(v2, ad2);
-//        _mm512_store_epi32(p2, v2);
+//        _mm512_storeu_si512(p2, v2);
 
         p3 = (uint *) mCycleBaseContentsI;
         v3 = _mm512_i32gather_epi32(idx, p3, 4);
-        v3 = _mm512_add_epi64(v3, ad1);
+        v3 = _mm512_add_epi32(v3, ad1);
         _mm512_i32scatter_epi32(p3, idx, v3, 4);
 
         p4 = (uint *) mCycleBaseQualI;
         v4 = _mm512_i32gather_epi32(idx, p4, 4);
-        v4 = _mm512_add_epi64(v4, ad2);
+        v4 = _mm512_add_epi32(v4, ad2);
         _mm512_i32scatter_epi32(p4, idx, v4, 4);
 
         p5 = (uint *) mCycleQ30BasesI;
         v5 = _mm512_i32gather_epi32(idx, p5, 4);
-        v5 = _mm512_mask_add_epi64(v5, q30_mask, v5, ad1);
+        v5 = _mm512_mask_add_epi32(v5, q30_mask, v5, ad1);
         _mm512_i32scatter_epi32(p5, idx, v5, 4);
 
         p6 = (uint *) mCycleQ20BasesI;
         v6 = _mm512_i32gather_epi32(idx, p6, 4);
-        v6 = _mm512_mask_add_epi64(v6, q20_mask, v6, ad1);
+        v6 = _mm512_mask_add_epi32(v6, q20_mask, v6, ad1);
         _mm512_i32scatter_epi32(p6, idx, v6, 4);
 
 

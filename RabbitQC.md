@@ -1813,3 +1813,15 @@ HTML report: RabbitQC.html
 rabbit_qc v0.0.1, time used: 56.3852 seconds
 ```
 
+<img src="/Users/ylf9811/Library/Containers/com.tencent.qq/Data/Library/Caches/Images/1F1A1E6E7FD34DD6E6E5553887E95D8F.jpg" alt="1F1A1E6E7FD34DD6E6E5553887E95D8F" style="zoom:50%;" />
+
+<img src="/Users/ylf9811/Library/Containers/com.tencent.qq/Data/Library/Caches/Images/8AC851EB868DC59442BD46FD84A9CBCA.jpg" alt="8AC851EB868DC59442BD46FD84A9CBCA" style="zoom:50%;" />
+
+就感觉自己最近挺搞笑的
+
+修改bug之后，统计一下时间
+
+```
+
+```
+

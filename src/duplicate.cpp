@@ -96,31 +96,6 @@ void Duplicate::addRecord(uint32 key, uint64 kmer32, uint8 gc) {
 //    lok.unlock();
 }
 
-#ifdef Vce512
-
-static void PP3(__m512i p) {
-    long long ar[8];
-    _mm512_store_si512(ar, p);
-    for (int i = 0; i < 8; i++)printf("%lld ", ar[i]);
-    printf("\n");
-}
-
-static void PP2(__m256i p) {
-    int ar[8];
-    _mm256_mask_store_epi32(ar, 0xFF, p);
-    for (int i = 0; i < 8; i++)printf("%d ", ar[i]);
-    printf("\n");
-}
-
-static void PP1(__m128i p) {
-    char ar[16];
-    _mm_mask_storeu_epi8(ar, 0xFFFF, p);
-    for (int i = 0; i < 16; i++)printf("%c ", ar[i]);
-    printf("\n");
-}
-
-#endif
-
 void Duplicate::statRead(Read *r) {
     if (r->length() < 32)
         return;
@@ -145,7 +120,7 @@ void Duplicate::statRead(Read *r) {
     // not calculated
     //TODO check correctness
 //    if (mCounts[key] == 0) {
-#ifdef Vce512
+#ifdef Vec512
     int i = 0;
     __m512i gcV = _mm512_set1_epi32(0);
     __m512i ad1 = _mm512_set1_epi32(1);
