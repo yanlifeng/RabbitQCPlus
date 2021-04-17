@@ -39,60 +39,99 @@ SOFTWARE.
 #include "options.h"
 #include <fstream>
 #include <map>
+#include <unordered_map>
+
+using namespace std;
 
 struct classcomp {
-    bool operator() (const string& lhs, const string& rhs) const {
+    bool operator()(const string &lhs, const string &rhs) const {
         if (lhs.length() < rhs.length())
             return true;
-        else if(lhs.length() == rhs.length()) {
+        else if (lhs.length() == rhs.length()) {
             return lhs < rhs;
         } else
             return false;
     }
 };
 
-using namespace std;
+//#define UseUnorder
 
-class FilterResult{
+class FilterResult {
 public:
-    FilterResult(Options* opt, bool paired = false);
+    FilterResult(Options *opt, bool paired = false);
+
     ~FilterResult();
-    inline long* getFilterReadStats() {return mFilterReadStats;}
+
+    inline long *getFilterReadStats() { return mFilterReadStats; }
+
     void addFilterResult(int result);
-    static FilterResult* merge(vector<FilterResult*>& list);
+
+    static FilterResult *merge(vector<FilterResult *> &list);
+
     void print();
+
     // for single end
     void addAdapterTrimmed(string adapter, bool isR2 = false);
+
     // for paired end
     void addAdapterTrimmed(string adapter1, string adapter2);
+
     // a part of JSON report
-    void reportJson(ofstream& ofs, string padding);
+    void reportJson(ofstream &ofs, string padding);
+
     // a part of JSON report for adapters
-    void reportAdapterJson(ofstream& ofs, string padding);
+    void reportAdapterJson(ofstream &ofs, string padding);
+
     // a part of HTML report
-    void reportHtml(ofstream& ofs, long totalReads, long totalBases);
+    void reportHtml(ofstream &ofs, long totalReads, long totalBases);
+
     // a part of HTML report for adapters
-    void reportAdapterHtml(ofstream& ofs, long totalBases);
-    void outputAdaptersJson(ofstream& ofs, map<string, long, classcomp>& adapterCounts);
-    void outputAdaptersHtml(ofstream& ofs, map<string, long, classcomp>& adapterCounts, long totalBases);
+    void reportAdapterHtml(ofstream &ofs, long totalBases);
+
+#ifdef UseUnorder
+
+    void outputAdaptersJson(ofstream &ofs, unordered_map<string, long> &adapterCounts);
+
+    void outputAdaptersHtml(ofstream &ofs, unordered_map<string, long> &adapterCounts, long totalBases);
+
+#else
+
+    void outputAdaptersJson(ofstream &ofs, map<string, long, classcomp> &adapterCounts);
+
+    void outputAdaptersHtml(ofstream &ofs, map<string, long, classcomp> &adapterCounts, long totalBases);
+
+#endif
+
     // deal with base correction results
-    long* getCorrectionMatrix() {return mCorrectionMatrix;}
+    long *getCorrectionMatrix() { return mCorrectionMatrix; }
+
     long getTotalCorrectedBases();
+
     void addCorrection(char from, char to);
+
     long getCorrectionNum(char from, char to);
+
     void incCorrectedReads(int count);
 
 public:
-    Options* mOptions;
+    Options *mOptions;
     bool mPaired;
     long mCorrectedReads;
 private:
     long mFilterReadStats[FILTER_RESULT_TYPES];
     long mTrimmedAdapterRead;
     long mTrimmedAdapterBases;
+
+#ifdef UseUnorder
+    unordered_map<string, long> mAdapter1;
+    unordered_map<string, long> mAdapter2;
+#else
     map<string, long, classcomp> mAdapter1;
     map<string, long, classcomp> mAdapter2;
-    long* mCorrectionMatrix;
+#endif
+
+
+    long *mCorrectionMatrix;
 };
 
 #endif

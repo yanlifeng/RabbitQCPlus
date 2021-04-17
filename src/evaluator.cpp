@@ -480,13 +480,13 @@ string Evaluator::evalAdapterAndReadNum(long &readNum, bool isR2) {
     memset(counts, 0, sizeof(unsigned int) * size);
 
     //prepare data for openMP add by liumy
-    int thread_count = 16; //num of threads
-    unsigned int **countArr = new unsigned int *[thread_count];
-    for (int i = 0; i < thread_count; i++) {
-        countArr[i] = new unsigned int[size];
-    }
+//    int thread_count = 1; //num of threads
+//    unsigned int **countArr = new unsigned int *[thread_count];
+//    for (int i = 0; i < thread_count; i++) {
+//        countArr[i] = new unsigned int[size];
+//    }
 
-#pragma omp parallel for num_threads(thread_count)
+//#pragma omp parallel for num_threads(thread_count)
     for (int i = 0; i < records; i++) {
         int my_rank = omp_get_thread_num();
         Read *r = loadedReads[i];
@@ -500,10 +500,10 @@ string Evaluator::evalAdapterAndReadNum(long &readNum, bool isR2) {
         }
     }
     //merge countArr to counts
-    for (int i = 0; i < thread_count; i++) {
-        for (int j = 0; j < size; j++)
-            counts[j] += countArr[i][j];
-    }
+//    for (int i = 0; i < thread_count; i++) {
+//        for (int j = 0; j < size; j++)
+//            counts[j] += countArr[i][j];
+//    }
 
     // set AAAAAAAAAA = 0;
     counts[0] = 0;
@@ -600,13 +600,13 @@ string Evaluator::getAdapterWithSeed(int seed, Read **loadedReads, long records,
     NucleotideTree forwardTree(mOptions);
     NucleotideTree backwardTree(mOptions);
 
-    int thread_count = 16;
+    int thread_count = 1;
     vector<vector<AdapterSeedInfo>> vecArr;// = new vector<AdapterSeedInfo>* [thread_count];
     for (int i = 0; i < thread_count; i++) {
         vector<AdapterSeedInfo> vec;
         vecArr.push_back(vec);
     }
-#pragma omp parallel for num_threads(thread_count)
+//#pragma omp parallel for num_threads(thread_count)
     for (int i = 0; i < records; i++) {
         Read *r = loadedReads[i];
         struct AdapterSeedInfo seedInfo;

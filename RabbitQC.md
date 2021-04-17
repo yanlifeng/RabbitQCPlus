@@ -1822,6 +1822,8 @@ rabbit_qc v0.0.1, time used: 56.3852 seconds
 修改bug之后，统计一下时间
 
 ```
-
+init：rabbit_qc v0.0.1, time used: 75.0299 seconds
+Vec512：rabbit_qc v0.0.1, time used: 40.981 seconds
+Novec：rabbit_qc v0.0.1, time used: 41.2447 seconds
 ```
 

@@ -13,6 +13,9 @@
 
 #define uint unsigned int
 
+int tc = 0;
+int fc = 0;
+
 SingleEndProcessor::SingleEndProcessor(Options *opt) {
     mOptions = opt;
     mProduceFinished = false;
@@ -135,6 +138,9 @@ bool SingleEndProcessor::process() {
     Stats *finalPostStats = Stats::merge(postStats);
     FilterResult *finalFilterResult = FilterResult::merge(filterResults);
 
+
+    cout << "tc " << tc << endl;
+    cout << "fc " << fc << endl;
 
     // read filter results to the first thread's
     //TODO is this useful?
@@ -317,27 +323,16 @@ bool SingleEndProcessor::process() {
     printf("total format =================================: %.5f\n", costFormat);
 #endif
 
-    cerr << "Read1 before filtering:" <<
-         endl;
-    finalPreStats->
+    cerr << "Read1 before filtering:" << endl;
+    finalPreStats->print();
 
-            print();
+    cerr << endl;
+    cerr << "Read1 after filtering:" << endl;
+    finalPostStats->print();
 
-    cerr <<
-         endl;
-    cerr << "Read1 after filtering:" <<
-         endl;
-    finalPostStats->
-
-            print();
-
-    cerr <<
-         endl;
-    cerr << "Filtering result:" <<
-         endl;
-    finalFilterResult->
-
-            print();
+    cerr << endl;
+    cerr << "Filtering result:" << endl;
+    finalFilterResult->print();
 
     int *dupHist = NULL;
     double *dupMeanTlen = NULL;
@@ -352,67 +347,44 @@ bool SingleEndProcessor::process() {
         memset(dupMeanGC,
                0, sizeof(double) * mOptions->duplicate.histSize);
         dupRate = mDuplicate->statAll(dupHist, dupMeanGC, mOptions->duplicate.histSize);
-        cerr <<
-             endl;
-        cerr << "Duplication rate (may be overestimated since this is SE data): " << dupRate * 100.0 << "%" <<
-             endl;
+        cerr << endl;
+        cerr << "Duplication rate (may be overestimated since this is SE data): " << dupRate * 100.0 << "%" << endl;
     }
 
 // make JSON report
     JsonReporter jr(mOptions);
-    jr.
-            setDupHist(dupHist, dupMeanGC, dupRate
-    );
-    jr.
-            report(finalFilterResult, finalPreStats, finalPostStats
-    );
+    jr.setDupHist(dupHist, dupMeanGC, dupRate);
+    jr.report(finalFilterResult, finalPreStats, finalPostStats);
 
 // make HTML report
     HtmlReporter hr(mOptions);
-    hr.
-            setDupHist(dupHist, dupMeanGC, dupRate
-    );
-    hr.
-            report(finalFilterResult, finalPreStats, finalPostStats
-    );
+    hr.setDupHist(dupHist, dupMeanGC, dupRate);
+    hr.report(finalFilterResult, finalPreStats, finalPostStats);
 
 // clean up
-    for (
-            int t = 0;
-            t < mOptions->
-                    thread;
-            t++) {
+    for (int t = 0; t < mOptions->thread; t++) {
         delete threads[t];
         threads[t] = NULL;
         delete configs[t];
         configs[t] = NULL;
     }
 
-    delete
-            finalPreStats;
-    delete
-            finalPostStats;
-    delete
-            finalFilterResult;
+    delete finalPreStats;
+    delete finalPostStats;
+    delete finalFilterResult;
 
     if (mOptions->duplicate.enabled) {
-        delete[]
-                dupHist;
-        delete[]
-                dupMeanGC;
+        delete[] dupHist;
+        delete[] dupMeanGC;
     }
 
-    delete[]
-            threads;
-    delete[]
-            configs;
+    delete[] threads;
+    delete[] configs;
 
     if (leftWriterThread)
-        delete
-                leftWriterThread;
+        delete leftWriterThread;
 
     if (!mOptions->split.enabled)
-
         closeOutput();
 
     return true;
@@ -526,7 +498,10 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         //not in because mOptions->adapter.hasSeqR1 is false
         if (r1 != NULL && mOptions->adapter.enabled && mOptions->adapter.hasSeqR1) {
 //            printf("AdapterTrimmer::trimBySequence ...\n");
-            AdapterTrimmer::trimBySequence(r1, config->getFilterResult(), mOptions->adapter.sequence);
+            bool res = AdapterTrimmer::trimBySequence(r1, config->getFilterResult(), mOptions->adapter.sequence);
+            if (res)tc++;
+            else fc++;
+
         }
 #ifdef Timer
         config->cost7 += get_wall_time() - t1;
