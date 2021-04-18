@@ -1827,3 +1827,23 @@ Vec512：rabbit_qc v0.0.1, time used: 40.981 seconds
 Novec：rabbit_qc v0.0.1, time used: 41.2447 seconds
 ```
 
+
+
+#### 0418
+
+现在的程序测试一下时间：
+
+首先，单端的数据 SRR2530740.sra.fastq（不带adapter） 不带输出
+
+```
+thread 1
+STD ： 1.70241  79.6475
+Plus Vec512 + UseUint ： 1.42099  41.7179
+Plus Vec512 + UseLong ： 1.42834  45.9298
+
+thread 4
+STD ： 1.7004  23.3883
+Plus Vec512 + UseUint ： 1.43543  19.4385
+Plus Vec512 + UseLong ： 
+```
+

@@ -322,7 +322,7 @@ bool PairEndProcessor::process() {
     printf("total delete r1 ========================: %.5f\n", cost13);
     printf("total ready output ========================: %.5f\n", cost14);
     printf("total costTotel ========================: %.5f\n",
-           cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11 + cost12 + cost13);
+           cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11 + cost12 + cost13 + cost14);
     printf("total cost =============================: %.5f\n", cost);
     printf("total  =================================: %d\n", totCnt);
     printf("total format =================================: %.5f\n", costFormat);
@@ -422,6 +422,11 @@ int PairEndProcessor::getPeakInsertSize() {
 
 
 bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) {
+
+    vector<Read *> newOut1;
+    vector<Read *> newOut2;
+
+
     string outstr1;
     string outstr2;
     string interleaved;
@@ -556,12 +561,24 @@ bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) 
 #ifdef Timer
             t1 = get_wall_time();
 #endif
+
+
             if (mOptions->outputToSTDOUT) {
                 interleaved += r1->toString() + r2->toString();
-            } else {
+            } else if (mOptions->split.enabled) {
                 outstr1 += r1->toString();
                 outstr2 += r2->toString();
+            } else {
+                if (mRightWriter && mLeftWriter) {
+                    newOut1.push_back(r1);
+                    newOut2.push_back(r2);
+                } else if (mLeftWriter) {
+                    interleaved += r1->toString() + r2->toString();
+                } else {
+
+                }
             }
+
 #ifdef Timer
             config->cost11 += get_wall_time() - t1;
             t1 = get_wall_time();
@@ -577,13 +594,42 @@ bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) 
 #ifdef Timer
         t1 = get_wall_time();
 #endif
-        delete pair;
-        // if no trimming applied, r1 should be identical to or1
-        if (r1 != or1 && r1 != NULL)
-            delete r1;
-        // if no trimming applied, r1 should be identical to or1
-        if (r2 != or2 && r2 != NULL)
-            delete r2;
+        if (mOptions->outputToSTDOUT) {
+            delete pair;
+            // if no trimming applied, r1 should be identical to or1
+            if (r1 != or1 && r1 != NULL)
+                delete r1;
+            // if no trimming applied, r1 should be identical to or1
+            if (r2 != or2 && r2 != NULL)
+                delete r2;
+        } else if (mOptions->split.enabled) {
+            delete pair;
+            // if no trimming applied, r1 should be identical to or1
+            if (r1 != or1 && r1 != NULL)
+                delete r1;
+            // if no trimming applied, r1 should be identical to or1
+            if (r2 != or2 && r2 != NULL)
+                delete r2;
+        } else {
+            if (mRightWriter && mLeftWriter) {
+            } else if (mLeftWriter) {
+                delete pair;
+                // if no trimming applied, r1 should be identical to or1
+                if (r1 != or1 && r1 != NULL)
+                    delete r1;
+                // if no trimming applied, r1 should be identical to or1
+                if (r2 != or2 && r2 != NULL)
+                    delete r2;
+            } else {
+                delete pair;
+                // if no trimming applied, r1 should be identical to or1
+                if (r1 != or1 && r1 != NULL)
+                    delete r1;
+                // if no trimming applied, r1 should be identical to or1
+                if (r2 != or2 && r2 != NULL)
+                    delete r2;
+            }
+        }
 #ifdef Timer
         config->cost13 += get_wall_time() - t1;
 #endif
@@ -609,19 +655,70 @@ bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) 
     } else {
         // normal output by left/right writer thread
         if (mRightWriter && mLeftWriter) {
-            // write PE
-            char *ldata = new char[outstr1.size()];
-            memcpy(ldata, outstr1.c_str(), outstr1.size());
-            mLeftWriter->input(ldata, outstr1.size());
+            printf("no\n");
+            unsigned long totSize1 = 0;
+            for (int i = 0; i < newOut1.size(); i++) {
+                Read *now = newOut1[i];
+                totSize1 += now->mName.size() + now->mSeq.mStr.size() + now->mStrand.size() + now->mQuality.size() + 4;
+            }
+            char *ldata1 = new char[totSize1];
+            char *nowPos1 = ldata1;
+            for (int i = 0; i < newOut1.size(); i++) {
+                Read *now = newOut1[i];
+                memcpy(nowPos1, now->mName.c_str(), now->mName.size());
+                nowPos1 += now->mName.size();
+                *nowPos1 = '\n';
+                nowPos1++;
+                memcpy(nowPos1, now->mSeq.mStr.c_str(), now->mSeq.length());
+                nowPos1 += now->mSeq.length();
+                *nowPos1 = '\n';
+                nowPos1++;
+                memcpy(nowPos1, now->mStrand.c_str(), now->mStrand.size());
+                nowPos1 += now->mStrand.size();
+                *nowPos1 = '\n';
+                nowPos1++;
+                memcpy(nowPos1, now->mQuality.c_str(), now->mQuality.size());
+                nowPos1 += now->mQuality.size();
+                *nowPos1 = '\n';
+                nowPos1++;
+                delete now;
+            }
+            mLeftWriter->input(ldata1, totSize1);
 
-            char *rdata = new char[outstr2.size()];
-            memcpy(rdata, outstr2.c_str(), outstr2.size());
-            mRightWriter->input(rdata, outstr2.size());
+            unsigned long totSize2 = 0;
+            for (int i = 0; i < newOut2.size(); i++) {
+                Read *now = newOut2[i];
+                totSize2 += now->mName.size() + now->mSeq.mStr.size() + now->mStrand.size() + now->mQuality.size() + 4;
+            }
+            char *ldata2 = new char[totSize2];
+            char *nowPos2 = ldata2;
+            for (int i = 0; i < newOut2.size(); i++) {
+                Read *now = newOut2[i];
+                memcpy(nowPos2, now->mName.c_str(), now->mName.size());
+                nowPos2 += now->mName.size();
+                *nowPos2 = '\n';
+                nowPos2++;
+                memcpy(nowPos2, now->mSeq.mStr.c_str(), now->mSeq.length());
+                nowPos2 += now->mSeq.length();
+                *nowPos2 = '\n';
+                nowPos2++;
+                memcpy(nowPos2, now->mStrand.c_str(), now->mStrand.size());
+                nowPos2 += now->mStrand.size();
+                *nowPos2 = '\n';
+                nowPos2++;
+                memcpy(nowPos2, now->mQuality.c_str(), now->mQuality.size());
+                nowPos2 += now->mQuality.size();
+                *nowPos2 = '\n';
+                nowPos2++;
+                delete now;
+            }
+            mRightWriter->input(ldata2, totSize2);
         } else if (mLeftWriter) {
             // write interleaved
             char *ldata = new char[interleaved.size()];
             memcpy(ldata, interleaved.c_str(), interleaved.size());
             mLeftWriter->input(ldata, interleaved.size());
+        } else {
         }
     }
     if (!mOptions->split.enabled)

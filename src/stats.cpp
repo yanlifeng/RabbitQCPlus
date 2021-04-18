@@ -683,10 +683,10 @@ void Stats::statRead(Read *r) {
         flag--;
     }
 #else
-    //    for (int i = 0; i < len; i++) {
-    //        mCycleTotalBase[i]++;
-    //        mCycleTotalQual[i] += (qualstr[i] - 33);
-    //    }
+//        for (int i = 0; i < len; i++) {
+//            mCycleTotalBase[i]++;
+//            mCycleTotalQual[i] += (qualstr[i] - 33);
+//        }
         for (int i = 0; i < len; i++) {
             char b = seqstr[i] & 0x07;
             mCycleQ30BasesR[i * 8 + b] += qualstr[i] >= q30;
@@ -1506,7 +1506,7 @@ Stats *Stats::merge(vector<Stats *> &list) {
             for (int i = 0; i < 8; i++) {
                 s->mCycleQ30BasesR[j * 8 + i] += list[t]->mCycleQ30BasesR[j * 8 + i];
                 s->mCycleQ20BasesR[j * 8 + i] += list[t]->mCycleQ20BasesR[j * 8 + i];
-                s->mCycleBaseContentsR[j * 8 + i] = list[t]->mCycleBaseContentsR[j * 8 + i];
+                s->mCycleBaseContentsR[j * 8 + i] += list[t]->mCycleBaseContentsR[j * 8 + i];
                 s->mCycleBaseQualR[j * 8 + i] += list[t]->mCycleBaseQualR[j * 8 + i];
             }
         }
@@ -1569,7 +1569,7 @@ Stats *Stats::merge(vector<Stats *> &list) {
             for (int i = 0; i < 8; i++) {
                 s->mCycleQ30BasesI[j * 8 + i] += list[t]->mCycleQ30BasesI[j * 8 + i];
                 s->mCycleQ20BasesI[j * 8 + i] += list[t]->mCycleQ20BasesI[j * 8 + i];
-                s->mCycleBaseContentsI[j * 8 + i] = list[t]->mCycleBaseContentsI[j * 8 + i];
+                s->mCycleBaseContentsI[j * 8 + i] += list[t]->mCycleBaseContentsI[j * 8 + i];
                 s->mCycleBaseQualI[j * 8 + i] += list[t]->mCycleBaseQualI[j * 8 + i];
             }
         }

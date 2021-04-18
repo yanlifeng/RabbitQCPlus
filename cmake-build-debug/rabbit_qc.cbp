@@ -44,7 +44,7 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add option="-DVec512"/>
+					<Add option="-DUseLong"/>
 					<Add directory="/usr/local/Cellar/gcc@8/8.4.0_1/lib/gcc/8/gcc/x86_64-apple-darwin19/8.4.0/../../../../../../include/c++/8.4.0"/>
 					<Add directory="/usr/local/Cellar/gcc@8/8.4.0_1/lib/gcc/8/gcc/x86_64-apple-darwin19/8.4.0/../../../../../../include/c++/8.4.0/x86_64-apple-darwin19"/>
 					<Add directory="/usr/local/Cellar/gcc@8/8.4.0_1/lib/gcc/8/gcc/x86_64-apple-darwin19/8.4.0/../../../../../../include/c++/8.4.0/backward"/>
@@ -67,7 +67,7 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add option="-DVec512"/>
+					<Add option="-DUseLong"/>
 					<Add directory="/usr/local/Cellar/gcc@8/8.4.0_1/lib/gcc/8/gcc/x86_64-apple-darwin19/8.4.0/../../../../../../include/c++/8.4.0"/>
 					<Add directory="/usr/local/Cellar/gcc@8/8.4.0_1/lib/gcc/8/gcc/x86_64-apple-darwin19/8.4.0/../../../../../../include/c++/8.4.0/x86_64-apple-darwin19"/>
 					<Add directory="/usr/local/Cellar/gcc@8/8.4.0_1/lib/gcc/8/gcc/x86_64-apple-darwin19/8.4.0/../../../../../../include/c++/8.4.0/backward"/>

@@ -13,9 +13,6 @@
 
 #define uint unsigned int
 
-int tc = 0;
-int fc = 0;
-
 SingleEndProcessor::SingleEndProcessor(Options *opt) {
     mOptions = opt;
     mProduceFinished = false;
@@ -137,11 +134,6 @@ bool SingleEndProcessor::process() {
     Stats *finalPreStats = Stats::merge(preStats);
     Stats *finalPostStats = Stats::merge(postStats);
     FilterResult *finalFilterResult = FilterResult::merge(filterResults);
-
-
-    cout << "tc " << tc << endl;
-    cout << "fc " << fc << endl;
-
     // read filter results to the first thread's
     //TODO is this useful?
 
@@ -393,18 +385,7 @@ bool SingleEndProcessor::process() {
 bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) {
 
     int outTag = 0;
-    //TODO motify for stdout and split
-    if (mOptions->outputToSTDOUT) {
-        outTag = 1;
-    } else if (mOptions->split.enabled) {
-        outTag = 2;
-    } else {
-        if (mLeftWriter) {
-            outTag = 3;
-        } else {
-            outTag = 4;
-        }
-    }
+
 
     string outstr;
     int readPassed = 0;
@@ -498,9 +479,7 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         //not in because mOptions->adapter.hasSeqR1 is false
         if (r1 != NULL && mOptions->adapter.enabled && mOptions->adapter.hasSeqR1) {
 //            printf("AdapterTrimmer::trimBySequence ...\n");
-            bool res = AdapterTrimmer::trimBySequence(r1, config->getFilterResult(), mOptions->adapter.sequence);
-            if (res)tc++;
-            else fc++;
+            AdapterTrimmer::trimBySequence(r1, config->getFilterResult(), mOptions->adapter.sequence);
 
         }
 #ifdef Timer
@@ -542,8 +521,17 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
 #ifdef Timer
             t1 = get_wall_time();
 #endif
-            if (outTag <= 2) outstr += r1->toString();
-            else if (outTag == 3)newOut.push_back(r1);
+            if (mOptions->outputToSTDOUT) {
+                outstr += r1->toString();
+            } else if (mOptions->split.enabled) {
+                outstr += r1->toString();
+            } else {
+                if (mLeftWriter) {
+                    newOut.push_back(r1);
+                } else {
+
+                }
+            }
 #ifdef Timer
             config->cost11 += get_wall_time() - t1;
             // stats the read after filtering
@@ -560,10 +548,23 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
         t1 = get_wall_time();
 #endif
         //         if no trimming applied, r1 should be identical to or1
-        if (outTag <= 2 || outTag == 4) {
+
+        if (mOptions->outputToSTDOUT) {
             delete or1;
             if (r1 != or1 && r1 != NULL)
                 delete r1;
+        } else if (mOptions->split.enabled) {
+            delete or1;
+            if (r1 != or1 && r1 != NULL)
+                delete r1;
+        } else {
+            if (mLeftWriter) {
+
+            } else {
+                delete or1;
+                if (r1 != or1 && r1 != NULL)
+                    delete r1;
+            }
         }
 
 #ifdef Timer
@@ -616,6 +617,8 @@ bool SingleEndProcessor::processSingleEnd(ReadPack *pack, ThreadConfig *config) 
                 delete now;
             }
             mLeftWriter->input(ldata, totSize);
+        } else {
+
         }
     }
 
