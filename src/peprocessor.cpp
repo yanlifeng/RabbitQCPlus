@@ -75,12 +75,6 @@ void PairEndProcessor::initConfig(ThreadConfig *config) {
     }
 }
 
-int c0 = 0;
-int c1 = 0;
-int c2 = 0;
-int c3 = 0;
-int d1 = 0, d2 = 0, d3 = 0;
-
 bool PairEndProcessor::process() {
     if (!mOptions->split.enabled)
         initOutput();
@@ -130,6 +124,10 @@ bool PairEndProcessor::process() {
     vector<Stats *> postStats2;
     vector<FilterResult *> filterResults;
     for (int t = 0; t < mOptions->thread; t++) {
+        configs[t]->getPreStats1()->getTotData();
+        configs[t]->getPostStats1()->getTotData();
+        configs[t]->getPreStats2()->getTotData();
+        configs[t]->getPostStats2()->getTotData();
         preStats1.push_back(configs[t]->getPreStats1());
         postStats1.push_back(configs[t]->getPostStats1());
         preStats2.push_back(configs[t]->getPreStats2());
@@ -142,16 +140,6 @@ bool PairEndProcessor::process() {
     Stats *finalPostStats2 = Stats::merge(postStats2);
     FilterResult *finalFilterResult = FilterResult::merge(filterResults);
     fstream out, in, inn;
-
-    cout << " c0 is " << c0 << endl;
-    cout << " c1 is " << c1 << endl;
-    cout << " c2 is " << c2 << endl;
-    cout << " c3 is " << c3 << endl;
-
-    cout << " d1 is " << d1 << endl;
-    cout << " d2 is " << d2 << endl;
-    cout << " d3 is " << d3 << endl;
-
     string outFileName1 = "preStats1Kmer";
     string outFileName11 = "preStats2Kmer";
     string outFileName2 = "postStats1Kmer";
@@ -510,19 +498,6 @@ bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) 
         bool isizeEvaluated = false;
         if (r1 != NULL && r2 != NULL && (mOptions->adapter.enabled || mOptions->correction.enabled)) {
             OverlapResult ov = OverlapAnalysis::analyze(r1, r2, mOptions->overlapDiffLimit, mOptions->overlapRequire);
-            /*
-             c0 is 3743702
-             c1 is 1586589
-             c2 is 1984683
-             c3 is 172430
-             d1 is 1586589
-             d2 is 78552391
-             d3 is 2397225
-             * */
-            c0++;
-            if (ov.offset == 0)c1++, d1++;
-            if (ov.offset > 0)c2++, d2 += ov.offset;
-            if (ov.offset < 0)c3++, d3 += -ov.offset;
             // we only use thread 0 to evaluae ISIZE
             if (config->getThreadId() == 0) {
                 statInsertSize(r1, r2, ov);

@@ -15,30 +15,18 @@ int Sequence::length() {
     return mStr.length();
 }
 
+static char reMap[123] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                          '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                          '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                          '0', '0', '0', '0', '0', '0', '0', '0', 'T', 'B', 'G', 'D', 'E', 'F', 'C', 'H', 'I', 'J', 'K',
+                          'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'A', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '0', '0', '0',
+                          '0', '0', 'T', 'b', 'G', 'd', 'e', 'f', 'C', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+                          'r', 's', 'A', 'u', 'v', 'w', 'x', 'y', 'z'};
+
 Sequence Sequence::reverseComplement() {
     string str(mStr.length(), 0);
     for (int c = 0; c < mStr.length(); c++) {
-        char base = mStr[c];
-        switch (base) {
-            case 'A':
-            case 'a':
-                str[mStr.length() - c - 1] = 'T';
-                break;
-            case 'T':
-            case 't':
-                str[mStr.length() - c - 1] = 'A';
-                break;
-            case 'C':
-            case 'c':
-                str[mStr.length() - c - 1] = 'G';
-                break;
-            case 'G':
-            case 'g':
-                str[mStr.length() - c - 1] = 'C';
-                break;
-            default:
-                str[mStr.length() - c - 1] = 'N';
-        }
+        str[mStr.length() - c - 1] = reMap[mStr[c]];
     }
     return Sequence(str);
 }
