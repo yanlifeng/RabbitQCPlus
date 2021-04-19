@@ -1,3 +1,5 @@
+
+
 ## RabbitQC
 
 TODO
@@ -1833,17 +1835,110 @@ Novec：rabbit_qc v0.0.1, time used: 41.2447 seconds
 
 现在的程序测试一下时间：
 
-首先，单端的数据 SRR2530740.sra.fastq（不带adapter） 不带输出
+首先，单端的数据 SRR2530740.sra.fastq（不带adapter） 不带输出  不包含adapter的检测
 
 ```
 thread 1
-STD ： 1.70241  79.6475
-Plus Vec512 + UseUint ： 1.42099  41.7179
-Plus Vec512 + UseLong ： 1.42834  45.9298
+STD ： 75.5552
+Plus Vec512 + UseUint ： 40.7154
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+
+thread 2
+STD ： 41.0599
+Plus Vec512 + UseUint ： 21.5165
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
 
 thread 4
-STD ： 1.7004  23.3883
-Plus Vec512 + UseUint ： 1.43543  19.4385
+STD ： 21.2547
+Plus Vec512 + UseUint ： 11.0905
 Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 8
+STD ： 11.5397
+Plus Vec512 + UseUint ： 6.16717	
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 16
+STD ： 6.1985
+Plus Vec512 + UseUint ： 3.5977
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
 ```
+
+```
+se 带adapter
+
+thread 1
+STD ： 46.307
+Plus Vec512 + UseUint ： 22.7573
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 2
+STD ： 23.2454
+Plus Vec512 + UseUint ： 11.2436
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 4
+STD ： 12.5085
+Plus Vec512 + UseUint ： 5.95877
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 8
+STD ： 6.62146
+Plus Vec512 + UseUint ： 3.32433
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 16
+STD ： 3.62546
+Plus Vec512 + UseUint ： 1.91137
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+
+
+pe 带adapter
+
+thread 1
+STD ： 93.2159
+Plus Vec512 + UseUint ： 42.6254
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 2
+STD ： 48.7778
+Plus Vec512 + UseUint ： 21.0922
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 4
+STD ： 24.3336
+Plus Vec512 + UseUint ： 11.2543
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 8
+STD ： 12.8506
+Plus Vec512 + UseUint ： 6.13277
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+thread 16
+STD ： 6.87486
+Plus Vec512 + UseUint ： 4.007
+Plus Vec512 + UseLong ： 
+Plus noVec  + UseLong ： 
+
+```
+
+
 

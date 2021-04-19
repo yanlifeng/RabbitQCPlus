@@ -471,7 +471,7 @@ int main(int argc, char *argv[]) {
     }
     cout << "adapter detected cost " << get_wall_time() - t1 << " seconds" << endl;
 
-
+    double t11 = get_wall_time();
     Processor p(&opt);
     p.process();
 
@@ -480,7 +480,9 @@ int main(int argc, char *argv[]) {
     cerr << endl << "JSON report: " << opt.jsonFile << endl;
     cerr << "HTML report: " << opt.htmlFile << endl;
     cerr << endl << command << endl;
-    cerr << "rabbit_qc v" << RABBITQC_VER << ", time used: " << t2 - t1 << " seconds" << endl;
+    cerr << "rabbit_qc v" << RABBITQC_VER << ", time used: " << t2 - t11 << " seconds" << endl;
+    cerr << "rabbit_qc v" << RABBITQC_VER << ", total time used: " << t2 - t1 << " seconds" << endl;
 
     return 0;
 }
+
