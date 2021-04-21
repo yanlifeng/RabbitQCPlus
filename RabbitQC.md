@@ -3,13 +3,13 @@
 ## RabbitQC
 
 TODO
-  - [ ] 研究main函数中每一个参数的意义
+  - [x] 研究main函数中每一个参数的意义
   - [x] 打开trimAndCut
   - [x] 打开polg
   - [x]  解决mDuplicate线程不安全问题
   - [x]  打开mUmiProcessor
   - [ ]  --[haoz:] I think it 3GS can add here
-  - [ ]  解决带adapter的数据每次统计信息输出都不一样的问题
+  - [x]  解决带adapter的数据每次统计信息输出都不一样的问题
   - [x]  check all！
   - [ ]  把string换成char*  不在nwe新的空间
   - [ ]  关闭多线程动态调度，静态分配然后多线程处理，check多线程正确性
@@ -19,8 +19,8 @@ TODO
   - [x] 关于空间
   - [ ] 解决报错./rabbit_qc -w 1 -i ../data/SRR2496709_1.fastq -o p.fq -t 4 -5
   - [x] 为啥运行空间稳定1g不变，
-  - [ ] 优化duplicate中的round
-  - [ ] state中尝试*8/16的向量化
+  - [x] 优化duplicate中的round
+  - [x] state中尝试*8/16的向量化
   - [ ]  
 
 

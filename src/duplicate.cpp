@@ -5,7 +5,11 @@
 #include "util.h"
 #include <thread>
 
+#ifdef Vec512
+
 #include <immintrin.h>
+
+#endif
 
 Duplicate::Duplicate(Options *opt) {
     mOptions = opt;
