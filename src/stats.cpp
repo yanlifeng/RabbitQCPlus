@@ -742,7 +742,18 @@ void Stats::statRead(Read *r) {
 
 
 #ifdef Vec256
-    cout << "pending..." << endl;
+    for (int i = 0; i < len; i++) {
+        char b = seqstr[i] & 0x07;
+        mCycleQ30BasesI[i * 8 + b] += qualstr[i] >= q30;
+        mCycleQ20BasesI[i * 8 + b] += qualstr[i] >= q20;
+        mCycleBaseContentsI[i * 8 + b]++;
+        mCycleBaseQualI[i * 8 + b] += (qualstr[i] - 33);
+        if (seqstr[i] == 'N')flag = 5;
+        int val = valAGCT[seqstr[i] & 0x07];
+        kmer = ((kmer << 2) & 0x3FC) | val;
+        if (flag <= 0)mKmer[kmer]++;
+        flag--;
+    }
 #elif Vec512
     int i = 0;
     int det = 16;

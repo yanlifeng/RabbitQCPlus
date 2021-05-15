@@ -1,6 +1,13 @@
 #include "adaptertrimmer.h"
 
+#include <set>
+
 #ifdef Vec512
+
+#include<immintrin.h>
+
+#endif
+#ifdef Vec256
 
 #include<immintrin.h>
 
@@ -107,6 +114,61 @@ bool AdapterTrimmer::trimBySequence(Read *r, FilterResult *fr, string &adapterse
         if (mismatch <= allowedMismatch) {
             found = true;
             break;
+        }
+    }
+#elif Vec256
+    for (pos = start; pos < rlen - matchReq; pos++) {
+        int cmplen = min(rlen - pos, alen);
+        int allowedMismatch = cmplen / allowOneMismatchForEach;
+        int mismatch = 0;
+        bool matched = true;
+        for (int i = max(0, -pos); i < cmplen; i++) {
+            mismatch += adata[i] != rdata[i + pos];
+            if (mismatch > allowedMismatch)break;
+        }
+        if (mismatch <= allowedMismatch) {
+            found = true;
+            break;
+        }
+    }
+#elif KK
+
+    for (pos = start; pos < rlen - matchReq; pos++) {
+        int cmplen = min(rlen - pos, alen);
+        int allowedMismatch = cmplen / allowOneMismatchForEach;
+        int ok = 1;
+        for (int i = max(0, -pos), j = 0; i < cmplen && j < 3; i++, j++) {
+            if (adata[i] != rdata[i + pos]) {
+                ok = 0;
+                break;
+            }
+        }
+        if (ok == 0) {
+            for (int i = cmplen - 1, j = 0; i >= max(0, -pos) && j < 3; i--, j++) {
+                if (adata[i] != rdata[i + pos]) {
+                    ok = 0;
+                    break;
+                }
+            }
+        }
+        if (ok == 0) {
+            for (int i = max(0, -pos) + 3, j = 0; i < cmplen && j < 3; i++, j++) {
+                if (adata[i] != rdata[i + pos]) {
+                    ok = 0;
+                    break;
+                }
+            }
+        }
+        if (ok) {
+            int mismatch = 0;
+            for (int i = max(0, -pos); i < cmplen; i++) {
+                mismatch += adata[i] != rdata[i + pos];
+                if (mismatch > allowedMismatch)break;
+            }
+            if (mismatch <= allowedMismatch) {
+                found = true;
+                break;
+            }
         }
     }
 #else

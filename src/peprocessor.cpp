@@ -655,7 +655,6 @@ bool PairEndProcessor::processPairEnd(ReadPairPack *pack, ThreadConfig *config) 
     } else {
         // normal output by left/right writer thread
         if (mRightWriter && mLeftWriter) {
-            printf("no\n");
             unsigned long totSize1 = 0;
             for (int i = 0; i < newOut1.size(); i++) {
                 Read *now = newOut1[i];

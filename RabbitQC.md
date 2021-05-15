@@ -21,6 +21,17 @@ TODO
   - [x] 为啥运行空间稳定1g不变，
   - [x] 优化duplicate中的round
   - [x] state中尝试*8/16的向量化
+  - [ ] 改代码支持 long - int 检测
+  - [ ] 2.3.3重新分一下段
+  - [ ] 编译时指定使用的向量化指令集
+  - [ ] 2.3.4 920是不是arm的
+  - [ ] 2.4 LTO抄的
+  - [ ] 1.1.1重新组织语言
+  - [ ] 2.2.2单双端介绍抄的
+  - [ ] 代码块编号
+  - [ ] 4.2中 复杂度公式
+  - [ ] arm架构优化
+  - [ ] arm架构向量化neno
   - [ ]  
 
 
@@ -1840,9 +1851,13 @@ Novec：rabbit_qc v0.0.1, time used: 41.2447 seconds
 ```
 thread 1
 STD ： 75.5552
+STD920 ： 110.4734
+STDAMD : 72.24
 Plus Vec512 + UseUint ： 40.7154
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 76.4233
+GoodAMD : 41.14
 
 
 thread 2
@@ -1850,25 +1865,36 @@ STD ： 41.0599
 Plus Vec512 + UseUint ： 21.5165
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
-
+Good920 ： 39.1343
+GoodAMD : 22.74
 
 thread 4
 STD ： 21.2547
 Plus Vec512 + UseUint ： 11.0905
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 19.5323
+GoodAMD : 11.64
+
 
 thread 8
 STD ： 11.5397
 Plus Vec512 + UseUint ： 6.16717	
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 11.4213
+GoodAMD : 5.98
+
 
 thread 16
 STD ： 6.1985
 Plus Vec512 + UseUint ： 3.5977
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 6.42534
+GoodAMD : 3.12
+
+
 ```
 
 ```
@@ -1876,33 +1902,57 @@ se 带adapter
 
 thread 1
 STD ： 46.307
+STD920 ： ～71
+STDAMD : 43.20
 Plus Vec512 + UseUint ： 22.7573
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 46.0725
+GoodAMD : 25.02
+
+
 
 thread 2
 STD ： 23.2454
+STD920 ： ～36
 Plus Vec512 + UseUint ： 11.2436
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ：22.3723
+GoodAMD : 12.84
+
+
 
 thread 4
 STD ： 12.5085
+STD920 ： ～18
 Plus Vec512 + UseUint ： 5.95877
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ：12.1082
+GoodAMD : 6.50
+
+
 
 thread 8
 STD ： 6.62146
+STD920 ： 9
 Plus Vec512 + UseUint ： 3.32433
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 6.75668
+GoodAMD : 3.40
+
+
 
 thread 16
 STD ： 3.62546
 Plus Vec512 + UseUint ： 1.91137
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 3.89239
+GoodAMD : 1.83
+
 
 
 
@@ -1910,33 +1960,59 @@ pe 带adapter
 
 thread 1
 STD ： 93.2159
+STD920 ： ～140
+STDAMD : 95.76
 Plus Vec512 + UseUint ： 42.6254
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ：98.1472
+GoodAMD : 67.93
+
+
 
 thread 2
 STD ： 48.7778
+STD920 ： ～70
 Plus Vec512 + UseUint ： 21.0922
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ：47.5428
+GoodAMD : 34.18
+
+
 
 thread 4
 STD ： 24.3336
+STD920 ： 35
 Plus Vec512 + UseUint ： 11.2543
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ：25.2185
+GoodAMD : 17.01
+
+
 
 thread 8
 STD ： 12.8506
+STD920 ： 17
 Plus Vec512 + UseUint ： 6.13277
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ：12.1297
+GoodAMD : 8.65
+
+
+
+
 
 thread 16
 STD ： 6.87486
 Plus Vec512 + UseUint ： 4.007
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
+Good920 ： 6.8712
+GoodAMD : 4.60
+
 
 ```
 
