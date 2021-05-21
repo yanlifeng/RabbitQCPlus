@@ -4,7 +4,12 @@
 #include <memory.h>
 #include "nucleotidetree.h"
 #include "knownadapters.h"
+
+#ifdef _OPENMP
+
 #include <omp.h>
+
+#endif
 
 Evaluator::Evaluator(Options *opt) {
     mOptions = opt;
@@ -479,16 +484,36 @@ string Evaluator::evalAdapterAndReadNum(long &readNum, bool isR2) {
     unsigned int *counts = new unsigned int[size];
     memset(counts, 0, sizeof(unsigned int) * size);
 
+#ifdef _OPENMP
     //prepare data for openMP add by liumy
-//    int thread_count = 1; //num of threads
-//    unsigned int **countArr = new unsigned int *[thread_count];
-//    for (int i = 0; i < thread_count; i++) {
-//        countArr[i] = new unsigned int[size];
-//    }
+    int thread_count = 1; //num of threads
+    unsigned int **countArr = new unsigned int *[thread_count];
+    for (int i = 0; i < thread_count; i++) {
+        countArr[i] = new unsigned int[size];
+        memset(countArr[i], 0, sizeof(unsigned int) * size);
+    }
 
-//#pragma omp parallel for num_threads(thread_count)
+
+#pragma omp parallel for num_threads(thread_count)
     for (int i = 0; i < records; i++) {
         int my_rank = omp_get_thread_num();
+        Read *r = loadedReads[i];
+        //const char* data = r->mSeq.mStr.c_str();
+        int key = -1;
+        for (int pos = 20; pos <= r->length() - keylen - shiftTail; pos++) {
+            key = seq2int(r->mSeq.mStr, pos, keylen, key);
+            if (key >= 0) {
+                countArr[my_rank][key]++;
+            }
+        }
+    }
+    //merge countArr to counts
+    for (int i = 0; i < thread_count; i++) {
+        for (int j = 0; j < size; j++)
+            counts[j] += countArr[i][j];
+    }
+#else
+    for (int i = 0; i < records; i++) {
         Read *r = loadedReads[i];
         //const char* data = r->mSeq.mStr.c_str();
         int key = -1;
@@ -499,12 +524,7 @@ string Evaluator::evalAdapterAndReadNum(long &readNum, bool isR2) {
             }
         }
     }
-    //merge countArr to counts
-//    for (int i = 0; i < thread_count; i++) {
-//        for (int j = 0; j < size; j++)
-//            counts[j] += countArr[i][j];
-//    }
-
+#endif
     // set AAAAAAAAAA = 0;
     counts[0] = 0;
 
@@ -600,13 +620,14 @@ string Evaluator::getAdapterWithSeed(int seed, Read **loadedReads, long records,
     NucleotideTree forwardTree(mOptions);
     NucleotideTree backwardTree(mOptions);
 
+#ifdef _OPENMP
     int thread_count = 1;
     vector<vector<AdapterSeedInfo>> vecArr;// = new vector<AdapterSeedInfo>* [thread_count];
     for (int i = 0; i < thread_count; i++) {
         vector<AdapterSeedInfo> vec;
         vecArr.push_back(vec);
     }
-//#pragma omp parallel for num_threads(thread_count)
+#pragma omp parallel for num_threads(thread_count)
     for (int i = 0; i < records; i++) {
         Read *r = loadedReads[i];
         struct AdapterSeedInfo seedInfo;
@@ -634,7 +655,31 @@ string Evaluator::getAdapterWithSeed(int seed, Read **loadedReads, long records,
         }
 
     }
-
+#else
+    vector<AdapterSeedInfo> vec;
+    for (int i = 0; i < records; i++) {
+        Read *r = loadedReads[i];
+        struct AdapterSeedInfo seedInfo;
+        int key = -1;
+        for (int pos = 20; pos <= r->length() - keylen - shiftTail; pos++) {
+            key = seq2int(r->mSeq.mStr, pos, keylen, key);
+            if (key == seed) {
+                seedInfo.recordsID = i;
+                seedInfo.pos = pos;
+                vec.push_back(seedInfo);
+            }
+        }
+    }
+    vector<AdapterSeedInfo>::iterator it;
+    for (it = vec.begin(); it != vec.end(); it++) {
+        forwardTree.addSeq(loadedReads[it->recordsID]->mSeq.mStr.substr(it->pos + keylen,
+                                                                        loadedReads[it->recordsID]->length() -
+                                                                        keylen - shiftTail - it->pos));
+        string seq = loadedReads[it->recordsID]->mSeq.mStr.substr(0, it->pos);
+        string rcseq = reverse(seq);
+        backwardTree.addSeq(rcseq);
+    }
+#endif
     bool reachedLeaf = true;
     string forwardPath = forwardTree.getDominantPath(reachedLeaf);
     string backwardPath = backwardTree.getDominantPath(reachedLeaf);

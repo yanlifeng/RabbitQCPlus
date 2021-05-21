@@ -241,12 +241,12 @@ OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDi
         for (; i < overlap_len; i++) {
             if (str1[offset + i] != reMap[str2[len2 - 1 - i]]) {
                 diff += 1;
-                if (diff == overlapDiffLimit && i < complete_compare_require)
+                if (diff > overlapDiffLimit && i < complete_compare_require)
                     break;
             }
         }
 
-        if (diff < overlapDiffLimit || (diff >= overlapDiffLimit && i >= complete_compare_require)) {
+        if (diff <= overlapDiffLimit || (diff > overlapDiffLimit && i > complete_compare_require)) {
             OverlapResult ov;
             ov.overlapped = true;
             ov.offset = offset;
@@ -274,12 +274,12 @@ OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDi
         for (i = 0; i < overlap_len; i++) {
             if (str1[i] != reMap[str2[len2 - 1 + offset - i]]) {
                 diff += 1;
-                if (diff >= overlapDiffLimit && i < complete_compare_require)
+                if (diff > overlapDiffLimit && i < complete_compare_require)
                     break;
             }
         }
 
-        if (diff < overlapDiffLimit || (diff >= overlapDiffLimit && i >= complete_compare_require)) {
+        if (diff <= overlapDiffLimit || (diff > overlapDiffLimit && i > complete_compare_require)) {
             OverlapResult ov;
             ov.overlapped = true;
             ov.offset = offset;

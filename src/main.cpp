@@ -8,8 +8,10 @@
 #include "options.h"
 #include "processor.h"
 #include "evaluator.h"
-#include "omp.h"
 
+#ifdef _OPENMP
+#include "omp.h"
+#endif
 
 // TODO: code refactoring to remove these global variables
 string command;
@@ -33,7 +35,8 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     //detect cpu cores using openmp
-    int nprocs = omp_get_num_procs();
+//    int nprocs = omp_get_num_procs();
+    int nprocs = 1;
     cerr << nprocs << " CPUs detected" << endl;
     if (nprocs >= 4) nprocs -= 2;
 

@@ -1,1 +1,1 @@
-rm -rf mDuplicateCount mDuplicateDups mDuplicateGC preStatsKmer postStatsKmer preStatsTotalBase preStatsTotalQual postStatsTotalBase postStatsTotalQual p.fq
+rm -rf mDuplicate* preStats* postStats* p.fq r.fq r1.fq r2.fq RabbitQC.json RabbitQC.html
