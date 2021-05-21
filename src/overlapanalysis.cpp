@@ -132,19 +132,17 @@ OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDi
         int leng = min(complete_compare_require, overlap_len);
         int i = 0;
         for (; i + 32 <= leng; i += 32) {
+
             __m256i t1 = _mm256_loadu_si256(reinterpret_cast<const __m256i_u *>(str1 + offset + i));
             __m256i t2 = _mm256_loadu_si256(reinterpret_cast<const __m256i_u *>(str2 + i));
             __m256i res = _mm256_cmpeq_epi8(t1, t2);
-            for (int j = 0; j < 32; j++) {
-                if (res[j] == 0)diff++;
-            }
+            unsigned mask = _mm256_movemask_epi8(res);
+            diff += 32 - _mm_popcnt_u32(mask);
             if (diff > overlapDiffLimit)break;
         }
         for (; i < leng; i++) {
-            if (str1[offset + i] != str2[i]) {
-                diff += 1;
-                if (diff > overlapDiffLimit)break;
-            }
+            diff += str1[offset + i] != str2[i];
+            if (diff > overlapDiffLimit)break;
         }
 
         if (diff <= overlapDiffLimit) {
@@ -178,16 +176,13 @@ OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDi
             __m256i t1 = _mm256_loadu_si256(reinterpret_cast<const __m256i_u *>(str1 + i));
             __m256i t2 = _mm256_loadu_si256(reinterpret_cast<const __m256i_u *>(str2 - offset + i));
             __m256i res = _mm256_cmpeq_epi8(t1, t2);
-            for (int j = 0; j < 32; j++) {
-                if (res[j] == 0)diff++;
-            }
+            unsigned mask = _mm256_movemask_epi8(res);
+            diff += 32 - _mm_popcnt_u32(mask);
             if (diff > overlapDiffLimit)break;
         }
         for (; i < leng; i++) {
-            if (str1[i] != str2[-offset + i]) {
-                diff += 1;
-                if (diff > overlapDiffLimit)break;
-            }
+            diff += str1[i] != str2[-offset + i];
+            if (diff > overlapDiffLimit)break;
         }
         if (diff <= overlapDiffLimit) {
             OverlapResult ov;
@@ -207,13 +202,19 @@ OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDi
 }
 
 #else
-static char reMap[123] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                   '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                   '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-                   '0', '0', '0', '0', '0', 'T', 'B', 'G', 'D', 'E', 'F', 'C', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                   'P', 'Q', 'R', 'S', 'A', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '0', '0', '0', '0', '0', 'T', 'b', 'G',
-                   'd', 'e', 'f', 'C', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 'A', 'u', 'v', 'w',
-                   'x', 'y', 'z'};
+static char reMap[123] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                          '0',
+                          '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                          '0',
+                          '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+                          '0',
+                          '0', '0', '0', '0', '0', 'T', 'B', 'G', 'D', 'E', 'F', 'C', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+                          'O',
+                          'P', 'Q', 'R', 'S', 'A', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '0', '0', '0', '0', '0', 'T', 'b',
+                          'G',
+                          'd', 'e', 'f', 'C', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 'A', 'u', 'v',
+                          'w',
+                          'x', 'y', 'z'};
 
 // ported from the python code of AfterQC
 OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDiffLimit, int overlapRequire) {
@@ -235,18 +236,15 @@ OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDi
     while (offset < len1 - overlapRequire) {
         // the overlap length of r1 & r2 when r2 is move right for offset
         overlap_len = min(len1 - offset, len2);
-
+        int leng = min(complete_compare_require, overlap_len);
         diff = 0;
-        int i = 0;
-        for (; i < overlap_len; i++) {
-            if (str1[offset + i] != reMap[str2[len2 - 1 - i]]) {
-                diff += 1;
-                if (diff > overlapDiffLimit && i < complete_compare_require)
-                    break;
-            }
+        for (int i = 0; i < leng; i++) {
+            diff += str1[offset + i] != reMap[str2[len2 - 1 - i]];
+            if (diff > overlapDiffLimit)
+                break;
         }
 
-        if (diff <= overlapDiffLimit || (diff > overlapDiffLimit && i > complete_compare_require)) {
+        if (diff <= overlapDiffLimit) {
             OverlapResult ov;
             ov.overlapped = true;
             ov.offset = offset;
@@ -268,18 +266,15 @@ OverlapResult OverlapAnalysis::analyze(Sequence &r1, Sequence &r2, int overlapDi
     while (offset > -(len2 - overlapRequire)) {
         // the overlap length of r1 & r2 when r2 is move right for offset
         overlap_len = min(len1, len2 - abs(offset));
-
+        int leng = min(complete_compare_require, overlap_len);
         diff = 0;
-        int i = 0;
-        for (i = 0; i < overlap_len; i++) {
-            if (str1[i] != reMap[str2[len2 - 1 + offset - i]]) {
-                diff += 1;
-                if (diff > overlapDiffLimit && i < complete_compare_require)
-                    break;
-            }
+        for (int i = 0; i < leng; i++) {
+            diff += str1[i] != reMap[str2[len2 - 1 + offset - i]];
+            if (diff > overlapDiffLimit)
+                break;
         }
 
-        if (diff <= overlapDiffLimit || (diff > overlapDiffLimit && i > complete_compare_require)) {
+        if (diff <= overlapDiffLimit) {
             OverlapResult ov;
             ov.overlapped = true;
             ov.offset = offset;

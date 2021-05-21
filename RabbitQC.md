@@ -1852,13 +1852,13 @@ Novec：rabbit_qc v0.0.1, time used: 41.2447 seconds
 thread 1
 STD ： 75.5552
 STD920 ： 110.4734
-STDAMD : 72.24
+STDAMD : 77.59
 STDM1 ： 71.30
 Plus Vec512 + UseUint ： 40.7154
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 76.4233
-GoodAMD : 41.14
+GoodAMD : 44.99
 GoodM1 ： 46.30
 
 
@@ -1868,7 +1868,7 @@ Plus Vec512 + UseUint ： 21.5165
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 39.1343
-GoodAMD : 22.74
+GoodAMD : 25.01
 GoodM1 ： 26.45
 
 thread 4
@@ -1877,7 +1877,7 @@ Plus Vec512 + UseUint ： 11.0905
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 19.5323
-GoodAMD : 11.64
+GoodAMD : 12.69
 GoodM1 ： 18.33
 
 
@@ -1887,7 +1887,7 @@ Plus Vec512 + UseUint ： 6.16717
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 11.4213
-GoodAMD : 5.98
+GoodAMD : 6.38
 GoodM1 ： 19.34
 
 
@@ -1897,7 +1897,7 @@ Plus Vec512 + UseUint ： 3.5977
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 6.42534
-GoodAMD : 3.12
+GoodAMD : 3.50
 GoodM1 ： 19.94
 
 
@@ -1909,13 +1909,13 @@ se 带adapter
 thread 1
 STD ： 46.307
 STD920 ： ～71
-STDAMD : 43.20
+STDAMD : 46.41
 STDM1 ： 36.98
 Plus Vec512 + UseUint ： 22.7573
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 46.0725
-GoodAMD : 25.02
+GoodAMD : 24.94
 GoodM1 ： 30.21
 
 
@@ -1926,7 +1926,7 @@ Plus Vec512 + UseUint ： 11.2436
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：22.3723
-GoodAMD : 12.84
+GoodAMD : 12.75
 GoodM1 ： 18.06
 
 
@@ -1938,7 +1938,7 @@ Plus Vec512 + UseUint ： 5.95877
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：12.1082
-GoodAMD : 6.50
+GoodAMD : 6.46
 GoodM1 ： 12.64
 
 
@@ -1961,7 +1961,7 @@ Plus Vec512 + UseUint ： 1.91137
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 3.89239
-GoodAMD : 1.83
+GoodAMD : 1.88
 GoodM1 ： 14.01
 
 
@@ -1972,13 +1972,13 @@ pe 带adapter
 thread 1
 STD ： 93.2159
 STD920 ： ～140
-STDAMD : 95.76
+STDAMD : 110.45
 STDM1 ： 78.19
 Plus Vec512 + UseUint ： 42.6254
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：98.1472
-GoodAMD : 67.93
+GoodAMD : 59.64
 GoodM1 ： 49.42
 
 
@@ -1989,7 +1989,7 @@ Plus Vec512 + UseUint ： 21.0922
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：47.5428
-GoodAMD : 34.18
+GoodAMD : 30.00
 GoodM1 ： 28.82
 
 
@@ -2001,9 +2001,8 @@ Plus Vec512 + UseUint ： 11.2543
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：25.2185
-GoodAMD : 17.01
+GoodAMD : 14.86
 GoodM1 ： 21.79
-
 
 
 thread 8
@@ -2013,11 +2012,8 @@ Plus Vec512 + UseUint ： 6.13277
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：12.1297
-GoodAMD : 8.65
+GoodAMD : 7.53
 GoodM1 ： 21.88
-
-
-
 
 
 thread 16
@@ -2026,7 +2022,7 @@ Plus Vec512 + UseUint ： 4.007
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 6.8712
-GoodAMD : 4.60
+GoodAMD : 4.06
 GoodM1 ： 22.32
 
 ```

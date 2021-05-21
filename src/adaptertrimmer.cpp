@@ -92,24 +92,7 @@ bool AdapterTrimmer::trimBySequence(Read *r, FilterResult *fr, string &adapterse
             mismatch += _mm_popcnt_u64(res);
             if (mismatch > allowedMismatch)break;
         }
-//
-//        for (int i = l; i < cmplen; i += 32) {
-//            uint32 tag = (1ll << min(32, cmplen - i)) - 1;
-//            __m256i t1 = _mm256_maskz_loadu_epi8(tag, adata + i);
-//            __m256i t2 = _mm256_maskz_loadu_epi8(tag, rdata + i + pos);
-//            __mmask32 res = _mm256_cmp_epi8_mask(t1, t2, 4);
-//            mismatch += _mm_popcnt_u32(res);
-//            if (mismatch > allowedMismatch)break;
-//        }
 
-//        for (int i = l; i < cmplen; i += 16) {
-//            uint16 tag = (1 << min(16, cmplen - i)) - 1;
-//            __m128i t1 = _mm_maskz_loadu_epi8(tag, adata + i);
-//            __m128i t2 = _mm_maskz_loadu_epi8(tag, rdata + i + pos);
-//            __mmask16 res = _mm_cmp_epi8_mask(t1, t2, 4);
-//            mismatch += _mm_popcnt_u32(res);
-//            if (mismatch > allowedMismatch)break;
-//        }
 
         if (mismatch <= allowedMismatch) {
             found = true;
@@ -121,8 +104,17 @@ bool AdapterTrimmer::trimBySequence(Read *r, FilterResult *fr, string &adapterse
         int cmplen = min(rlen - pos, alen);
         int allowedMismatch = cmplen / allowOneMismatchForEach;
         int mismatch = 0;
-        bool matched = true;
-        for (int i = max(0, -pos); i < cmplen; i++) {
+        int l = max(0, -pos);
+        int i = l;
+        for (; i + 32 < cmplen; i += 32) {
+            __m256i t1 = _mm256_loadu_si256(reinterpret_cast<const __m256i_u *>(adata + i));
+            __m256i t2 = _mm256_loadu_si256(reinterpret_cast<const __m256i_u *>(rdata + i + pos));
+            __m256i res = _mm256_cmpeq_epi8(t1, t2);
+            unsigned mask = _mm256_movemask_epi8(res);
+            mismatch += 32 - _mm_popcnt_u32(mask);
+            if (mismatch > allowedMismatch)break;
+        }
+        for (; i < cmplen; i++) {
             mismatch += adata[i] != rdata[i + pos];
             if (mismatch > allowedMismatch)break;
         }
