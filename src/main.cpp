@@ -4,6 +4,7 @@
 #include <time.h>
 #include "cmdline.h"
 #include <sstream>
+#include <cmath>
 #include "util.h"
 #include "options.h"
 #include "processor.h"
@@ -390,6 +391,37 @@ int main(int argc, char *argv[]) {
 //    cout << "blacklist1 is " << blacklist1 << "\nblacklist2 is " << blacklist2 << "\nindexFilterThreshold is "
 //         << indexFilterThreshold << endl;
 //
+
+    cout << "in1 " << opt.in1 << " in2 " << opt.in2 << endl;
+
+#ifdef UseLong
+
+#else
+    FILE *fp1;
+    const char *fname1 = opt.in1.c_str();
+    fp1 = fopen(fname1, "rb");
+    fseek(fp1, 0, SEEK_END);
+    long fsize1 = ftell(fp1);
+    long totSize = fsize1;
+    if (opt.in2.length() > 0) {
+//        FILE *fp2;
+//        const char *fname2 = opt.in1.c_str();
+//        fp2 = fopen(fname2, "rb");
+//        fseek(fp2, 0, SEEK_END);
+//        long fsize2 = ftell(fp2);
+//        totSize += fsize2;
+    }
+    //totSize -> bytes
+    //readNum = totSize / 2 / 100
+    //maxVal = readNum / 4 * 40
+    long maxVal = long(totSize / 800.0 * 40);
+    cout << "maxVal is " << maxVal << endl;
+    if (maxVal > (1ll << 31)) {
+        cout << "uint is not available because input fastq file is so big, please add -DUseLong in Makefile." << endl;
+        exit(0);
+    }
+#endif
+
     stringstream ss;
     for (int i = 0; i < argc; i++) {
         ss << argv[i] << " ";
