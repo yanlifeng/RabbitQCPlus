@@ -1970,11 +1970,11 @@ GoodM1 ： 14.01
 pe 带adapter
 
 thread 1
-STD ： 93.2159
+STD ： 117.29
 STD920 ： ～140
 STDAMD : 110.45
-STDM1 ： 78.19
-Plus Vec512 + UseUint ： 42.6254
+STDM1 ： 86.19
+Plus Vec512 + UseUint ： 50.29
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：98.1472
@@ -1983,9 +1983,9 @@ GoodM1 ： 49.42
 
 
 thread 2
-STD ： 48.7778
+STD ： 
 STD920 ： ～70
-Plus Vec512 + UseUint ： 21.0922
+Plus Vec512 + UseUint ： 25.17
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：47.5428
@@ -1995,9 +1995,9 @@ GoodM1 ： 28.82
 
 
 thread 4
-STD ： 24.3336
+STD ： 
 STD920 ： 35
-Plus Vec512 + UseUint ： 11.2543
+Plus Vec512 + UseUint ： 13.36
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：25.2185
@@ -2006,9 +2006,9 @@ GoodM1 ： 21.79
 
 
 thread 8
-STD ： 12.8506
+STD ： 
 STD920 ： 17
-Plus Vec512 + UseUint ： 6.13277
+Plus Vec512 + UseUint ： 7.34
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ：12.1297
@@ -2017,8 +2017,8 @@ GoodM1 ： 21.88
 
 
 thread 16
-STD ： 6.87486
-Plus Vec512 + UseUint ： 4.007
+STD ： 
+Plus Vec512 + UseUint ： 4.15
 Plus Vec512 + UseLong ： 
 Plus noVec  + UseLong ： 
 Good920 ： 6.8712
@@ -2029,3 +2029,32 @@ GoodM1 ： 22.32
 
 
 
+|                           | Thread | RQC   | RQCP | RQC  | RQCP |
+| ------------------------- | ------ | ----- | ---- | ---- | ---- |
+| PE adapter without output | 1      | 116.0 | 52.1 |      |      |
+|                           | 2      | 58.3  | 25.2 |      |      |
+|                           | 4      | 30.3  | 13.3 |      |      |
+|                           | 8      | 15.9  | 7.3  |      |      |
+|                           | 16     | 8.5   | 4.1  |      |      |
+|                           | 20     | 6.9   | 4.0  |      |      |
+|                           | 24     | 6.2   | 4.0  |      |      |
+|                           | 28     | 5.4   | 4.2  |      |      |
+|                           | 32     | 5.3   | 4.4  |      |      |
+
+
+
+|                             | Thread | RQC  | RQCP |      |      |
+| --------------------------- | ------ | ---- | ---- | ---- | ---- |
+| SE noadapter without output | 1      | 79.0 | 45.2 | 0.09 | 0.17 |
+|                             | 2      | 40.4 | 21.5 | 0.18 | 0.34 |
+|                             | 4      | 21.1 | 11.5 | 0.36 | 0.65 |
+|                             | 8      | 11.5 | 6.3  | 0.65 | 1.19 |
+|                             | 16     | 6.2  | 3.9  | 1.21 | 1.92 |
+|                             | 20     | 5.2  | 3.7  | 1.44 | 2.02 |
+|                             | 24     | 4.5  | 3.8  | 1.67 | 2.00 |
+|                             | 28     | 4.1  | 3.8  | 1.83 | 2.00 |
+|                             | 32     | 4.0  | 3.9  | 1.88 | 1.92 |
+
+## 0807
+
+fix polx bug

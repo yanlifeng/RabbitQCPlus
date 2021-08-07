@@ -11,7 +11,6 @@
 #include "adaptertrimmer.h"
 #include "polyx.h"
 
-#define uint unsigned int
 
 SingleEndProcessor::SingleEndProcessor(Options *opt) {
     mOptions = opt;
@@ -200,22 +199,22 @@ bool SingleEndProcessor::process() {
 #else
     out.open(outFileName6.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalBaseI), finalPreStats->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalBaseI), finalPreStats->mBufLen * sizeof(uint32));
     out.close();
 
     out.open(outFileName7.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalQualI), finalPreStats->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPreStats->mCycleTotalQualI), finalPreStats->mBufLen * sizeof(uint32));
     out.close();
 
     out.open(outFileName8.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalBaseI), finalPostStats->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalBaseI), finalPostStats->mBufLen * sizeof(uint32));
     out.close();
 
     out.open(outFileName9.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalQualI), finalPostStats->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPostStats->mCycleTotalQualI), finalPostStats->mBufLen * sizeof(uint32));
     out.close();
 
 //
@@ -226,7 +225,7 @@ bool SingleEndProcessor::process() {
 //
 //    auto tlen = finalPreStats->mBufLen;
 //    for (int tt = 0; tt < 4; tt++) {
-//        uint *f1 = new uint[tlen];
+//        uint32 *f1 = new uint32[tlen];
 //        long *f2 = new long[tlen];
 //        cout << fn[tt] << " " << fr[tt] << endl;
 //        in.open(fn[tt].c_str(), ios::in | ios::binary);
@@ -237,7 +236,7 @@ bool SingleEndProcessor::process() {
 //            printf("Can't open file \"%s\"\n", fr[tt].c_str());
 //        } else {
 //            in.seekg(0, ios::beg);
-//            in.read(reinterpret_cast<char *>(f1), tlen * sizeof(uint));
+//            in.read(reinterpret_cast<char *>(f1), tlen * sizeof(uint32));
 //            inn.seekg(0, ios::beg);
 //            inn.read(reinterpret_cast<char *>(f2), tlen * sizeof(long));
 //            printf("=================================================\n");

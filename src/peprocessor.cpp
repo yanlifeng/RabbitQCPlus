@@ -229,39 +229,39 @@ bool PairEndProcessor::process() {
 #else
     out.open(outFileName6.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalBaseI), finalPreStats1->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalBaseI), finalPreStats1->mBufLen * sizeof(uint32));
     out.close();
     out.open(outFileName66.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalBaseI), finalPreStats2->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalBaseI), finalPreStats2->mBufLen * sizeof(uint32));
     out.close();
 
     out.open(outFileName7.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalQualI), finalPreStats1->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalQualI), finalPreStats1->mBufLen * sizeof(uint32));
     out.close();
     out.open(outFileName77.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalQualI), finalPreStats2->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalQualI), finalPreStats2->mBufLen * sizeof(uint32));
     out.close();
 
     out.open(outFileName8.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalBaseI), finalPostStats1->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalBaseI), finalPostStats1->mBufLen * sizeof(uint32));
     out.close();
     out.open(outFileName88.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalBaseI), finalPostStats2->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalBaseI), finalPostStats2->mBufLen * sizeof(uint32));
     out.close();
 
     out.open(outFileName9.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalQualI), finalPostStats1->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalQualI), finalPostStats1->mBufLen * sizeof(uint32));
     out.close();
 
     out.open(outFileName99.c_str(), ios::out | ios::binary);
     out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalQualI), finalPostStats2->mBufLen * sizeof(uint));
+    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalQualI), finalPostStats2->mBufLen * sizeof(uint32));
     out.close();
 
     cout << "finalPostStats1->mBufLen  " << finalPostStats1->mBufLen << endl;
@@ -322,7 +322,8 @@ bool PairEndProcessor::process() {
     printf("total delete r1 ========================: %.5f\n", cost13);
     printf("total ready output ========================: %.5f\n", cost14);
     printf("total costTotel ========================: %.5f\n",
-           cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11 + cost12 + cost13 + cost14);
+           cost1 + cost2 + cost3 + cost4 + cost5 + cost6 + cost7 + cost8 + cost9 + cost10 + cost11 + cost12 + cost13 +
+           cost14);
     printf("total cost =============================: %.5f\n", cost);
     printf("total  =================================: %d\n", totCnt);
     printf("total format =================================: %.5f\n", costFormat);

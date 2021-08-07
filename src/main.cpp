@@ -399,7 +399,7 @@ int main(int argc, char *argv[]) {
 #else
     FILE *fp1;
     const char *fname1 = opt.in1.c_str();
-    fp1 = fopen(fname1, "rb");
+    fp1 = fopen(fname1, "r");
     fseek(fp1, 0, SEEK_END);
     long fsize1 = ftell(fp1);
     long totSize = fsize1;
@@ -411,15 +411,18 @@ int main(int argc, char *argv[]) {
 //        long fsize2 = ftell(fp2);
 //        totSize += fsize2;
     }
+
     //totSize -> bytes
     //readNum = totSize / 2 / 100
     //maxVal = readNum / 4 * 40
+    cout << "my evaluate readNum is " << long(totSize / 200.0) << endl;
     long maxVal = long(totSize / 800.0 * 40);
     cout << "maxVal is " << maxVal << endl;
     if (maxVal > (1ll << 31)) {
         cout << "uint is not available because input fastq file is so big, please add -DUseLong in Makefile." << endl;
         exit(0);
     }
+
 #endif
 
     stringstream ss;
@@ -480,6 +483,7 @@ int main(int argc, char *argv[]) {
             cerr << endl;
         }
     }
+    cout << "fastp evaluate readNum is " << readNum << endl;
 
     opt.validate();
 

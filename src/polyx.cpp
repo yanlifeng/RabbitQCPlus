@@ -1,63 +1,63 @@
 #include "polyx.h"
 
-PolyX::PolyX(){
+PolyX::PolyX() {
 }
 
 
-PolyX::~PolyX(){
+PolyX::~PolyX() {
 }
 
-void PolyX::trimPolyG(Read* r1, Read* r2, FilterResult* fr, int compareReq) {
+void PolyX::trimPolyG(Read *r1, Read *r2, FilterResult *fr, int compareReq) {
     trimPolyG(r1, fr, compareReq);
     trimPolyG(r2, fr, compareReq);
 }
 
-void PolyX::trimPolyG(Read* r, FilterResult* fr, int compareReq) {
+void PolyX::trimPolyG(Read *r, FilterResult *fr, int compareReq) {
     const int allowOneMismatchForEach = 8;
     const int maxMismatch = 5;
 
-    const char* data = r->mSeq.mStr.c_str();
+    const char *data = r->mSeq.mStr.c_str();
 
     int rlen = r->length();
 
     int mismatch = 0;
     int i = 0;
     int firstGPos = rlen - 1;
-    for(i=0; i< rlen; i++) {
-        if(data[rlen - i - 1] != 'G') {
+    for (i = 0; i < rlen; i++) {
+        if (data[rlen - i - 1] != 'G') {
             mismatch++;
         } else {
-            firstGPos = rlen - i -1;
+            firstGPos = rlen - i - 1;
         }
 
-        int allowedMismatch = (i+1)/allowOneMismatchForEach;
-        if(mismatch > maxMismatch || (mismatch>allowedMismatch && i>= compareReq-1) )
+        int allowedMismatch = (i + 1) / allowOneMismatchForEach;
+        if (mismatch > maxMismatch || (mismatch > allowedMismatch && i >= compareReq - 1))
             break;
     }
 
-    if(i >= compareReq) {
+    if (i >= compareReq) {
         r->resize(firstGPos);
     }
 }
 
-void PolyX::trimPolyX(Read* r1, Read* r2, FilterResult* fr, int compareReq) {
+void PolyX::trimPolyX(Read *r1, Read *r2, FilterResult *fr, int compareReq) {
     trimPolyX(r1, fr, compareReq);
     trimPolyX(r2, fr, compareReq);
 }
 
-void PolyX::trimPolyX(Read* r, FilterResult* fr, int compareReq) {
+void PolyX::trimPolyX(Read *r, FilterResult *fr, int compareReq) {
     const int allowOneMismatchForEach = 8;
     const int maxMismatch = 5;
 
-    const char* data = r->mSeq.mStr.c_str();
+    const char *data = r->mSeq.mStr.c_str();
 
     int rlen = r->length();
 
     int atcgNumbers[4] = {0, 0, 0, 0};
     char atcgBases[4] = {'A', 'T', 'C', 'G'};
     int pos = 0;
-    for(pos=0; pos<rlen; pos++) {
-        switch(data[rlen - pos - 1]) {
+    for (pos = 0; pos < rlen; pos++) {
+        switch (data[rlen - pos - 1]) {
             case 'A':
                 atcgNumbers[0]++;
                 break;
@@ -80,32 +80,33 @@ void PolyX::trimPolyX(Read* r, FilterResult* fr, int compareReq) {
                 break;
         }
 
-        int cmp = (pos+1);
-        int allowedMismatch = min(maxMismatch, cmp/allowOneMismatchForEach);
+        int cmp = (pos + 1);
+        int allowedMismatch = min(maxMismatch, cmp / allowOneMismatchForEach);
 
         bool needToBreak = true;
-        for(int b=0; b<4; b++) {
-            if(cmp - atcgNumbers[b] <= allowedMismatch)
+        for (int b = 0; b < 4; b++) {
+            if (cmp - atcgNumbers[b] <= allowedMismatch)
                 needToBreak = false;
         }
-        if(needToBreak && (pos >= allowOneMismatchForEach || pos+1 >= compareReq-1)) {
+        if (needToBreak && (pos >= allowOneMismatchForEach || pos + 1 >= compareReq - 1)) {
             break;
         }
     }
 
     // has polyX
-    if(pos+1 >= compareReq) {
+    //add && pos < rlen, fix some bug
+    if (pos + 1 >= compareReq && pos < rlen) {
         // find the poly
         int poly;
         int maxCount = -1;
-        for(int b=0; b<4; b++) {
-            if(atcgNumbers[b] > maxCount){
+        for (int b = 0; b < 4; b++) {
+            if (atcgNumbers[b] > maxCount) {
                 maxCount = atcgNumbers[b];
                 poly = b;
             }
         }
         char polyBase = atcgBases[poly];
-        while(data[rlen - pos - 1] != polyBase && pos>=0)
+        while (data[rlen - pos - 1] != polyBase && pos >= 0)
             pos--;
 
         r->resize(rlen - pos - 1);
@@ -114,9 +115,9 @@ void PolyX::trimPolyX(Read* r, FilterResult* fr, int compareReq) {
 
 bool PolyX::test() {
     Read r("@name",
-        "ATTTTAAAAAAAAAATAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAT",
-        "+",
-        "///EEEEEEEEEEEEEEEEEEEEEEEEEE////EEEEEEEEEEEEE////E////E");
+           "ATTTTAAAAAAAAAATAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAT",
+           "+",
+           "///EEEEEEEEEEEEEEEEEEEEEEEEEE////EEEEEEEEEEEEE////E////E");
     PolyX::trimPolyX(&r, NULL, 10);
     r.print();
     return r.mSeq.mStr == "ATTTT";

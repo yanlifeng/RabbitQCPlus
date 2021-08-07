@@ -3,8 +3,6 @@
 #include <sstream>
 #include "util.h"
 
-#define uint unsigned int
-
 #ifdef Vec512
 
 #include <immintrin.h>
@@ -132,24 +130,24 @@ Stats::Stats(Options *opt, bool isRead2, int guessedCycles, int bufferMargin) {
     }
 
 
-    mCycleQ30BasesI = new uint[mBufLen * 8];
-    memset(mCycleQ30BasesI, 0, sizeof(uint) * mBufLen * 8);
+    mCycleQ30BasesI = new uint32[mBufLen * 8];
+    memset(mCycleQ30BasesI, 0, sizeof(uint32) * mBufLen * 8);
 
-    mCycleQ20BasesI = new uint[mBufLen * 8];
-    memset(mCycleQ20BasesI, 0, sizeof(uint) * mBufLen * 8);
+    mCycleQ20BasesI = new uint32[mBufLen * 8];
+    memset(mCycleQ20BasesI, 0, sizeof(uint32) * mBufLen * 8);
 
-    mCycleBaseContentsI = new uint[mBufLen * 8];
-    memset(mCycleBaseContentsI, 0, sizeof(uint) * mBufLen * 8);
+    mCycleBaseContentsI = new uint32[mBufLen * 8];
+    memset(mCycleBaseContentsI, 0, sizeof(uint32) * mBufLen * 8);
 
-    mCycleBaseQualI = new uint[mBufLen * 8];
-    memset(mCycleBaseQualI, 0, sizeof(uint) * mBufLen * 8);
+    mCycleBaseQualI = new uint32[mBufLen * 8];
+    memset(mCycleBaseQualI, 0, sizeof(uint32) * mBufLen * 8);
 
 
-    mCycleTotalBaseI = new uint[mBufLen];
-    memset(mCycleTotalBaseI, 0, sizeof(uint) * mBufLen);
+    mCycleTotalBaseI = new uint32[mBufLen];
+    memset(mCycleTotalBaseI, 0, sizeof(uint32) * mBufLen);
 
-    mCycleTotalQualI = new uint[mBufLen];
-    memset(mCycleTotalQualI, 0, sizeof(uint) * mBufLen);
+    mCycleTotalQualI = new uint32[mBufLen];
+    memset(mCycleTotalQualI, 0, sizeof(uint32) * mBufLen);
 
     mKmerBufLen = 2 << (KMER_LEN * 2);
     mKmer = new long[mKmerBufLen];
@@ -243,43 +241,43 @@ void Stats::extendBuffer(int newBufLen) {
 void Stats::extendBuffer(int newBufLen) {
     if (newBufLen <= mBufLen)
         return;
-    uint *newBuf = NULL;
+    uint32 *newBuf = NULL;
 
-    newBuf = new uint[newBufLen * 8];
-    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
-    memcpy(newBuf, mCycleQ30BasesI, sizeof(uint) * mBufLen * 8);
+    newBuf = new uint32[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint32) * newBufLen * 8);
+    memcpy(newBuf, mCycleQ30BasesI, sizeof(uint32) * mBufLen * 8);
     delete mCycleQ30BasesI;
     mCycleQ30BasesI = newBuf;
 
 
-    newBuf = new uint[newBufLen * 8];
-    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
-    memcpy(newBuf, mCycleQ20BasesI, sizeof(uint) * mBufLen * 8);
+    newBuf = new uint32[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint32) * newBufLen * 8);
+    memcpy(newBuf, mCycleQ20BasesI, sizeof(uint32) * mBufLen * 8);
     delete mCycleQ20BasesI;
     mCycleQ20BasesI = newBuf;
 
-    newBuf = new uint[newBufLen * 8];
-    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
-    memcpy(newBuf, mCycleBaseContentsI, sizeof(uint) * mBufLen * 8);
+    newBuf = new uint32[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint32) * newBufLen * 8);
+    memcpy(newBuf, mCycleBaseContentsI, sizeof(uint32) * mBufLen * 8);
     delete mCycleBaseContentsI;
     mCycleBaseContentsI = newBuf;
 
-    newBuf = new uint[newBufLen * 8];
-    memset(newBuf, 0, sizeof(uint) * newBufLen * 8);
-    memcpy(newBuf, mCycleBaseQualI, sizeof(uint) * mBufLen * 8);
+    newBuf = new uint32[newBufLen * 8];
+    memset(newBuf, 0, sizeof(uint32) * newBufLen * 8);
+    memcpy(newBuf, mCycleBaseQualI, sizeof(uint32) * mBufLen * 8);
     delete mCycleBaseQualI;
     mCycleBaseQualI = newBuf;
 
-    newBuf = new uint[newBufLen];
-    memset(newBuf, 0, sizeof(uint) * newBufLen);
-    memcpy(newBuf, mCycleTotalBaseI, sizeof(uint) * mBufLen);
+    newBuf = new uint32[newBufLen];
+    memset(newBuf, 0, sizeof(uint32) * newBufLen);
+    memcpy(newBuf, mCycleTotalBaseI, sizeof(uint32) * mBufLen);
     delete mCycleTotalBaseI;
     mCycleTotalBaseI = newBuf;
 
 
-    newBuf = new uint[newBufLen];
-    memset(newBuf, 0, sizeof(uint) * newBufLen);
-    memcpy(newBuf, mCycleTotalQualI, sizeof(uint) * mBufLen);
+    newBuf = new uint32[newBufLen];
+    memset(newBuf, 0, sizeof(uint32) * newBufLen);
+    memcpy(newBuf, mCycleTotalQualI, sizeof(uint32) * mBufLen);
     delete mCycleTotalQualI;
     mCycleTotalQualI = newBuf;
 
@@ -757,7 +755,7 @@ void Stats::statRead(Read *r) {
 #elif Vec512
     int i = 0;
     int det = 16;
-    uint *p1, *p2, *p3, *p4, *p5, *p6;
+    uint32 *p1, *p2, *p3, *p4, *p5, *p6;
     __m512i ad0, ad1, ad2, ad3, ad4, v1, v2, v3, v4, v5, v6, sub33, quamm;
     __m512i bse, and7, add8, idx;
     __m128i ide;
@@ -788,33 +786,33 @@ void Stats::statRead(Read *r) {
         bse = _mm512_add_epi32(bse, add8);
 
 
-//        p1 = (uint *) (mCycleTotalBaseI + i);
+//        p1 = (uint32 *) (mCycleTotalBaseI + i);
 //        v1 = _mm512_load_epi32(p1);
 //        v1 = _mm512_add_epi32(v1, ad1);
 //        _mm512_storeu_si512(p1, v1);
 //
 //
-//        p2 = (uint *) (mCycleTotalQualI + i);
+//        p2 = (uint32 *) (mCycleTotalQualI + i);
 //        v2 = _mm512_load_epi32(p2);
 //        v2 = _mm512_add_epi32(v2, ad2);
 //        _mm512_storeu_si512(p2, v2);
 
-        p3 = (uint *) mCycleBaseContentsI;
+        p3 = (uint32 *) mCycleBaseContentsI;
         v3 = _mm512_i32gather_epi32(idx, p3, 4);
         v3 = _mm512_add_epi32(v3, ad1);
         _mm512_i32scatter_epi32(p3, idx, v3, 4);
 
-        p4 = (uint *) mCycleBaseQualI;
+        p4 = (uint32 *) mCycleBaseQualI;
         v4 = _mm512_i32gather_epi32(idx, p4, 4);
         v4 = _mm512_add_epi32(v4, ad2);
         _mm512_i32scatter_epi32(p4, idx, v4, 4);
 
-        p5 = (uint *) mCycleQ30BasesI;
+        p5 = (uint32 *) mCycleQ30BasesI;
         v5 = _mm512_i32gather_epi32(idx, p5, 4);
         v5 = _mm512_mask_add_epi32(v5, q30_mask, v5, ad1);
         _mm512_i32scatter_epi32(p5, idx, v5, 4);
 
-        p6 = (uint *) mCycleQ20BasesI;
+        p6 = (uint32 *) mCycleQ20BasesI;
         v6 = _mm512_i32gather_epi32(idx, p6, 4);
         v6 = _mm512_mask_add_epi32(v6, q20_mask, v6, ad1);
         _mm512_i32scatter_epi32(p6, idx, v6, 4);
@@ -958,7 +956,7 @@ long *Stats::getOneStats() {
 
 #else
 
-uint *Stats::getOneStats() {
+uint32 *Stats::getOneStats() {
     return mCycleTotalQualI;
 }
 

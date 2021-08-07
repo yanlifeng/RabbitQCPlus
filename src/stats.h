@@ -38,7 +38,6 @@ SOFTWARE.
 #include "read.h"
 #include "options.h"
 
-#define uint unsigned int
 
 using namespace std;
 
@@ -72,7 +71,7 @@ public:
     long *getOneStats();
 #else
 
-    uint *getOneStats();
+    uint32 *getOneStats();
 
 #endif
 
@@ -160,13 +159,13 @@ public:
     long *mCycleTotalQual;
 
 #else
-    unsigned int *mCycleQ30BasesI;
-    unsigned int *mCycleQ20BasesI;
-    unsigned int *mCycleBaseContentsI;
-    unsigned int *mCycleBaseQualI;
+    uint32 *mCycleQ30BasesI;
+    uint32 *mCycleQ20BasesI;
+    uint32 *mCycleBaseContentsI;
+    uint32 *mCycleBaseQualI;
 
-    unsigned int *mCycleTotalBaseI;
-    unsigned int *mCycleTotalQualI;
+    uint32 *mCycleTotalBaseI;
+    uint32 *mCycleTotalQualI;
 #endif
     long *mKmer;
     bool *fg;
