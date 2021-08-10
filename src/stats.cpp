@@ -970,6 +970,8 @@ void Stats::print() {
     cerr << "total bases: " << mBases << endl;
     cerr << "Q20 bases: " << mQ20Total << "(" << (mQ20Total * 100.0) / mBases << "%)" << endl;
     cerr << "Q30 bases: " << mQ30Total << "(" << (mQ30Total * 100.0) / mBases << "%)" << endl;
+    cerr << "kmer max: " << mKmerMax << endl;
+    cerr << "kmer min: " << mKmerMin << endl;
 }
 
 void Stats::reportJson(ofstream &ofs, string padding) {

@@ -471,7 +471,7 @@ uint64 FastqChunkReaderPair::GetNextRecordPos(dsrc::uchar* data_, uint64 pos_, c
 	SkipToEol(data_, pos_, size_);
 	++pos_;
 	if(data_[pos_] != '+')
-		std::cout << "core dump is " << data_[pos_] << std::endl;	
+		std::cout << "core dump is " << data_[pos_] << std::endl;
 	ASSERT(data_[pos_] == '+');	// pos0 was the start of tag
 	return pos0;
 }
@@ -496,7 +496,7 @@ ChunkPair* FastqChunkReaderPair::readNextChunkPair_interleaved(){
 		//return false;
 		fastqPool_left -> Release(leftPart);
 		fastqPool_right->Release(rightPart);
-		return NULL; 
+		return NULL;
 	}
 
 	//flush the data from previous incomplete chunk
@@ -598,7 +598,7 @@ ChunkPair* FastqChunkReaderPair::readNextChunkPair_interleaved(){
 	    		chunkEnd_right++;
 	    	}
 			std::cout << "end: " << chunkEnd_right << std::endl;
-	    			
+
 	    }else if(difference < 0){
 	    	//move leftPart difference lines before
 			//std::cout << "difference < 0 "  <<left_line_count <<" " <<right_line_count << " " << difference << std::endl;
@@ -627,10 +627,10 @@ ChunkPair* FastqChunkReaderPair::readNextChunkPair_interleaved(){
 	    	rightPart->size -= 1;
 	    std::copy(data_right + chunkEnd_right, data_right + cbufSize_right, swapBuffer_right.Pointer());
 	    bufferSize_right = cbufSize_right - chunkEnd_right;
-	}	
+	}
 	pair->leftpart = leftPart;
 	pair->rightpart = rightPart;
-	return pair;			
+	return pair;
 
 }
 

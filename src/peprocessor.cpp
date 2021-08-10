@@ -139,134 +139,134 @@ bool PairEndProcessor::process() {
     Stats *finalPreStats2 = Stats::merge(preStats2);
     Stats *finalPostStats2 = Stats::merge(postStats2);
     FilterResult *finalFilterResult = FilterResult::merge(filterResults);
-    fstream out, in, inn;
-    string outFileName1 = "preStats1Kmer";
-    string outFileName11 = "preStats2Kmer";
-    string outFileName2 = "postStats1Kmer";
-    string outFileName22 = "postStats2Kmer";
-    string outFileName3 = "mDuplicateCount";
-    string outFileName4 = "mDuplicateGC";
-    string outFileName5 = "mDuplicateDups";
-    string outFileName6 = "preStats1TotalBase";
-    string outFileName66 = "preStats2TotalBase";
-    string outFileName7 = "preStats1TotalQual";
-    string outFileName77 = "preStats2TotalQual";
-    string outFileName8 = "postStats1TotalBase";
-    string outFileName88 = "postStats2TotalBase";
-    string outFileName9 = "postStats1TotalQual";
-    string outFileName99 = "postStats2TotalQual";
-
-    out.open(outFileName1.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats1->mKmer), finalPreStats1->mKmerBufLen * sizeof(long));
-    out.close();
-    out.open(outFileName11.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats2->mKmer), finalPreStats2->mKmerBufLen * sizeof(long));
-    out.close();
-
-    out.open(outFileName2.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats1->mKmer), finalPostStats1->mKmerBufLen * sizeof(long));
-    out.close();
-    out.open(outFileName22.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats2->mKmer), finalPostStats2->mKmerBufLen * sizeof(long));
-    out.close();
-
-    out.open(outFileName3.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(mDuplicate->mCounts), mDuplicate->mKeyLenInBit * sizeof(uint16));
-    out.close();
-
-    out.open(outFileName4.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(mDuplicate->mGC), mDuplicate->mKeyLenInBit * sizeof(uint8));
-    out.close();
-
-    out.open(outFileName5.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(mDuplicate->mDups), mDuplicate->mKeyLenInBit * sizeof(uint64));
-    out.close();
-#ifdef UseLong
-    out.open(outFileName6.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalBase), finalPreStats1->mBufLen * sizeof(long));
-    out.close();
-    out.open(outFileName66.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalBase), finalPreStats2->mBufLen * sizeof(long));
-    out.close();
-
-    out.open(outFileName7.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalQual), finalPreStats1->mBufLen * sizeof(long));
-    out.close();
-    out.open(outFileName77.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalQual), finalPreStats2->mBufLen * sizeof(long));
-    out.close();
-
-    out.open(outFileName8.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalBase), finalPostStats1->mBufLen * sizeof(long));
-    out.close();
-
-    out.open(outFileName88.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalBase), finalPostStats2->mBufLen * sizeof(long));
-    out.close();
-
-    out.open(outFileName9.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalQual), finalPostStats1->mBufLen * sizeof(long));
-    out.close();
-
-    out.open(outFileName99.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalQual), finalPostStats2->mBufLen * sizeof(long));
-    out.close();
-#else
-    out.open(outFileName6.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalBaseI), finalPreStats1->mBufLen * sizeof(uint32));
-    out.close();
-    out.open(outFileName66.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalBaseI), finalPreStats2->mBufLen * sizeof(uint32));
-    out.close();
-
-    out.open(outFileName7.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalQualI), finalPreStats1->mBufLen * sizeof(uint32));
-    out.close();
-    out.open(outFileName77.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalQualI), finalPreStats2->mBufLen * sizeof(uint32));
-    out.close();
-
-    out.open(outFileName8.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalBaseI), finalPostStats1->mBufLen * sizeof(uint32));
-    out.close();
-    out.open(outFileName88.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalBaseI), finalPostStats2->mBufLen * sizeof(uint32));
-    out.close();
-
-    out.open(outFileName9.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalQualI), finalPostStats1->mBufLen * sizeof(uint32));
-    out.close();
-
-    out.open(outFileName99.c_str(), ios::out | ios::binary);
-    out.seekp(0, ios::beg);
-    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalQualI), finalPostStats2->mBufLen * sizeof(uint32));
-    out.close();
-
-    cout << "finalPostStats1->mBufLen  " << finalPostStats1->mBufLen << endl;
-
-#endif
+//    fstream out, in, inn;
+//    string outFileName1 = "preStats1Kmer";
+//    string outFileName11 = "preStats2Kmer";
+//    string outFileName2 = "postStats1Kmer";
+//    string outFileName22 = "postStats2Kmer";
+//    string outFileName3 = "mDuplicateCount";
+//    string outFileName4 = "mDuplicateGC";
+//    string outFileName5 = "mDuplicateDups";
+//    string outFileName6 = "preStats1TotalBase";
+//    string outFileName66 = "preStats2TotalBase";
+//    string outFileName7 = "preStats1TotalQual";
+//    string outFileName77 = "preStats2TotalQual";
+//    string outFileName8 = "postStats1TotalBase";
+//    string outFileName88 = "postStats2TotalBase";
+//    string outFileName9 = "postStats1TotalQual";
+//    string outFileName99 = "postStats2TotalQual";
+//
+//    out.open(outFileName1.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats1->mKmer), finalPreStats1->mKmerBufLen * sizeof(long));
+//    out.close();
+//    out.open(outFileName11.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats2->mKmer), finalPreStats2->mKmerBufLen * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName2.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats1->mKmer), finalPostStats1->mKmerBufLen * sizeof(long));
+//    out.close();
+//    out.open(outFileName22.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats2->mKmer), finalPostStats2->mKmerBufLen * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName3.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(mDuplicate->mCounts), mDuplicate->mKeyLenInBit * sizeof(uint16));
+//    out.close();
+//
+//    out.open(outFileName4.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(mDuplicate->mGC), mDuplicate->mKeyLenInBit * sizeof(uint8));
+//    out.close();
+//
+//    out.open(outFileName5.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(mDuplicate->mDups), mDuplicate->mKeyLenInBit * sizeof(uint64));
+//    out.close();
+//#ifdef UseLong
+//    out.open(outFileName6.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalBase), finalPreStats1->mBufLen * sizeof(long));
+//    out.close();
+//    out.open(outFileName66.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalBase), finalPreStats2->mBufLen * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName7.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalQual), finalPreStats1->mBufLen * sizeof(long));
+//    out.close();
+//    out.open(outFileName77.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalQual), finalPreStats2->mBufLen * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName8.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalBase), finalPostStats1->mBufLen * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName88.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalBase), finalPostStats2->mBufLen * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName9.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalQual), finalPostStats1->mBufLen * sizeof(long));
+//    out.close();
+//
+//    out.open(outFileName99.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalQual), finalPostStats2->mBufLen * sizeof(long));
+//    out.close();
+//#else
+//    out.open(outFileName6.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalBaseI), finalPreStats1->mBufLen * sizeof(uint32));
+//    out.close();
+//    out.open(outFileName66.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalBaseI), finalPreStats2->mBufLen * sizeof(uint32));
+//    out.close();
+//
+//    out.open(outFileName7.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats1->mCycleTotalQualI), finalPreStats1->mBufLen * sizeof(uint32));
+//    out.close();
+//    out.open(outFileName77.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPreStats2->mCycleTotalQualI), finalPreStats2->mBufLen * sizeof(uint32));
+//    out.close();
+//
+//    out.open(outFileName8.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalBaseI), finalPostStats1->mBufLen * sizeof(uint32));
+//    out.close();
+//    out.open(outFileName88.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalBaseI), finalPostStats2->mBufLen * sizeof(uint32));
+//    out.close();
+//
+//    out.open(outFileName9.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats1->mCycleTotalQualI), finalPostStats1->mBufLen * sizeof(uint32));
+//    out.close();
+//
+//    out.open(outFileName99.c_str(), ios::out | ios::binary);
+//    out.seekp(0, ios::beg);
+//    out.write(reinterpret_cast<char *>(finalPostStats2->mCycleTotalQualI), finalPostStats2->mBufLen * sizeof(uint32));
+//    out.close();
+//
+//    cout << "finalPostStats1->mBufLen  " << finalPostStats1->mBufLen << endl;
+//
+//#endif
 
 #ifdef Timer
     double cost = 0;

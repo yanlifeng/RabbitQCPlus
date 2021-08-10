@@ -14,7 +14,7 @@ TARGET := rabbit_qc
 
 BIN_TARGET := ${TARGET}
 
-CXX := g++
+CXX := g++-8
 #CXXFLAGS := -DTimer -std=c++11 -g -fopenmp -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 #CXXFLAGS :=  -DTimer -std=c++11 -g -funroll-loops -flto -fopenmp -march=native -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
 #CXXFLAGS := -std=c++11 -g -funroll-loops -flto -fopenmp -mavx2 -I${DIR_INC} $(foreach includedir,$(INCLUDE_DIRS),-I$(includedir))
